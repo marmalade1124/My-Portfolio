@@ -1,0 +1,36 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-montserrat: 'Montserrat', sans-serif;
+  --font-metropolis: 'Plus Jakarta Sans', 'Metropolis', sans-serif;
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --color-primary: #000000;
+  --color-secondary: #71717a;
+  --color-muted: #a1a1aa;
+  --color-border: #e4e4e7;
+  --color-surface: #ffffff;
+  --color-background: #fafafa;
+
+  --tracking-tighter: -0.04em;
+  --tracking-tight: -0.02em;
+  --tracking-widest: 0.12em;
+}
+
+@layer base {
+  body {
+    @apply bg-background text-primary antialiased;
+    font-feature-settings: "ss01", "ss02", "cv01";
+  }
+
+  ::selection {
+    @apply bg-neutral-900 text-white;
+  }
+
+  * {
+    @apply border-border;
+  }
+}
