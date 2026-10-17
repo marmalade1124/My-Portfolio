@@ -130,3 +130,7 @@ Built using the **Swiss International Typographic Style**, the interface feature
 <div align="center">
   <sub>Designed & Developed with precision by <strong>Raziel Salamat</strong> · © 2026 All Rights Reserved.</sub>
 </div>
+
+### Resume asset
+
+`public/resume.pdf` is the original `Portfolio Files/Portfolio_Resume_OCT.pdf`. The viewer uses 13 JPEG page previews for browser compatibility; both download links save the original as `Portfolio_Resume_OCT.pdf`. When replacing the PDF, regenerate `public/resume-preview-01.jpg` through `-13.jpg` with `pdftoppm -scale-to 1800 -jpeg -jpegopt quality=88 public/resume.pdf public/resume-preview` and update the page count in `ResumeModal.tsx` if it changes.

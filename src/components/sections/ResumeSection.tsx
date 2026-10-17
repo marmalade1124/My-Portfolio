@@ -26,7 +26,7 @@ export function ResumeSection() {
           <div className="mt-4 flex justify-end">
             <a
               href="/resume.pdf"
-              download
+              download="Portfolio_Resume_OCT.pdf"
               className="inline-flex items-center gap-2 font-mono text-xs text-zinc-500 hover:text-black transition-colors"
             >
               Or download directly <Download className="w-3 h-3" />

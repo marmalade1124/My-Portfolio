@@ -1,4 +1,5 @@
 import { useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Download } from 'lucide-react';
 import { cn } from '@/lib/cn';
@@ -28,7 +29,9 @@ export function ResumeModal({ isOpen, onClose, className }: ResumeModalProps) {
     };
   }, [isOpen, handleKeyDown]);
 
-  return (
+  if (typeof document === 'undefined') return null;
+
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
         <motion.div
@@ -46,7 +49,7 @@ export function ResumeModal({ isOpen, onClose, className }: ResumeModalProps) {
             <div className="flex items-center gap-4">
               <a
                 href="/resume.pdf"
-                download
+                download="Portfolio_Resume_OCT.pdf"
                 className="flex items-center gap-1.5 font-mono text-xs uppercase tracking-wider text-zinc-500 hover:text-zinc-900 transition-colors"
               >
                 <Download size={12} />
@@ -63,24 +66,24 @@ export function ResumeModal({ isOpen, onClose, className }: ResumeModalProps) {
             </div>
           </div>
 
-          {/* Resume content */}
-          <div className="flex items-center justify-center h-[calc(100vh-57px)] overflow-auto p-8">
-            <img
-              src="/resume.pdf"
-              alt="Resume - Raziel Salamat"
-              className="max-w-full max-h-full object-contain"
-              onError={(e) => {
-                const target = e.currentTarget;
-                target.style.display = 'none';
-                const fallback = document.createElement('div');
-                fallback.className = 'flex flex-col items-center gap-4 text-zinc-400';
-                fallback.innerHTML = '<span class="font-mono text-sm">Resume file not found</span><span class="font-mono text-xs">Drop resume.pdf into /public/</span>';
-                target.parentNode?.appendChild(fallback);
-              }}
-            />
+          <div className="h-[calc(100dvh-57px)] overflow-auto bg-zinc-100 p-4 sm:p-8" tabIndex={0} aria-label="October portfolio resume pages">
+            <div className="mx-auto max-w-6xl space-y-4">
+              {Array.from({ length: 13 }, (_, index) => (
+                <img
+                  key={index}
+                  src={`/resume-preview-${String(index + 1).padStart(2, '0')}.jpg`}
+                  alt={`October portfolio resume — page ${index + 1} of 13`}
+                  width={1800}
+                  height={1013}
+                  loading={index === 0 ? 'eager' : 'lazy'}
+                  className="block w-full h-auto bg-white shadow-sm"
+                />
+              ))}
+            </div>
           </div>
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }
