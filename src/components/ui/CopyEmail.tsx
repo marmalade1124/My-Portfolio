@@ -17,10 +17,10 @@ export function CopyEmail({ email, className }: CopyEmailProps) {
   }, [email]);
 
   return (
-    <div className={cn('flex items-center gap-4', className)}>
+    <div className={cn('flex flex-wrap items-center gap-4', className)}>
       <a
         href={`mailto:${email}`}
-        className="font-display text-2xl md:text-3xl font-medium text-zinc-900 hover:text-zinc-600 transition-colors"
+        className="break-all font-display text-2xl md:text-3xl font-medium text-zinc-900 hover:text-zinc-600 transition-colors"
       >
         {email}
       </a>

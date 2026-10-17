@@ -9,26 +9,17 @@ export function useSectionReveal(containerRef: React.RefObject<HTMLElement | nul
     () => {
       if (!containerRef.current) return;
 
-      const sections = containerRef.current.querySelectorAll('section:not(#hero)');
-
-      sections.forEach((section) => {
-        gsap.fromTo(
-          section,
-          { opacity: 0, y: 28 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.7,
-            ease: 'power3.out',
-            scrollTrigger: {
-              trigger: section,
-              start: 'top 85%',
-              toggleActions: 'play none none none',
-              once: true,
-            },
-          }
-        );
+      const media = gsap.matchMedia();
+      media.add('(prefers-reduced-motion: no-preference)', () => {
+        const headings = containerRef.current!.querySelectorAll('section:not(#hero):not(#concept-to-creation) h2');
+        headings.forEach((heading) => {
+          gsap.fromTo(heading, { opacity: 0, y: 20 }, {
+            opacity: 1, y: 0, duration: 0.65, ease: 'power3.out',
+            scrollTrigger: { trigger: heading, start: 'top 92%', once: true },
+          });
+        });
       });
+      return () => media.revert();
     },
     { scope: containerRef }
   );

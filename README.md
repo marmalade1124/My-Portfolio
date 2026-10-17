@@ -134,3 +134,17 @@ Built using the **Swiss International Typographic Style**, the interface feature
 ### Resume asset
 
 `public/resume.pdf` is the original `Portfolio Files/Portfolio_Resume_OCT.pdf`. The viewer uses 13 JPEG page previews for browser compatibility; both download links save the original as `Portfolio_Resume_OCT.pdf`. When replacing the PDF, regenerate `public/resume-preview-01.jpg` through `-13.jpg` with `pdftoppm -scale-to 1800 -jpeg -jpegopt quality=88 public/resume.pdf public/resume-preview` and update the page count in `ResumeModal.tsx` if it changes.
+
+### Cinematic opening
+
+The cream editorial hero now has a staggered title entrance and desktop scroll parallax. ConceptToCreation adds three chapters using existing CAD, TwentyFour, and film assets. At 900px wide and 720px tall or above, GSAP drives a native sticky scene from scroll position. Phones, short windows, reduced-motion preferences, and the pre-animation fallback use a normal stacked layout. The opening and story both link directly to selected work. No scroll replacement or new dependencies are used.
+
+Browser smoke check (Edge, with the development server on port 5174):
+
+```powershell
+pnpm dev --host 127.0.0.1 --port 5174
+npx --yes --package @playwright/cli playwright-cli open http://127.0.0.1:5174/ --browser msedge
+npx --yes --package @playwright/cli playwright-cli run-code --filename=tests/cinematic.browser.js
+```
+
+The check covers scene progression/reversal, resize cleanup, reduced motion, 320/390/768px widths, short windows, keyboard skip navigation, the project gallery, and resume preview. Physical-device animation performance still needs a device recording.

@@ -1,7 +1,9 @@
 import { useRef } from 'react';
+import { MotionConfig } from 'motion/react';
 import { Header } from './components/layout/Header';
 import { Footer } from './components/layout/Footer';
 import { HeroSection } from './components/sections/HeroSection';
+import { ConceptToCreation } from './components/sections/ConceptToCreation';
 import { ProjectsSection } from './components/sections/ProjectsSection';
 import { ExperienceSection } from './components/sections/ExperienceSection';
 import { EducationSection } from './components/sections/EducationSection';
@@ -16,21 +18,24 @@ export default function App() {
   useSectionReveal(mainRef);
 
   return (
-    <div className="relative min-h-screen bg-[#faf9f6]">
-      {/* Tactile Archival Paper Grain Texture */}
-      <PaperTexture />
+    <MotionConfig reducedMotion="user">
+      <div className="relative min-h-screen bg-[#faf9f6]">
+        {/* Tactile Archival Paper Grain Texture */}
+        <PaperTexture />
 
-      <Header />
-      <main ref={mainRef} className="relative pt-[52px] bg-transparent">
-        <HeroSection />
-        <ProjectsSection />
-        <ExperienceSection />
-        <EducationSection />
-        <SkillsSection />
-        <ResumeSection />
-        <ContactSection />
-      </main>
-      <Footer />
-    </div>
+        <Header />
+        <main ref={mainRef} className="relative pt-[52px] bg-transparent">
+          <HeroSection />
+          <ConceptToCreation />
+          <ProjectsSection />
+          <ExperienceSection />
+          <EducationSection />
+          <SkillsSection />
+          <ResumeSection />
+          <ContactSection />
+        </main>
+        <Footer />
+      </div>
+    </MotionConfig>
   );
 }

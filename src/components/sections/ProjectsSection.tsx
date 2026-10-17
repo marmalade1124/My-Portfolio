@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import { Github, ExternalLink, ArrowUpRight, Maximize2, Layers, Play, LayoutGrid, List, ChevronDown, ChevronUp } from 'lucide-react';
 import { PROJECTS, type Project } from '@/lib/data';
 import { SectionHeading } from '@/components/ui/SectionHeading';
@@ -21,6 +21,7 @@ const CATEGORIES: { label: string; value: FilterType }[] = [
 const INITIAL_GRID_LIMIT = 6;
 
 export function ProjectsSection() {
+  const reduceMotion = useReducedMotion();
   const [activeCategory, setActiveCategory] = useState<FilterType>('all');
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
@@ -136,9 +137,10 @@ export function ProjectsSection() {
                     <motion.div
                       key={project.id}
                       layout
-                      initial={{ opacity: 0, y: 15 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, scale: 0.98 }}
+                      initial={reduceMotion ? false : { opacity: 0, transform: 'translateY(24px)' }}
+                      whileInView={{ opacity: 1, transform: 'translateY(0px)' }}
+                      viewport={{ once: true, amount: 0.1 }}
+                      exit={{ opacity: 0 }}
                       transition={{ duration: 0.25 }}
                       className="group relative flex flex-col justify-between p-6 sm:p-8 bg-transparent border border-zinc-300 hover:border-black transition-colors duration-200"
                     >

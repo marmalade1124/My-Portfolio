@@ -59,12 +59,12 @@ export function Header() {
   const handleNavClick = (href: string) => {
     setMobileOpen(false);
     if (href === '#hero') {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
       return;
     }
     const el = document.querySelector(href);
     if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
+      el.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
     }
   };
 
@@ -95,7 +95,7 @@ export function Header() {
             className="font-display text-xs font-semibold uppercase tracking-[0.14em] text-black hover:text-zinc-600 transition-colors"
             onClick={(e) => {
               e.preventDefault();
-              window.scrollTo({ top: 0, behavior: 'smooth' });
+              window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
             }}
           >
             Raziel Salamat
@@ -130,7 +130,7 @@ export function Header() {
           className="font-display text-xs font-bold uppercase tracking-[0.12em] text-black"
           onClick={(e) => {
             e.preventDefault();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
           }}
         >
           {scrolled ? 'RS' : 'Raziel Salamat'}
@@ -224,7 +224,7 @@ export function Header() {
           href="#"
           onClick={(e) => {
             e.preventDefault();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
           }}
           animate={scrolled ? { scale: 1, opacity: 1 } : { scale: 0.8, opacity: 0 }}
           transition={{ duration: 0.4, delay: 0.1 }}

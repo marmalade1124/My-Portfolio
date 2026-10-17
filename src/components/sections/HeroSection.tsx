@@ -1,8 +1,11 @@
 import { useRef } from 'react';
 import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 import { PERSONAL } from '@/lib/data';
 import { StatusBadge } from '@/components/ui/StatusBadge';
+
+gsap.registerPlugin(ScrollTrigger);
 
 export function HeroSection() {
   const containerRef = useRef<HTMLElement>(null);
@@ -16,31 +19,22 @@ export function HeroSection() {
 
   useGSAP(
     () => {
-      const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
-
-      tl.fromTo(
-        titleRef.current,
-        { yPercent: 20, opacity: 0 },
-        { yPercent: 0, opacity: 1, duration: 1.0 }
-      )
-        .fromTo(
-          salamatRef.current,
-          { x: -15, opacity: 0 },
-          { x: 0, opacity: 1, duration: 0.8 },
-          '-=0.7'
-        )
-        .fromTo(
-          portraitRef.current,
-          { y: 35, opacity: 0, scale: 0.97 },
-          { y: 0, opacity: 1, scale: 1, duration: 1.1, ease: 'power3.out' },
-          '-=0.8'
-        )
-        .fromTo(
-          [leftAccentRef.current, rightAccentRef.current, statusRef.current],
-          { y: 15, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.7, stagger: 0.08 },
-          '-=0.5'
-        );
+      const media = gsap.matchMedia();
+      media.add('(prefers-reduced-motion: no-preference)', () => {
+        const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+        tl.from(titleRef.current!.children, { yPercent: 110, opacity: 0, duration: 0.9, stagger: 0.055 })
+          .from(salamatRef.current, { y: 20, opacity: 0, duration: 0.7 }, 0.25)
+          .from(portraitRef.current, { y: 40, opacity: 0, scale: 0.96, duration: 1.1 }, 0.15)
+          .from([leftAccentRef.current, rightAccentRef.current, statusRef.current],
+            { y: 12, opacity: 0, duration: 0.6, stagger: 0.06 }, 0.65);
+      });
+      media.add('(min-width: 900px) and (prefers-reduced-motion: no-preference)', () => {
+        gsap.to(canvasRef.current, {
+          yPercent: -8, scale: 0.96, opacity: 0.25, ease: 'none',
+          scrollTrigger: { trigger: containerRef.current, start: 'top top', end: 'bottom top', scrub: true },
+        });
+      });
+      return () => media.revert();
     },
     { scope: containerRef }
   );
@@ -49,7 +43,7 @@ export function HeroSection() {
     <section
       id="hero"
       ref={containerRef}
-      className="relative min-h-[90vh] lg:min-h-[95vh] bg-transparent border-b border-zinc-200 flex flex-col justify-between pt-6 pb-8 overflow-visible select-none"
+      className="relative min-h-[90vh] lg:min-h-[95vh] bg-transparent border-b border-zinc-200 flex flex-col justify-between pt-6 pb-8 overflow-hidden select-none"
     >
       {/* Top Status Bar (Layer z-30) */}
       <div
@@ -75,7 +69,8 @@ export function HeroSection() {
             {/* RAZIEL: Bold Geometric Montserrat */}
             <h1
               ref={titleRef}
-              className="w-full font-['Montserrat',sans-serif] font-extrabold uppercase leading-[0.80] text-black flex justify-between items-center tracking-[-0.03em] text-[21vw] sm:text-[19vw] md:text-[18vw] lg:text-[16vw]"
+              aria-label="Raziel Salamat"
+              className="w-full font-['Montserrat',sans-serif] font-extrabold uppercase leading-[0.80] text-black flex justify-between items-center tracking-[-0.03em] overflow-hidden text-[21vw] sm:text-[19vw] md:text-[18vw] lg:text-[16vw]"
             >
               <span>R</span>
               <span>A</span>
@@ -146,8 +141,8 @@ export function HeroSection() {
 
       {/* Bottom Subtle Scroll Indicator */}
       <div className="w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-16 flex items-center justify-between text-[11px] font-mono text-zinc-400 z-10">
-        <span>[001] — HERO INDEX</span>
-        <span className="animate-pulse">SCROLL TO EXPLORE ↓</span>
+        <a href="#work" className="cinema-link text-zinc-700">SKIP TO SELECTED WORK ↗</a>
+        <a href="#concept-to-creation" className="cinema-link text-zinc-700">SCROLL TO EXPLORE ↓</a>
       </div>
     </section>
   );
