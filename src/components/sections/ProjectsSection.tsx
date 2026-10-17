@@ -184,7 +184,7 @@ export function ProjectsSection() {
                             <img
                               src={project.coverImage}
                               alt={`${project.title} preview`}
-                              className={`w-full h-full ${project.id === 'twentyfour' ? 'object-contain bg-white p-6' : 'object-cover object-top'} opacity-90 group-hover/img:opacity-100 group-hover/img:scale-103 transition-all duration-500`}
+                              className="w-full h-full object-cover object-top opacity-90 group-hover/img:opacity-100 group-hover/img:scale-103 transition-all duration-500"
                               loading="lazy"
                             />
                             <div className="absolute inset-0 bg-black/10 group-hover/img:bg-transparent transition-colors" />

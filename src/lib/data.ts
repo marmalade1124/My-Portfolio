@@ -74,9 +74,13 @@ export const PROJECTS: Project[] = [
     role: 'Creator & Full-Stack Developer',
     techStack: ['JavaScript', 'Node.js', 'Supabase', 'IndexedDB', 'PWA'],
     liveUrl: 'https://twentyfour-ixyq.onrender.com/',
-    coverImage: '/projects/twentyfour-logo.png',
-    images: ['/projects/twentyfour-logo.png'],
-    imageCaptions: ['TwentyFour brand mark — event photography web app'],
+    coverImage: '/projects/twentyfour-home.png',
+    images: ['/projects/twentyfour-home.png', '/projects/twentyfour-camera.png', '/projects/twentyfour-roll.png'],
+    imageCaptions: [
+      'TwentyFour — live web app landing page',
+      'Mobile camera interface — public demo with a sample scene',
+      'Camera roll and reveal countdown — public demo, no photos uploaded',
+    ],
   },
 
   // === TOP FLAGSHIP WORKS (SHOWCASED IN INITIAL 6 CARDS) ===
