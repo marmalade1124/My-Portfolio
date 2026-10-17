@@ -31,8 +31,13 @@ export function ConceptToCreation() {
         if (index > 0) {
           const at = index * 1.5 - 0.3;
           timeline.to(scenes[index - 1]!, { autoAlpha: 0, yPercent: -8, duration: 0.3 }, at)
-            .to(scene, { autoAlpha: 1, yPercent: 0, duration: 0.3 }, at);
+            .to(scene, { autoAlpha: 1, yPercent: 0, duration: 0.3 }, at)
+            .fromTo(scene.querySelectorAll('.cinema-title-line > span'), { yPercent: 110 }, { yPercent: 0, duration: 0.3, stagger: 0.04 }, at);
         }
+      });
+      gsap.from(scenes[0]!.querySelectorAll('.cinema-title-line > span'), {
+        yPercent: 110, duration: 0.7, stagger: 0.06, ease: 'power3.out',
+        scrollTrigger: { trigger: section, start: 'top 85%', once: true },
       });
       timeline.fromTo('.cinema-progress', { scaleX: 0 }, { scaleX: 1, duration: timeline.duration() }, 0);
       return () => section.classList.remove('cinema-enabled');
@@ -52,7 +57,7 @@ export function ConceptToCreation() {
             <article key={chapter.id} className="cinema-scene">
               <div className="cinema-copy">
                 <p className="cinema-eyebrow">0{index + 1} / {chapter.label}</p>
-                <h2>{chapter.title}</h2>
+                <h2 aria-label={chapter.title.replace('\n', ' ')}>{chapter.title.split('\n').map((line) => <span className="cinema-title-line" aria-hidden="true" key={line}><span>{line}</span></span>)}</h2>
                 <p className="cinema-detail">{chapter.detail}</p>
               </div>
               <figure className={`cinema-visual cinema-visual-${chapter.project.tag}`}>

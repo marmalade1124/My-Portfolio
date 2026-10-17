@@ -11,7 +11,7 @@ export function useSectionReveal(containerRef: React.RefObject<HTMLElement | nul
 
       const media = gsap.matchMedia();
       media.add('(prefers-reduced-motion: no-preference)', () => {
-        const headings = containerRef.current!.querySelectorAll('section:not(#hero):not(#concept-to-creation) h2');
+        const headings = containerRef.current!.querySelectorAll('section:not(#hero):not(#concept-to-creation):not(#contact) h2');
         headings.forEach((heading) => {
           gsap.fromTo(heading, { opacity: 0, y: 20 }, {
             opacity: 1, y: 0, duration: 0.65, ease: 'power3.out',

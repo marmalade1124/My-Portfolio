@@ -1,10 +1,11 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import { X, ChevronLeft, ChevronRight, ExternalLink, Maximize2, Play } from 'lucide-react';
 import { type Project } from '@/lib/data';
 
 interface ImageLightboxModalProps {
+  sharedImageId?: string;
   project: Project | null;
   currentImageIndex: number;
   isOpen: boolean;
@@ -13,12 +14,15 @@ interface ImageLightboxModalProps {
 }
 
 export function ImageLightboxModal({
+  sharedImageId,
   project,
   currentImageIndex,
   isOpen,
   onClose,
   onSelectImage,
 }: ImageLightboxModalProps) {
+  const reduceMotion = useReducedMotion();
+  const dialogRef = useRef<HTMLDivElement>(null);
   const images = project?.images || (project?.coverImage ? [project.coverImage] : []);
   const captions = project?.imageCaptions || [];
   const currentImage = images[currentImageIndex] || '';
@@ -34,12 +38,26 @@ export function ImageLightboxModal({
     onSelectImage((currentImageIndex - 1 + images.length) % images.length);
   }, [images.length, currentImageIndex, onSelectImage]);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const opener = document.activeElement as HTMLElement | null;
+    dialogRef.current?.querySelector<HTMLButtonElement>('[aria-label="Close modal"]')?.focus({ preventScroll: true });
+    return () => opener?.focus({ preventScroll: true });
+  }, [isOpen]);
+
   // Keyboard navigation (Escape, ArrowLeft, ArrowRight)
   useEffect(() => {
     if (!isOpen) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
+      if (e.key === 'Tab') {
+        const controls = Array.from(dialogRef.current?.querySelectorAll<HTMLElement>('a[href], button:not([disabled])') ?? []);
+        const first = controls[0];
+        const last = controls[controls.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last?.focus(); }
+        if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first?.focus(); }
+      }
       if (e.key === 'ArrowRight') handleNext();
       if (e.key === 'ArrowLeft') handlePrev();
     };
@@ -58,7 +76,7 @@ export function ImageLightboxModal({
   return createPortal(
     <AnimatePresence>
       {isOpen && project && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 md:p-10">
+        <motion.div layoutRoot ref={dialogRef} role="dialog" aria-modal="true" aria-label={project.title + ' gallery'} className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 md:p-10">
           {/* Backdrop Blur */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -70,19 +88,19 @@ export function ImageLightboxModal({
 
           {/* Modal Container */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 15 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 15 }}
-            transition={{ type: 'spring', damping: 28, stiffness: 300 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: reduceMotion ? 0 : 0.2 }}
             className="relative z-10 w-full max-w-6xl max-h-[92vh] flex flex-col bg-zinc-950 border border-zinc-800 shadow-2xl overflow-hidden"
           >
             {/* Modal Top Header Bar */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-800 bg-black/60 text-white">
-              <div className="flex items-center gap-3 font-mono text-xs">
+            <div className="flex flex-wrap items-center justify-between gap-3 px-4 sm:px-6 py-4 border-b border-zinc-800 bg-black/60 text-white">
+              <div className="flex min-w-0 w-full sm:w-auto sm:flex-1 items-center gap-3 font-mono text-xs">
                 <span className="px-2 py-0.5 bg-white text-black font-semibold uppercase tracking-wider">
                   ({project.num})
                 </span>
-                <span className="font-['Montserrat',sans-serif] font-bold text-sm uppercase tracking-tight">
+                <span className="min-w-0 truncate font-['Montserrat',sans-serif] font-bold text-sm uppercase tracking-tight">
                   {project.title}
                 </span>
                 <span className="hidden sm:inline text-zinc-500">/</span>
@@ -91,7 +109,7 @@ export function ImageLightboxModal({
                 </span>
               </div>
 
-              <div className="flex items-center gap-3">
+              <div className="flex w-full sm:w-auto shrink-0 items-center justify-between sm:justify-start gap-3">
                 {images.length > 1 && (
                   <span className="font-mono text-xs text-zinc-400 tracking-wider">
                     {String(currentImageIndex + 1).padStart(2, '0')} / {String(images.length).padStart(2, '0')}
@@ -137,10 +155,10 @@ export function ImageLightboxModal({
             <div className="relative flex-1 min-h-[320px] max-h-[68vh] bg-zinc-950/80 flex items-center justify-center p-4 sm:p-8 overflow-hidden group">
               <motion.img
                 key={currentImage}
-                initial={{ opacity: 0, scale: 0.98 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.98 }}
-                transition={{ duration: 0.2 }}
+                layoutId={!reduceMotion && currentImageIndex === 0 ? sharedImageId : undefined}
+                initial={{ opacity: sharedImageId ? 1 : 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ type: 'spring', duration: reduceMotion ? 0 : 0.5, bounce: 0 }}
                 src={currentImage}
                 alt={currentCaption}
                 className="max-h-[62vh] max-w-full object-contain shadow-2xl border border-zinc-800/80"
@@ -201,7 +219,7 @@ export function ImageLightboxModal({
               )}
             </div>
           </motion.div>
-        </div>
+        </motion.div>
       )}
     </AnimatePresence>,
     document.body

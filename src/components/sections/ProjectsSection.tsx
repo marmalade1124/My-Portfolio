@@ -26,6 +26,7 @@ export function ProjectsSection() {
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const [lightboxProject, setLightboxProject] = useState<Project | null>(null);
+  const [galleryTransition, setGalleryTransition] = useState(false);
   const [lightboxImageIndex, setLightboxImageIndex] = useState<number>(0);
 
   const filteredProjects = useMemo(() => {
@@ -40,7 +41,8 @@ export function ProjectsSection() {
     return filteredProjects.slice(0, INITIAL_GRID_LIMIT);
   }, [activeCategory, filteredProjects, isExpanded]);
 
-  const handleOpenLightbox = (project: Project, index: number = 0) => {
+  const handleOpenLightbox = (project: Project, index: number = 0, fromPointer = false) => {
+    setGalleryTransition(fromPointer && !reduceMotion && viewMode === 'grid');
     setLightboxProject(project);
     setLightboxImageIndex(index);
   };
@@ -167,7 +169,7 @@ export function ProjectsSection() {
 
                           {hasImages && (
                             <button
-                              onClick={() => handleOpenLightbox(project, 0)}
+                              onClick={(event) => handleOpenLightbox(project, 0, event.detail > 0)}
                               className="shrink-0 flex items-center gap-1.5 px-2.5 py-1 bg-zinc-100 hover:bg-black hover:text-white text-zinc-700 border border-zinc-200 font-mono text-[10px] uppercase tracking-wider transition-colors cursor-pointer"
                               title="View project screenshot gallery"
                             >
@@ -179,14 +181,18 @@ export function ProjectsSection() {
 
                         {/* Rich Screenshot Preview if available */}
                         {hasImages && project.coverImage && (
-                          <div
-                            onClick={() => handleOpenLightbox(project, 0)}
-                            className="relative mt-5 w-full aspect-[16/9] overflow-hidden border border-zinc-200 bg-zinc-950 cursor-pointer group/img"
+                          <button
+                            type="button"
+                            aria-label={`Open ${project.title} gallery`}
+                            onClick={(event) => handleOpenLightbox(project, 0, event.detail > 0)}
+                            className="block relative mt-5 w-full aspect-[16/9] overflow-hidden border border-zinc-200 bg-zinc-950 cursor-pointer group/img"
                           >
-                            <img
+                            <motion.img
+                              layoutId={reduceMotion ? undefined : `project-cover-${project.id}`}
+                              transition={{ type: 'spring', duration: 0.5, bounce: 0 }}
                               src={project.coverImage}
                               alt={`${project.title} preview`}
-                              className="w-full h-full object-cover object-top opacity-90 group-hover/img:opacity-100 group-hover/img:scale-103 transition-all duration-500"
+                              className="w-full h-full object-cover object-top opacity-90 group-hover/img:opacity-100 transition-opacity duration-200"
                               loading="lazy"
                             />
                             <div className="absolute inset-0 bg-black/10 group-hover/img:bg-transparent transition-colors" />
@@ -204,7 +210,7 @@ export function ProjectsSection() {
                                 <span>1 of {imageCount}</span>
                               </div>
                             )}
-                          </div>
+                          </button>
                         )}
 
                         {/* Description */}
@@ -270,7 +276,7 @@ export function ProjectsSection() {
 
                           {hasImages && (
                             <button
-                              onClick={() => handleOpenLightbox(project, 0)}
+                              onClick={(event) => handleOpenLightbox(project, 0, event.detail > 0)}
                               className="inline-flex items-center gap-1 font-mono text-xs uppercase tracking-wider text-zinc-500 hover:text-black font-medium transition-colors cursor-pointer ml-auto"
                             >
                               <Maximize2 size={11} />
@@ -370,7 +376,7 @@ export function ProjectsSection() {
                         <div className="inline-flex items-center justify-end gap-3">
                           {hasImages && (
                             <button
-                              onClick={() => handleOpenLightbox(project, 0)}
+                              onClick={(event) => handleOpenLightbox(project, 0, event.detail > 0)}
                               className="text-zinc-600 hover:text-black font-semibold uppercase text-[11px] inline-flex items-center gap-1 cursor-pointer"
                               title="Inspect Image"
                             >
@@ -428,6 +434,7 @@ export function ProjectsSection() {
 
       {/* Fullscreen Image Lightbox Modal */}
       <ImageLightboxModal
+        sharedImageId={galleryTransition && lightboxProject ? `project-cover-${lightboxProject.id}` : undefined}
         project={lightboxProject}
         currentImageIndex={lightboxImageIndex}
         isOpen={Boolean(lightboxProject)}

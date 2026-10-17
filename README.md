@@ -148,3 +148,9 @@ npx --yes --package @playwright/cli playwright-cli run-code --filename=tests/cin
 ```
 
 The check covers scene progression/reversal, resize cleanup, reduced motion, 320/390/768px widths, short windows, keyboard skip navigation, the project gallery, and resume preview. Physical-device animation performance still needs a device recording.
+
+### Cinematic details
+
+Project cover images expand into their gallery on pointer clicks using Motion shared layout; keyboard openings and reduced motion use a simpler fade. The gallery traps keyboard focus, restores focus on close, and wraps its controls on narrow screens. Chapter headings reveal through line masks. The TwentyFour walkthrough uses two actual demo screenshots and a clearly labeled illustrative shared album using existing sample imagery. Its three frames form a native horizontally scrollable strip on small screens. Contact closes with a masked headline and name reveal while links stay immediately usable.
+
+Additional browser check: `npx --yes --package @playwright/cli playwright-cli run-code --filename=tests/cinematic-details.browser.js`. This checks cover expansion, focus containment/return, reduced motion, narrow-screen gallery controls, product-strip keyboard scrolling and contact availability. No CAD exploded animation or filmmaking reel was added.
