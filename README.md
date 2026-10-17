@@ -30,7 +30,7 @@ Built using the **Swiss International Typographic Style**, the interface feature
 
 ### 2. 📐 3D CAD Design & DFM Mechanical Prototyping
 - **CAD Modeling**: Autodesk Fusion 360, SolidWorks
-- **Engineering Capabilities**: Design for Manufacturing (DFM), Injection Molding Tooling, Thermal Dissipation Analysis, IP67 Enclosures, Linear Actuation Mechanisms, Gantry Assemblies
+- **Engineering Capabilities**: Design for Manufacturing (DFM), CAD Assembly Studies, Enclosure CAD Concepts, Linear Actuation Mechanisms, Gantry Assemblies
 
 ### 3. 🔌 Hardware IoT & Embedded Systems
 - **Microcontrollers & SoC**: Arduino, ESP32, Raspberry Pi
@@ -46,14 +46,15 @@ Built using the **Swiss International Typographic Style**, the interface feature
 
 | No. | Project | Category | Key Technologies / Tools | Live Links |
 |:---:|:---|:---|:---|:---:|
+| **29** | **TwentyFour** | Mobile Web / Event Photography | JavaScript, Node.js, Supabase, IndexedDB | [Live App](https://twentyfour-ixyq.onrender.com/) |
 | **01** | **The Collegium** | Digital Newsroom & Media | Next.js, TypeScript, Tailwind CSS, Digital Flipbook | [Live Platform](https://thecollegium.vercel.app/) |
-| **02** | **Industrial Logic Controller Enclosure** | 3D CAD / Rugged Electronics | Fusion 360, Injection Molding DFM, Thermal Analysis | Blueprint Specs |
+| **02** | **Industrial Logic Controller Enclosure** | 3D CAD / Rugged Electronics | Fusion 360, CAD Modeling, Assembly Design | Blueprint Specs |
 | **03** | **Mutya ng UMTC 2024: BTS** | Videography & Documentary | Cinematography, DaVinci Resolve, Color Grading | [Watch Stream](https://www.facebook.com/watch/?v=523154220511260) |
 | **04** | **CCPrint** | Hardware / 3D Print Fleet IoT | Next.js, Node.js, WebSocket, OctoPrint API | [GitHub](https://github.com/marmalade1124) |
 | **05** | **CodeCraft Management** | Full-Stack SaaS Ops Portal | Next.js, TypeScript, Tailwind CSS, Supabase | [Live Demo](https://codecraftmanagement.vercel.app/) |
 | **06** | **CPU Scheduler Visualizer** | OS Simulation Workbench | React, TypeScript, Tailwind CSS, Canvas | [Live Demo](https://scheduler-psi.vercel.app/) |
 
-*Explore 28+ categorized works directly in the portfolio interface with direct access to CAD blueprints, GitHub repositories, and media streams.*
+*Explore 29+ categorized works directly in the portfolio interface with direct access to CAD blueprints, GitHub repositories, and media streams.*
 
 ---
 
@@ -62,7 +63,7 @@ Built using the **Swiss International Typographic Style**, the interface feature
 - **Dynamic Navigation Transition**: The top minimalist banner seamlessly morphs into a floating left sidebar as you scroll down past 80px, displaying numbered sections (`01 WORK`, `02 EXPERIENCE`, `03 EDUCATION`, `04 SKILLS`, `05 RESUME`, `06 CONTACT`) with active section underline indicators.
 - **Dual Display Modes**:
   - **⊞ Cards Grid**: Curated visual cards with high-resolution screenshot carousels and CAD previews.
-  - **☰ Index Table**: High-density 1-line monospace Swiss archive table to scan all 28 works in a single screen.
+  - **☰ Index Table**: High-density 1-line monospace Swiss archive table to scan all 29 works in a single screen.
 - **Tactile Paper Grain Texture**: Custom SVG fractal noise overlay giving the canvas an archival Swiss linen poster feel.
 - **Interactive Lightbox**: Multi-slide inspection modal supporting photo galleries, CAD schematics, and stream launch buttons.
 
