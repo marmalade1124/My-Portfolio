@@ -15,7 +15,7 @@
 
 ## 🧭 Overview
 
-This is the official portfolio and engineering archive of **Raziel Renz C. Salamat**, a multidisciplinary Computer Engineer specializing in bridging the physical and digital realms. From custom embedded hardware and precision 3D CAD mechanical prototypes to scalable full-stack web applications and editorial documentary cinematography, this portfolio embodies the design ethos of **"Concept to Creation"**.
+This is the official portfolio and engineering archive of **Raziel Renz C. Salamat**, a Computer Engineering student (expected graduation 2027) working across web applications, Windows tools, CAD concepts, and visual media. This portfolio follows the design direction of **"Concept to Creation"**.
 
 Built using the **Swiss International Typographic Style**, the interface features tactile archival print paper grain textures, dynamic scroll-driven sidebar transitions, interactive multi-view project inspection (Cards Grid & Compact Monospace Index Table), and responsive media lightboxes.
 
@@ -42,7 +42,7 @@ Built using the **Swiss International Typographic Style**, the interface feature
 
 ---
 
-## 🏆 Featured Flagship Works
+## 🏆 Project Archive Highlights
 
 | No. | Project | Category | Key Technologies / Tools | Live Links |
 |:---:|:---|:---|:---|:---:|
