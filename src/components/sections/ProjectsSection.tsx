@@ -18,7 +18,8 @@ const CATEGORIES: { label: string; value: FilterType }[] = [
   { label: 'DEV TOOLS', value: 'devtools' },
 ];
 
-const INITIAL_GRID_LIMIT = 6;
+const FEATURED_IDS = ['twentyfour', 'picolor', 'cad-enclosure'];
+const INITIAL_GRID_LIMIT = FEATURED_IDS.length;
 
 export function ProjectsSection() {
   const reduceMotion = useReducedMotion();
@@ -38,7 +39,7 @@ export function ProjectsSection() {
     if (activeCategory !== 'all' || isExpanded) {
       return filteredProjects;
     }
-    return filteredProjects.slice(0, INITIAL_GRID_LIMIT);
+    return FEATURED_IDS.map((id) => filteredProjects.find((project) => project.id === id)!).filter(Boolean);
   }, [activeCategory, filteredProjects, isExpanded]);
 
   const handleOpenLightbox = (project: Project, index: number = 0, fromPointer = false) => {
@@ -67,26 +68,28 @@ export function ProjectsSection() {
             <div className="flex items-center gap-1 p-1 bg-zinc-100/80 border border-zinc-200 self-start sm:self-auto">
               <button
                 onClick={() => setViewMode('grid')}
-                className={`flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-wider px-2.5 py-1 transition-colors cursor-pointer ${
+                className={`flex items-center gap-1.5 font-mono text-xs uppercase tracking-wider px-2.5 py-1 transition-colors cursor-pointer ${
                   viewMode === 'grid'
                     ? 'bg-black text-white font-medium'
-                    : 'text-zinc-500 hover:text-black hover:bg-white/60'
+                    : 'text-zinc-600 hover:text-black hover:bg-white/60'
                 }`}
                 title="Cards Grid View"
                 aria-label="Grid View"
+                aria-pressed={viewMode === 'grid'}
               >
                 <LayoutGrid size={13} />
                 <span>Cards</span>
               </button>
               <button
                 onClick={() => setViewMode('index')}
-                className={`flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-wider px-2.5 py-1 transition-colors cursor-pointer ${
+                className={`flex items-center gap-1.5 font-mono text-xs uppercase tracking-wider px-2.5 py-1 transition-colors cursor-pointer ${
                   viewMode === 'index'
                     ? 'bg-black text-white font-medium'
-                    : 'text-zinc-500 hover:text-black hover:bg-white/60'
+                    : 'text-zinc-600 hover:text-black hover:bg-white/60'
                 }`}
                 title="Compact Index Table View"
                 aria-label="Index View"
+                aria-pressed={viewMode === 'index'}
               >
                 <List size={13} />
                 <span>Index Table</span>
@@ -106,15 +109,16 @@ export function ProjectsSection() {
               return (
                 <button
                   key={cat.value}
+                  aria-pressed={isActive}
                   onClick={() => handleCategoryChange(cat.value)}
-                  className={`font-mono text-[11px] uppercase tracking-wider px-3 py-1.5 transition-all cursor-pointer flex items-center gap-1.5 ${
+                  className={`font-mono text-xs uppercase tracking-wider px-3 py-1.5 transition-all cursor-pointer flex items-center gap-1.5 ${
                     isActive
                       ? 'bg-black text-white font-medium shadow-xs'
-                      : 'text-zinc-500 hover:text-black hover:bg-white/60'
+                      : 'text-zinc-600 hover:text-black hover:bg-white/60'
                   }`}
                 >
                   <span>{cat.label}</span>
-                  <span className={`text-[10px] ${isActive ? 'text-zinc-300' : 'text-zinc-400'}`}>
+                  <span className={`text-xs ${isActive ? 'text-zinc-300' : 'text-zinc-600'}`}>
                     ({count})
                   </span>
                 </button>
@@ -123,11 +127,15 @@ export function ProjectsSection() {
           </div>
         </div>
 
+        <p className="mt-6 max-w-2xl text-base leading-relaxed text-zinc-600">
+          Three projects across web, Windows, and physical design. Open a case study for the problem, my contribution, and the evidence behind the result. Use the categories or full archive to explore all {PROJECTS.length} works.
+        </p>
+
         {/* --- VIEW MODE 1: VISUAL EDITORIAL CARDS --- */}
         {viewMode === 'grid' && (
           <>
             <motion.div
-              layout
+              layout={!reduceMotion}
               className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8"
             >
               <AnimatePresence mode="popLayout">
@@ -138,19 +146,20 @@ export function ProjectsSection() {
                   return (
                     <motion.div
                       key={project.id}
-                      layout
+                      data-project={project.id}
+                      layout={!reduceMotion}
                       initial={reduceMotion ? false : { opacity: 0, transform: 'translateY(24px)' }}
                       whileInView={{ opacity: 1, transform: 'translateY(0px)' }}
                       viewport={{ once: true, amount: 0.1 }}
                       exit={{ opacity: 0 }}
-                      transition={{ duration: 0.25 }}
+                      transition={{ duration: reduceMotion ? 0 : 0.25 }}
                       className="group relative flex flex-col justify-between p-6 sm:p-8 bg-transparent border border-zinc-300 hover:border-black transition-colors duration-200"
                     >
                       {/* Card Top: Index Number + Category + Year */}
                       <div className="relative z-10">
-                        <div className="flex items-center justify-between font-mono text-xs text-zinc-400 pb-4 border-b border-zinc-100">
+                        <div className="flex items-center justify-between font-mono text-xs text-zinc-600 pb-4 border-b border-zinc-100">
                           <span className="font-semibold text-black">({project.num})</span>
-                          <span className="uppercase tracking-widest text-[11px] text-zinc-500">
+                          <span className="uppercase tracking-widest text-xs text-zinc-600">
                             {project.category}
                           </span>
                           <span>{project.year}</span>
@@ -162,7 +171,7 @@ export function ProjectsSection() {
                             <h3 className="font-['Montserrat',sans-serif] text-xl sm:text-2xl font-bold uppercase tracking-tight text-black group-hover:text-zinc-700 transition-colors">
                               {project.title}
                             </h3>
-                            <div className="mt-1.5 font-mono text-[11px] uppercase tracking-wider text-zinc-500">
+                            <div className="mt-1.5 font-mono text-xs uppercase tracking-wider text-zinc-600">
                               {project.role}
                             </div>
                           </div>
@@ -170,7 +179,7 @@ export function ProjectsSection() {
                           {hasImages && (
                             <button
                               onClick={(event) => handleOpenLightbox(project, 0, event.detail > 0)}
-                              className="shrink-0 flex items-center gap-1.5 px-2.5 py-1 bg-zinc-100 hover:bg-black hover:text-white text-zinc-700 border border-zinc-200 font-mono text-[10px] uppercase tracking-wider transition-colors cursor-pointer"
+                              className="shrink-0 flex items-center gap-1.5 px-2.5 py-1 bg-zinc-100 hover:bg-black hover:text-white text-zinc-700 border border-zinc-200 font-mono text-xs uppercase tracking-wider transition-colors cursor-pointer"
                               title="View project screenshot gallery"
                             >
                               <Layers size={11} />
@@ -198,14 +207,14 @@ export function ProjectsSection() {
                             <div className="absolute inset-0 bg-black/10 group-hover/img:bg-transparent transition-colors" />
 
                             {/* Top-Right Expand Prompt Badge */}
-                            <div className="absolute top-2.5 right-2.5 flex items-center gap-1 px-2 py-0.5 bg-black/80 text-white font-mono text-[10px] uppercase tracking-wider opacity-0 group-hover/img:opacity-100 transition-opacity backdrop-blur-xs">
+                            <div className="absolute top-2.5 right-2.5 flex items-center gap-1 px-2 py-0.5 bg-black/80 text-white font-mono text-xs uppercase tracking-wider opacity-0 group-hover/img:opacity-100 transition-opacity backdrop-blur-xs">
                               <Maximize2 size={10} />
                               <span>Expand</span>
                             </div>
 
                             {/* Multi-Photo Dots Indicator if > 1 images */}
                             {imageCount > 1 && (
-                              <div className="absolute bottom-2.5 right-2.5 flex items-center gap-1 px-2 py-0.5 bg-black/80 text-white font-mono text-[10px] uppercase tracking-wider backdrop-blur-xs">
+                              <div className="absolute bottom-2.5 right-2.5 flex items-center gap-1 px-2 py-0.5 bg-black/80 text-white font-mono text-xs uppercase tracking-wider backdrop-blur-xs">
                                 <Layers size={10} />
                                 <span>1 of {imageCount}</span>
                               </div>
@@ -214,9 +223,39 @@ export function ProjectsSection() {
                         )}
 
                         {/* Description */}
-                        <p className="mt-4 text-sm text-zinc-600 font-sans leading-relaxed">
+                        <p className="mt-4 text-base text-zinc-600 font-sans leading-relaxed">
                           {project.description}
                         </p>
+                        {project.caseStudy && (
+                          <>
+                            <p className="mt-4 font-mono text-xs text-zinc-700 border-l-2 border-black pl-3">{project.caseStudy.status}</p>
+                            <details className="case-study mt-6 border-y border-zinc-300">
+                              <summary className="py-4 cursor-pointer font-display font-semibold text-base">Read {project.title} case study</summary>
+                              <dl className="space-y-5 pb-6">
+                                {[
+                                  ['The problem', project.caseStudy.problem],
+                                  ['My role', project.role],
+                                  ['Key decision', project.caseStudy.decision],
+                                  ['Delivered result', project.caseStudy.result],
+                                  ['Scope & limitations', project.caseStudy.limitations],
+                                ].map(([label, content]) => (
+                                  <div key={label}>
+                                    <dt className="font-mono text-xs uppercase tracking-wider text-zinc-700 mb-2">{label}</dt>
+                                    <dd className="text-base leading-relaxed text-zinc-700">{content}</dd>
+                                  </div>
+                                ))}
+                              </dl>
+                              <div className="space-y-6 pb-6">
+                                {project.caseStudy.evidence.map((item) => (
+                                  <figure key={item.image}>
+                                    <img src={item.image} alt={item.caption} loading="lazy" className="case-evidence w-full max-h-[420px] object-contain bg-zinc-100 border border-zinc-200" />
+                                    <figcaption className="mt-3 text-sm leading-relaxed text-zinc-600">{item.caption}</figcaption>
+                                  </figure>
+                                ))}
+                              </div>
+                            </details>
+                          </>
+                        )}
                       </div>
 
                       {/* Card Bottom: Tech Pills + Action Links */}
@@ -226,7 +265,7 @@ export function ProjectsSection() {
                           {project.techStack.map((tech) => (
                             <span
                               key={tech}
-                              className="font-mono text-[11px] px-2 py-0.5 border border-zinc-200 bg-zinc-50 text-zinc-700"
+                              className="font-mono text-xs px-2 py-0.5 border border-zinc-200 bg-zinc-50 text-zinc-700"
                             >
                               {tech}
                             </span>
@@ -277,7 +316,7 @@ export function ProjectsSection() {
                           {hasImages && (
                             <button
                               onClick={(event) => handleOpenLightbox(project, 0, event.detail > 0)}
-                              className="inline-flex items-center gap-1 font-mono text-xs uppercase tracking-wider text-zinc-500 hover:text-black font-medium transition-colors cursor-pointer ml-auto"
+                              className="inline-flex items-center gap-1 font-mono text-xs uppercase tracking-wider text-zinc-600 hover:text-black font-medium transition-colors cursor-pointer ml-auto"
                             >
                               <Maximize2 size={11} />
                               {project.tag === 'media' ? 'Inspect Still' : project.tag === 'cad' ? 'Inspect Blueprint' : 'Inspect Gallery'}
@@ -285,7 +324,7 @@ export function ProjectsSection() {
                           )}
 
                           {!project.githubUrl && !project.liveUrl && !project.videoUrl && !hasImages && (
-                            <span className="font-mono text-xs text-zinc-400 italic">
+                            <span className="font-mono text-xs text-zinc-600 italic">
                               Hardware / Engineering Build
                             </span>
                           )}
@@ -302,12 +341,13 @@ export function ProjectsSection() {
               <div className="mt-12 flex justify-center">
                 <button
                   onClick={() => setIsExpanded(!isExpanded)}
+                  aria-expanded={isExpanded}
                   className="group inline-flex items-center gap-3 px-8 py-3.5 bg-black hover:bg-zinc-800 text-white font-mono text-xs uppercase tracking-widest transition-all cursor-pointer shadow-sm hover:shadow-md"
                 >
                   <span>
                     {isExpanded
                       ? `Show Featured (${INITIAL_GRID_LIMIT})`
-                      : `View All ${filteredProjects.length} Works (+${filteredProjects.length - INITIAL_GRID_LIMIT})`}
+                      : `Explore all ${filteredProjects.length} works · Full archive`}
                   </span>
                   {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                 </button>
@@ -321,7 +361,7 @@ export function ProjectsSection() {
           <div className="mt-12 overflow-x-auto">
             <table className="w-full border-collapse font-mono text-xs text-left">
               <thead>
-                <tr className="border-b-2 border-black text-zinc-500 uppercase tracking-widest text-[10px]">
+                <tr className="border-b-2 border-black text-zinc-600 uppercase tracking-widest text-xs">
                   <th className="py-3 px-4 w-14">NO.</th>
                   <th className="py-3 px-4">PROJECT & ROLE</th>
                   <th className="py-3 px-4 hidden md:table-cell">CATEGORY</th>
@@ -351,23 +391,23 @@ export function ProjectsSection() {
                             {project.title}
                           </span>
                         </div>
-                        <div className="text-[11px] text-zinc-500">
+                        <div className="text-xs text-zinc-600">
                           {project.role}
                         </div>
                       </td>
 
                       {/* Category */}
-                      <td className="py-3.5 px-4 hidden md:table-cell text-zinc-600 uppercase text-[11px]">
+                      <td className="py-3.5 px-4 hidden md:table-cell text-zinc-600 uppercase text-xs">
                         {project.category}
                       </td>
 
                       {/* Tech Stack */}
-                      <td className="py-3.5 px-4 hidden lg:table-cell text-zinc-500 text-[11px]">
+                      <td className="py-3.5 px-4 hidden lg:table-cell text-zinc-600 text-xs">
                         {project.techStack.slice(0, 3).join(' · ')}
                       </td>
 
                       {/* Year */}
-                      <td className="py-3.5 px-4 text-center text-zinc-500">
+                      <td className="py-3.5 px-4 text-center text-zinc-600">
                         {project.year}
                       </td>
 
@@ -377,7 +417,7 @@ export function ProjectsSection() {
                           {hasImages && (
                             <button
                               onClick={(event) => handleOpenLightbox(project, 0, event.detail > 0)}
-                              className="text-zinc-600 hover:text-black font-semibold uppercase text-[11px] inline-flex items-center gap-1 cursor-pointer"
+                              className="text-zinc-600 hover:text-black font-semibold uppercase text-xs inline-flex items-center gap-1 cursor-pointer"
                               title="Inspect Image"
                             >
                               <Maximize2 size={11} />
@@ -390,7 +430,7 @@ export function ProjectsSection() {
                               href={project.liveUrl}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-black font-semibold hover:underline text-[11px] inline-flex items-center gap-1"
+                              className="text-black font-semibold hover:underline text-xs inline-flex items-center gap-1"
                             >
                               <span>{project.liveLabel ?? 'Demo'}</span>
                               <ArrowUpRight size={11} />
@@ -402,7 +442,7 @@ export function ProjectsSection() {
                               href={project.videoUrl}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-black font-semibold hover:underline text-[11px] inline-flex items-center gap-1"
+                              className="text-black font-semibold hover:underline text-xs inline-flex items-center gap-1"
                             >
                               <Play size={10} className="fill-current" />
                               <span>Stream</span>
@@ -415,7 +455,7 @@ export function ProjectsSection() {
                               href={project.githubUrl}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-zinc-500 hover:text-black text-[11px] inline-flex items-center gap-1"
+                              className="text-zinc-600 hover:text-black text-xs inline-flex items-center gap-1"
                             >
                               <Github size={11} />
                               <ArrowUpRight size={11} />

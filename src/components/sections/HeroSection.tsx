@@ -51,17 +51,29 @@ export function HeroSection() {
         className="w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-16 flex items-center justify-between z-30"
       >
         <StatusBadge status={PERSONAL.status} />
-        <div className="font-mono text-xs text-zinc-400 hidden sm:flex items-center gap-2">
+        <div className="font-mono text-xs text-zinc-600 hidden sm:flex items-center gap-2">
           <span>{PERSONAL.location}</span>
           <span>·</span>
           <span>{PERSONAL.timezone}</span>
         </div>
       </div>
 
+      <div className="hero-intro w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-16 z-30">
+        <div>
+          <p className="font-mono text-xs uppercase tracking-wider text-zinc-600">Computer Engineering student · Expected graduation 2027</p>
+          <p className="mt-3 max-w-xl font-display text-xl sm:text-2xl leading-snug">I build web apps, Windows tools, and CAD prototypes—from the first concept to a working product.</p>
+        </div>
+        <div className="hero-actions">
+          <a href="#work" className="portfolio-action portfolio-action-primary">View projects ↗</a>
+          <a href="#resume" className="portfolio-action">Resume & portfolio ↓</a>
+          <a href="#contact" className="cinema-link text-sm py-3">Contact ↗</a>
+        </div>
+      </div>
+
       {/* Center Editorial Poster Canvas */}
       <div
         ref={canvasRef}
-        className="relative w-full max-w-6xl mx-auto px-4 sm:px-8 my-auto flex items-center justify-center min-h-[580px] sm:min-h-[660px] md:min-h-[740px] lg:min-h-[820px] overflow-visible"
+        className="hero-canvas relative w-full max-w-6xl mx-auto px-4 sm:px-8 my-auto flex items-center justify-center overflow-visible"
       >
         {/* Layer 1: Giant RAZIEL & SALAMAT in Montserrat Typography (Z-2) */}
         <div className="absolute top-2 sm:top-4 md:top-6 left-0 right-0 w-full z-[2] pointer-events-none">
@@ -129,10 +141,10 @@ export function HeroSection() {
         >
           <div className="inline-flex flex-col items-start w-fit">
             <h2 className="w-full font-['Plus_Jakarta_Sans','Metropolis',sans-serif] text-[0.95rem] sm:text-[1.1rem] md:text-[1.22rem] lg:text-[1.32rem] font-extrabold uppercase tracking-[0.04em] text-black leading-tight flex justify-between">
-              <span>C</span><span>O</span><span>M</span><span>P</span><span>U</span><span>T</span><span>E</span><span>R</span><span>&nbsp;</span><span>E</span><span>N</span><span>G</span><span>I</span><span>N</span><span>E</span><span>E</span><span>R</span>
+              SOFTWARE · CAD · DESIGN
             </h2>
             <p className="w-full font-['Plus_Jakarta_Sans','Metropolis',sans-serif] text-[0.72rem] sm:text-[0.82rem] md:text-[0.9rem] lg:text-[0.98rem] text-zinc-800 font-normal mt-0.5 whitespace-nowrap leading-tight text-left">
-              Full Stack Software - CAD Designer
+              Built with curiosity. Shaped by practice.
             </p>
           </div>
         </div>
@@ -141,8 +153,8 @@ export function HeroSection() {
 
       {/* Bottom Subtle Scroll Indicator */}
       <div className="w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-16 flex items-center justify-between text-[11px] font-mono text-zinc-400 z-10">
-        <a href="#work" className="cinema-link text-zinc-700">SKIP TO SELECTED WORK ↗</a>
-        <a href="#concept-to-creation" className="cinema-link text-zinc-700">SCROLL TO EXPLORE ↓</a>
+        <a href="#work" className="cinema-link text-zinc-700">EXPLORE SELECTED WORK ↓</a>
+        <span className="text-zinc-600">WEB / WINDOWS / CAD</span>
       </div>
     </section>
   );

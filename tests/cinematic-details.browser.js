@@ -3,8 +3,8 @@ async page => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.goto('http://127.0.0.1:5174/');
-  check(await page.locator('.product-frame').count() === 3, 'Expected capture, anticipation and reveal frames');
-  await page.locator('.product-frames img').evaluateAll(images => Promise.all(images.map(img => img.decode())));
+
+
   await page.getByRole('button', { name: 'Open TwentyFour gallery', exact: true }).click();
   const dialog = page.getByRole('dialog', { name: 'TwentyFour gallery', exact: true });
   const image = dialog.getByRole('img', { name: 'TwentyFour — live web app landing page', exact: true });
@@ -33,7 +33,7 @@ async page => {
   check(await image.evaluate(img => getComputedStyle(img).transform === 'none'), 'Reduced-motion image should not move');
   await page.keyboard.press('Escape');
   await dialog.waitFor({ state: 'detached' });
-  check(await page.locator('.product-screen').evaluateAll(frames => frames.every(el => getComputedStyle(el).opacity === '1')), 'Reduced-motion product screens must stay visible');
+
 
   for (const width of [320, 390, 768]) {
     await page.setViewportSize({ width, height: 844 });
@@ -45,10 +45,6 @@ async page => {
     await page.keyboard.press('Escape');
     await dialog.waitFor({ state: 'detached' });
   }
-  const story = page.getByRole('region', { name: 'TwentyFour guest experience, three steps' });
-  await story.focus();
-  await page.keyboard.press('ArrowRight');
-  await page.waitForFunction(() => document.querySelector('.product-frames').scrollLeft > 0);
   await page.locator('#contact').scrollIntoViewIfNeeded();
   check(await page.getByRole('link', { name: 'razielrenz@gmail.com', exact: true }).isVisible(), 'Contact email should remain available');
   check(await page.locator('.contact-signature').evaluate(el => getComputedStyle(el).opacity === '1'), 'Reduced-motion signature must remain visible');

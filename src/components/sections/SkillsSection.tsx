@@ -12,7 +12,7 @@ export function SkillsSection() {
           {SKILLS.map((category) => (
             <div key={category.label} className="grid grid-cols-1 lg:grid-cols-12 gap-6 py-8 border-b border-zinc-200">
               <div className="lg:col-span-3 flex items-start">
-                <h3 className="font-mono text-xs uppercase tracking-widest text-zinc-400 mt-2">
+                <h3 className="font-mono text-xs uppercase tracking-widest text-zinc-600 mt-2">
                   {category.label}
                 </h3>
               </div>

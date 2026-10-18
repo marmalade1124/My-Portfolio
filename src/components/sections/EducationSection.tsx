@@ -13,7 +13,7 @@ export function EducationSection() {
         <div className="mt-12 grid grid-cols-1 lg:grid-cols-12 gap-12">
           {/* Education Column */}
           <div className="lg:col-span-6 flex flex-col">
-            <h3 className="font-mono text-xs uppercase tracking-widest text-zinc-400 mb-6">
+            <h3 className="font-mono text-xs uppercase tracking-widest text-zinc-600 mb-6">
               [ ACADEMIC DEGREES ]
             </h3>
 
@@ -21,11 +21,11 @@ export function EducationSection() {
               {EDUCATION.map((edu, index) => (
                 <Fragment key={edu.id}>
                   <div className="py-6 flex flex-col">
-                    <div className="flex items-baseline justify-between gap-4">
+                    <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 sm:gap-4">
                       <h4 className="text-base md:text-lg font-display uppercase font-semibold text-black tracking-tight">
                         {edu.degree}
                       </h4>
-                      <span className="font-mono text-xs text-zinc-400 shrink-0">
+                      <span className="font-mono text-xs text-zinc-600 sm:max-w-[160px] sm:text-right">
                         {edu.period}
                       </span>
                     </div>
@@ -33,7 +33,7 @@ export function EducationSection() {
                       {edu.school}
                     </span>
                     {edu.details && (
-                      <p className="text-xs text-zinc-500 font-sans mt-2 leading-relaxed">
+                      <p className="text-sm text-zinc-600 font-sans mt-2 leading-relaxed">
                         {edu.details}
                       </p>
                     )}
@@ -46,7 +46,7 @@ export function EducationSection() {
 
           {/* Leadership & Activities Column */}
           <div className="lg:col-span-6 flex flex-col">
-            <h3 className="font-mono text-xs uppercase tracking-widest text-zinc-400 mb-6">
+            <h3 className="font-mono text-xs uppercase tracking-widest text-zinc-600 mb-6">
               [ LEADERSHIP & ROLES ]
             </h3>
 
@@ -54,11 +54,11 @@ export function EducationSection() {
               {LEADERSHIP.map((lead, index) => (
                 <Fragment key={lead.id}>
                   <div className="py-6 flex flex-col">
-                    <div className="flex items-baseline justify-between gap-4">
+                    <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 sm:gap-4">
                       <h4 className="text-base md:text-lg font-display uppercase font-semibold text-black tracking-tight">
                         {lead.role}
                       </h4>
-                      <span className="font-mono text-xs text-zinc-400 shrink-0">
+                      <span className="font-mono text-xs text-zinc-600 sm:max-w-[160px] sm:text-right">
                         {lead.period}
                       </span>
                     </div>
@@ -66,7 +66,7 @@ export function EducationSection() {
                       {lead.org}
                     </span>
                     {lead.details && (
-                      <p className="text-xs text-zinc-500 font-sans mt-2 leading-relaxed">
+                      <p className="text-sm text-zinc-600 font-sans mt-2 leading-relaxed">
                         {lead.details}
                       </p>
                     )}

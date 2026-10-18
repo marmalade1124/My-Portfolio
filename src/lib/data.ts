@@ -15,6 +15,14 @@ export interface Project {
   coverImage?: string;
   images?: string[];
   imageCaptions?: string[];
+  caseStudy?: {
+    status: string;
+    problem: string;
+    decision: string;
+    result: string;
+    limitations: string;
+    evidence: { image: string; caption: string }[];
+  };
 }
 
 export interface Experience {
@@ -50,7 +58,7 @@ export const PERSONAL = {
   name: 'Raziel Renz C. Salamat',
   firstName: 'Raziel',
   lastName: 'Salamat',
-  title: 'Computer Engineer',
+  title: 'Computer Engineering Student & Developer',
   disciplines: 'Hardware Systems · 3D CAD Design · Full-Stack Software',
   tagline: 'concept to creation',
   status: 'Available for Full-Time / Contracts',
@@ -66,6 +74,17 @@ export const PERSONAL = {
 export const PROJECTS: Project[] = [
   {
     id: 'twentyfour',
+    caseStudy: {
+      status: 'Deployed web app · Public demo',
+      problem: 'Event photos are scattered across guests’ phones. TwentyFour gives hosts one invitation and guests a shared, limited-roll camera experience without creating an account.',
+      decision: 'I chose a browser-based guest flow to remove an installation step. An IndexedDB capture queue supports interrupted connections, while a scheduled reveal keeps the shared album hidden during the event.',
+      result: 'The delivered app includes QR joining, guest capture, a reveal countdown, and host album controls. The public demo lets visitors explore the guest flow using a sample photograph.',
+      limitations: 'The demo uses sample imagery rather than the device camera. These screenshots demonstrate the interface; they do not establish real-event usage or upload reliability on every phone.',
+      evidence: [
+        { image: '/projects/twentyfour-camera.png', caption: 'Capture: the guest enters a limited-roll camera without an account. Actual demo screen; the photograph is a sample.' },
+        { image: '/projects/twentyfour-roll.png', caption: 'Anticipation: the countdown explains when the shared album will become available. Actual demo screen.' },
+      ],
+    },
     num: '29',
     title: 'TwentyFour',
     category: 'Mobile Web / Event Photography',
@@ -86,6 +105,17 @@ export const PROJECTS: Project[] = [
 
   {
     id: 'picolor',
+    caseStudy: {
+      status: 'Windows desktop app · Download available',
+      problem: 'Sampling a color is only the beginning of designing an interface. I wanted a local tool that turns that color into named UI roles, previews, and usable exports.',
+      decision: 'I built a native C#/WPF app with Win32 screen sampling, then organized palettes around semantic roles rather than an unstructured swatch list. Light/dark previews and pair-specific contrast checks give each change context.',
+      result: 'The app provides screen sampling, editable palettes, interface previews, CSS/JSON export, and a local library with favorites and backups. The linked website introduces the Windows download; the repository exposes the implementation.',
+      limitations: 'The gallery contains native app renders, separately labeled from the website screenshot. Windows hardware and display configurations require their own testing; these renders are not a compatibility benchmark.',
+      evidence: [
+        { image: '/projects/picolor-editor.png', caption: 'Edit: adjust the selected color role with the HSV editor. Native app render.' },
+        { image: '/projects/picolor-preview.png', caption: 'Evaluate: inspect UI context and contrast for a selected color pair before export. Native app render.' },
+      ],
+    },
     num: '27',
     title: 'PiColor 3.14',
     category: 'Windows App / Color Picker & Palette Studio',
@@ -140,13 +170,23 @@ export const PROJECTS: Project[] = [
   },
   {
     id: 'cad-enclosure',
+    caseStudy: {
+      status: 'CAD concept · Unvalidated physical design',
+      problem: 'A custom electronics assembly needs a housing that makes space for components, connectors, and assembly access. This study explores that arrangement before fabrication.',
+      decision: 'I modeled the housing, ventilation fins, and connector openings in Fusion 360 to make component placement and the exterior form visible in one concept.',
+      result: 'The deliverable is an enclosure model and presentation render. The image communicates the proposed housing and opening layout for review and further iteration.',
+      limitations: 'This is a design study. Ingress protection, thermal performance, fit, tolerances, and manufacturing readiness have not been validated by the render.',
+      evidence: [
+        { image: '/images/cad/enclosure.png', caption: 'Design intent: the render shows the housing form, fins, and connector openings. It is not evidence of a tested physical enclosure.' },
+      ],
+    },
     num: '02',
     title: 'Industrial Logic Controller Enclosure',
     category: '3D CAD / Rugged Electronics',
     tag: 'cad',
     year: '2024',
     description: 'A CAD enclosure concept for organizing a custom electronics assembly. I modeled the housing, ventilation fins, and connector openings to explore component placement and assembly. The render shows design intent; ingress protection, thermal performance, and manufacturing readiness have not been validated.',
-    role: '3D CAD Designer & DFM Prototyper',
+    role: '3D CAD Designer',
     techStack: ['Fusion 360', 'CAD Modeling', 'Assembly Design'],
     coverImage: '/images/cad/enclosure.png',
     images: ['/images/cad/enclosure.png'],
@@ -531,7 +571,7 @@ export const EXPERIENCE: Experience[] = [
     bullets: [
       'Designed and developed custom 3D models, enclosures, and mechanical components for engineering and student thesis projects.',
       'Created precise CAD drawings and 3D models to support prototyping, assembly, and presentation requirements.',
-      'Collaborated with clients and engineering teams to translate project concepts into workable mechanical designs, improving efficiency and innovation.',
+      'Revised enclosure and mechanical models from client requirements, measurements, and project feedback.',
     ],
   },
   {
@@ -540,19 +580,19 @@ export const EXPERIENCE: Experience[] = [
     company: 'CODE&CRAFT',
     period: '2011 — Present',
     bullets: [
-      'Created layouts for event materials, branding identity, and school publication content (pubmats) with visually striking designs.',
+      'Created event materials, brand graphics, and school publication layouts for print and digital use.',
       'Collaborated with clients to transform concepts into polished graphics for print, marketing, and digital platforms.',
-      'Delivered high-quality, brand-consistent designs while meeting tight deadlines and strict production style requirements.',
+      'Prepared revised layouts and final artwork to match client briefs and publication styles.',
     ],
   },
   {
     id: 'exp-student',
     role: 'Computer Engineering Practice',
     company: 'UM Tagum College',
-    period: '2020 — 2025',
+    period: '2020 — Present',
     bullets: [
       'Engineered embedded systems, IoT hardware prototypes, and full-stack software applications across multidisciplinary academic coursework.',
-      'Spearheaded capstone hardware-software integration projects and technical documentation.',
+      'Worked on capstone hardware-software integration and technical documentation.',
       'Collaborated with engineering student teams on robotics, digital signal processing, and game design architectures.',
     ],
   },
@@ -580,8 +620,8 @@ export const EDUCATION: Education[] = [
     id: 'edu-bscpe',
     degree: 'Bachelor of Science in Computer Engineering',
     school: 'UM Tagum College',
-    period: '2020 — 2025',
-    details: 'Major in Embedded Systems & Game Design. Comprehensive user experience & hardware-software engineering practice.',
+    period: '2020 — Present · Expected 2027',
+    details: 'Currently pursuing the degree, with project work in embedded systems, CAD, and software development.',
   },
   {
     id: 'edu-shs',

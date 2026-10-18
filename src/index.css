@@ -41,6 +41,26 @@ a, button { touch-action: manipulation; }
 .cinema-link { text-underline-offset: 5px; }
 .cinema-link:hover { text-decoration: underline; }
 
+.hero-intro { margin-top: 28px; display: flex; justify-content: space-between; align-items: center; gap: 24px; }
+.hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.portfolio-action { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 12px 16px; border: 1px solid #18181b; font: 500 14px/1.4 var(--font-sans); cursor: pointer; }
+.portfolio-action-primary { background: #18181b; color: #fff; }
+.portfolio-action:hover { background: #e4e4e7; color: #18181b; }
+.portfolio-action-primary:hover { background: #3f3f46; color: #fff; }
+.hero-canvas { min-height: 600px; }
+.case-study[open] > summary { margin-bottom: 12px; }
+.case-study summary::marker { color: #18181b; }
+.case-evidence { min-height: 120px; }
+#work button, #resume button { min-height: 44px; }
+@media (max-width: 899px) {
+  .hero-intro { display: block; }
+  .hero-actions { margin-top: 20px; }
+  .hero-canvas { min-height: 540px; }
+}
+@media (min-width: 900px) {
+  .hero-canvas { min-height: 660px; }
+}
+
 .cinema { position: relative; background: #161616; color: #f4f1ea; }
 .cinema-stage { padding: 32px max(24px, calc((100vw - 1152px) / 2)); overflow: hidden; }
 .cinema-topline, .cinema-bottomline, .cinema-visual figcaption {

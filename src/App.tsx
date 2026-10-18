@@ -3,8 +3,6 @@ import { MotionConfig } from 'motion/react';
 import { Header } from './components/layout/Header';
 import { Footer } from './components/layout/Footer';
 import { HeroSection } from './components/sections/HeroSection';
-import { ConceptToCreation } from './components/sections/ConceptToCreation';
-import { TwentyFourStory } from './components/sections/TwentyFourStory';
 import { ProjectsSection } from './components/sections/ProjectsSection';
 import { ExperienceSection } from './components/sections/ExperienceSection';
 import { EducationSection } from './components/sections/EducationSection';
@@ -27,8 +25,6 @@ export default function App() {
         <Header />
         <main ref={mainRef} className="relative pt-[52px] bg-transparent">
           <HeroSection />
-          <ConceptToCreation />
-          <TwentyFourStory />
           <ProjectsSection />
           <ExperienceSection />
           <EducationSection />

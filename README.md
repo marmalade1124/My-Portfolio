@@ -1,7 +1,7 @@
 # RAZIEL SALAMAT // 2026 PORTFOLIO
 
-> **Computer Engineer** · *Hardware Systems · 3D CAD Design · Full-Stack Software · Cinematography*  
-> *Tagum City / Davao del Norte, PH · GMT+8*  
+> **Computer Engineering student · Expected graduation 2027** · *Hardware Systems · 3D CAD Design · Full-Stack Software · Cinematography*
+> *Tagum City / Davao del Norte, PH · GMT+8*
 > **Concept to Creation**
 
 [![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen?style=flat-square)](https://github.com/marmalade1124/My-Portfolio)
@@ -132,30 +132,29 @@ Built using the **Swiss International Typographic Style**, the interface feature
   <sub>Designed & Developed with precision by <strong>Raziel Salamat</strong> · © 2026 All Rights Reserved.</sub>
 </div>
 
-### Resume asset
+### Visitor journey and project archive
 
-`public/resume.pdf` is the original `Portfolio Files/Portfolio_Resume_OCT.pdf`. The viewer uses 13 JPEG page previews for browser compatibility; both download links save the original as `Portfolio_Resume_OCT.pdf`. When replacing the PDF, regenerate `public/resume-preview-01.jpg` through `-13.jpg` with `pdftoppm -scale-to 1800 -jpeg -jpegopt quality=88 public/resume.pdf public/resume-preview` and update the page count in `ResumeModal.tsx` if it changes.
+The cream editorial hero presents the developer/CAD focus, current student status, and direct Work, Documents, and Contact links. Work immediately follows the hero. Three flagship cards (TwentyFour, PiColor 3.14, and the enclosure CAD study) include native keyboard-accessible case-study disclosures, annotated evidence, delivery status, and limitations. Categories and the full archive retain all 29 projects; the index view remains available. The former standalone concept sequence and TwentyFour strip are no longer mounted, avoiding repeated introductions. Hero motion, gallery transitions, and the contact finale remain, respecting reduced motion.
 
-### Cinematic opening
+### Resume and portfolio documents
 
-The cream editorial hero now has a staggered title entrance and desktop scroll parallax. ConceptToCreation adds three chapters using existing CAD, TwentyFour, and film assets. At 900px wide and 720px tall or above, GSAP drives a native sticky scene from scroll position. Phones, short windows, reduced-motion preferences, and the pre-animation fallback use a normal stacked layout. The opening and story both link directly to selected work. No scroll replacement or new dependencies are used.
+- `public/resume.pdf`: edited copy of the supplied two-page CAD-focused resume, about 123 KB.
+- `public/portfolio.pdf`: updated 15-page landscape portfolio, about 22.9 MB, including TwentyFour and PiColor 3.14 on pages 11 and 12.
+- Both documents identify current Computer Engineering study and expected graduation in 2027. The confirmed Graphic Designer start date remains 2011. Originals in `Portfolio Files/` and the earlier generated output are preserved.
+- The viewer has dialog semantics, focus containment/return, Escape/Close, and a direct-PDF fallback if a preview fails. Download links provide descriptive filenames.
+- Previews use `resume-preview-01.jpg` through `-02.jpg` and `portfolio-preview-01.jpg` through `-15.jpg`. When replacing documents, regenerate matching previews and update `DOCUMENTS` in `ResumeModal.tsx` (page count, file size, dimensions, description).
 
-Browser smoke check (Edge, with the development server on port 5174):
+Regenerate with Poppler: `pdftoppm -scale-to 1800 -jpeg -jpegopt quality=85 public/portfolio.pdf public/portfolio-preview`. For two-page documents Poppler generates single-digit suffixes; rename them to `-01.jpg` and `-02.jpg` for the viewer.
+
+### Browser verification
+
+With `pnpm dev --host 127.0.0.1 --port 5174` running:
 
 ```powershell
-pnpm dev --host 127.0.0.1 --port 5174
 npx --yes --package @playwright/cli playwright-cli open http://127.0.0.1:5174/ --browser msedge
 npx --yes --package @playwright/cli playwright-cli run-code --filename=tests/cinematic.browser.js
+npx --yes --package @playwright/cli playwright-cli run-code --filename=tests/cinematic-details.browser.js
+npx --yes --package @playwright/cli playwright-cli run-code --filename=tests/picolor.browser.js
 ```
 
-The check covers scene progression/reversal, resize cleanup, reduced motion, 320/390/768px widths, short windows, keyboard skip navigation, the project gallery, and resume preview. Physical-device animation performance still needs a device recording.
-
-### Cinematic details
-
-Project cover images expand into their gallery on pointer clicks using Motion shared layout; keyboard openings and reduced motion use a simpler fade. The gallery traps keyboard focus, restores focus on close, and wraps its controls on narrow screens. Chapter headings reveal through line masks. The TwentyFour walkthrough uses two actual demo screenshots and a clearly labeled illustrative shared album using existing sample imagery. Its three frames form a native horizontally scrollable strip on small screens. Contact closes with a masked headline and name reveal while links stay immediately usable.
-
-Additional browser check: `npx --yes --package @playwright/cli playwright-cli run-code --filename=tests/cinematic-details.browser.js`. This checks cover expansion, focus containment/return, reduced motion, narrow-screen gallery controls, product-strip keyboard scrolling and contact availability. No CAD exploded animation or filmmaking reel was added.
-
-PiColor 3.14 replaces the older PiColor listing and is featured after TwentyFour. Its five-image gallery includes four native app renders and a live website capture, labeled separately. Project totals remain 29; the website link is labeled Website because 3.14 is a Windows application.
-
-PiColor gallery check: `npx --yes --package @playwright/cli playwright-cli run-code --filename=tests/picolor.browser.js` (local preview on port 5174). Verifies all five images, developer-tools filtering, Website labels in gallery/index and 320/390px gallery controls.
+The first check now exercises the shorter visitor journey: three featured projects, keyboard case studies, all 29 archive entries, category reset, both PDF files and previews, focus behavior, preview-load failure, and 320/390/768/1440px layouts. The other checks cover shared gallery motion, keyboard/reduced-motion behavior, contact availability, and all five PiColor images. Browser checks use Edge desktop/emulation; physical-phone performance and Safari remain unverified.

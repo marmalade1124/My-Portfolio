@@ -19,14 +19,14 @@ export function ExperienceSection() {
                     {exp.role}
                   </h3>
                   <span className="text-zinc-600 font-medium text-sm mt-1">{exp.company}</span>
-                  <span className="font-mono text-xs text-zinc-400 mt-2 block md:hidden">
+                  <span className="font-mono text-xs text-zinc-600 mt-2 block md:hidden">
                     {exp.period}
                   </span>
                 </div>
 
                 <div className="md:w-2/3 flex flex-col">
                   <div className="hidden md:flex justify-end mb-4">
-                    <span className="font-mono text-xs text-zinc-400">
+                    <span className="font-mono text-xs text-zinc-600">
                       {exp.period}
                     </span>
                   </div>
@@ -35,7 +35,7 @@ export function ExperienceSection() {
                     {exp.bullets.map((bullet, idx) => (
                       <li
                         key={idx}
-                        className="text-sm text-zinc-600 font-sans leading-relaxed relative pl-4 before:content-[''] before:absolute before:left-0 before:top-2 before:w-1.5 before:h-1.5 before:bg-zinc-400"
+                        className="text-base text-zinc-600 font-sans leading-relaxed relative pl-4 before:content-[''] before:absolute before:left-0 before:top-2 before:w-1.5 before:h-1.5 before:bg-zinc-400"
                       >
                         {bullet}
                       </li>
