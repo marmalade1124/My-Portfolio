@@ -158,3 +158,5 @@ npx --yes --package @playwright/cli playwright-cli run-code --filename=tests/pic
 ```
 
 The first check now exercises the shorter visitor journey: three featured projects, keyboard case studies, all 29 archive entries, category reset, both PDF files and previews, focus behavior, preview-load failure, and 320/390/768/1440px layouts. The other checks cover shared gallery motion, keyboard/reduced-motion behavior, contact availability, and all five PiColor images. Browser checks use Edge desktop/emulation; physical-phone performance and Safari remain unverified.
+
+Layout regression check: `tests/layout-stability.browser.js` measures hero text separation from 320px through 2560px and samples category-control positions and scroll offsets during switches between long and short result sets. Project filtering updates immediately without grid layout/exit animation; the shared-image gallery transition is retained. Hero display type scales within its capped canvas rather than the viewport.

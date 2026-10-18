@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
+import { motion, useReducedMotion } from 'motion/react';
 import { Github, ExternalLink, ArrowUpRight, Maximize2, Layers, Play, LayoutGrid, List, ChevronDown, ChevronUp } from 'lucide-react';
 import { PROJECTS, type Project } from '@/lib/data';
 import { SectionHeading } from '@/components/ui/SectionHeading';
@@ -111,7 +111,7 @@ export function ProjectsSection() {
                   key={cat.value}
                   aria-pressed={isActive}
                   onClick={() => handleCategoryChange(cat.value)}
-                  className={`font-mono text-xs uppercase tracking-wider px-3 py-1.5 transition-all cursor-pointer flex items-center gap-1.5 ${
+                  className={`font-mono font-medium text-xs uppercase tracking-wider px-3 py-1.5 transition-colors cursor-pointer flex items-center gap-1.5 ${
                     isActive
                       ? 'bg-black text-white font-medium shadow-xs'
                       : 'text-zinc-600 hover:text-black hover:bg-white/60'
@@ -134,25 +134,17 @@ export function ProjectsSection() {
         {/* --- VIEW MODE 1: VISUAL EDITORIAL CARDS --- */}
         {viewMode === 'grid' && (
           <>
-            <motion.div
-              layout={!reduceMotion}
+            <div
               className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8"
             >
-              <AnimatePresence mode="popLayout">
                 {displayedGridProjects.map((project: Project) => {
                   const hasImages = Boolean(project.coverImage || (project.images && project.images.length > 0));
                   const imageCount = project.images ? project.images.length : (project.coverImage ? 1 : 0);
 
                   return (
-                    <motion.div
+                    <article
                       key={project.id}
                       data-project={project.id}
-                      layout={!reduceMotion}
-                      initial={reduceMotion ? false : { opacity: 0, transform: 'translateY(24px)' }}
-                      whileInView={{ opacity: 1, transform: 'translateY(0px)' }}
-                      viewport={{ once: true, amount: 0.1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: reduceMotion ? 0 : 0.25 }}
                       className="group relative flex flex-col justify-between p-6 sm:p-8 bg-transparent border border-zinc-300 hover:border-black transition-colors duration-200"
                     >
                       {/* Card Top: Index Number + Category + Year */}
@@ -330,11 +322,10 @@ export function ProjectsSection() {
                           )}
                         </div>
                       </div>
-                    </motion.div>
+                    </article>
                   );
                 })}
-              </AnimatePresence>
-            </motion.div>
+            </div>
 
             {/* Expand / Collapse Action Bar when in ALL category and > INITIAL_GRID_LIMIT */}
             {activeCategory === 'all' && filteredProjects.length > INITIAL_GRID_LIMIT && (

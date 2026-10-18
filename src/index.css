@@ -47,7 +47,9 @@ a, button { touch-action: manipulation; }
 .portfolio-action-primary { background: #18181b; color: #fff; }
 .portfolio-action:hover { background: #e4e4e7; color: #18181b; }
 .portfolio-action-primary:hover { background: #3f3f46; color: #fff; }
-.hero-canvas { min-height: 600px; }
+.hero-canvas { min-height: 600px; container-type: inline-size; }
+.hero-name { font-size: clamp(60px, 19cqw, 212px); }
+#work { overflow-anchor: none; }
 .case-study[open] > summary { margin-bottom: 12px; }
 .case-study summary::marker { color: #18181b; }
 .case-evidence { min-height: 120px; }

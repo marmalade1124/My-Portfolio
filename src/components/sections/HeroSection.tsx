@@ -82,7 +82,7 @@ export function HeroSection() {
             <h1
               ref={titleRef}
               aria-label="Raziel Salamat"
-              className="w-full font-['Montserrat',sans-serif] font-extrabold uppercase leading-[0.80] text-black flex justify-between items-center tracking-[-0.03em] overflow-hidden text-[21vw] sm:text-[19vw] md:text-[18vw] lg:text-[16vw]"
+              className="hero-name w-full font-['Montserrat',sans-serif] font-extrabold uppercase leading-[0.80] text-black flex justify-between items-center tracking-[-0.03em] overflow-hidden"
             >
               <span>R</span>
               <span>A</span>
