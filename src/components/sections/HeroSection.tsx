@@ -140,10 +140,10 @@ export function HeroSection() {
           className="absolute bottom-6 sm:bottom-12 md:bottom-16 right-2 sm:right-6 md:right-10 lg:right-12 z-20"
         >
           <div className="inline-flex flex-col items-start w-fit">
-            <h2 className="w-full font-['Plus_Jakarta_Sans','Metropolis',sans-serif] text-[0.95rem] sm:text-[1.1rem] md:text-[1.22rem] lg:text-[1.32rem] font-extrabold uppercase tracking-[0.04em] text-black leading-tight flex justify-between">
+            <h2 className="w-full font-['Plus_Jakarta_Sans','Metropolis',sans-serif] text-[0.85rem] sm:text-[0.95rem] md:text-[1.05rem] lg:text-[1.12rem] font-extrabold uppercase tracking-[0.04em] text-black leading-tight flex justify-between">
               SOFTWARE · CAD · DESIGN
             </h2>
-            <p className="w-full font-['Plus_Jakarta_Sans','Metropolis',sans-serif] text-[0.72rem] sm:text-[0.82rem] md:text-[0.9rem] lg:text-[0.98rem] text-zinc-800 font-normal mt-0.5 whitespace-nowrap leading-tight text-left">
+            <p className="w-full font-['Plus_Jakarta_Sans','Metropolis',sans-serif] text-[0.68rem] sm:text-[0.74rem] md:text-[0.8rem] lg:text-[0.84rem] text-zinc-800 font-normal mt-0.5 whitespace-nowrap leading-tight text-left">
               Built with curiosity. Shaped by practice.
             </p>
           </div>
