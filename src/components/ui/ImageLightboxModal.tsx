@@ -123,7 +123,7 @@ export function ImageLightboxModal({
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1.5 px-3 py-1 font-mono text-xs uppercase tracking-wider bg-zinc-900 hover:bg-white hover:text-black text-white border border-zinc-700 transition-colors"
                   >
-                    <span>Live Demo</span>
+                    <span>{project.liveLabel ?? 'Live Demo'}</span>
                     <ExternalLink size={12} />
                   </a>
                 )}

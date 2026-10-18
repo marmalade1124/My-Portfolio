@@ -46,6 +46,7 @@ Built using the **Swiss International Typographic Style**, the interface feature
 
 | No. | Project | Category | Key Technologies / Tools | Live Links |
 |:---:|:---|:---|:---|:---:|
+| **27** | **PiColor 3.14** | Windows Color Picker & Palette Studio | C#, WPF, .NET Framework 4.8, Win32, OKLCH | [Website](https://pi-color-studio.vercel.app/) |
 | **29** | **TwentyFour** | Mobile Web / Event Photography | JavaScript, Node.js, Supabase, IndexedDB | [Live App](https://twentyfour-ixyq.onrender.com/) |
 | **01** | **The Collegium** | Digital Newsroom & Media | Next.js, TypeScript, Tailwind CSS, Digital Flipbook | [Live Platform](https://thecollegium.vercel.app/) |
 | **02** | **Industrial Logic Controller Enclosure** | 3D CAD / Rugged Electronics | Fusion 360, CAD Modeling, Assembly Design | Blueprint Specs |
@@ -154,3 +155,7 @@ The check covers scene progression/reversal, resize cleanup, reduced motion, 320
 Project cover images expand into their gallery on pointer clicks using Motion shared layout; keyboard openings and reduced motion use a simpler fade. The gallery traps keyboard focus, restores focus on close, and wraps its controls on narrow screens. Chapter headings reveal through line masks. The TwentyFour walkthrough uses two actual demo screenshots and a clearly labeled illustrative shared album using existing sample imagery. Its three frames form a native horizontally scrollable strip on small screens. Contact closes with a masked headline and name reveal while links stay immediately usable.
 
 Additional browser check: `npx --yes --package @playwright/cli playwright-cli run-code --filename=tests/cinematic-details.browser.js`. This checks cover expansion, focus containment/return, reduced motion, narrow-screen gallery controls, product-strip keyboard scrolling and contact availability. No CAD exploded animation or filmmaking reel was added.
+
+PiColor 3.14 replaces the older PiColor listing and is featured after TwentyFour. Its five-image gallery includes four native app renders and a live website capture, labeled separately. Project totals remain 29; the website link is labeled Website because 3.14 is a Windows application.
+
+PiColor gallery check: `npx --yes --package @playwright/cli playwright-cli run-code --filename=tests/picolor.browser.js` (local preview on port 5174). Verifies all five images, developer-tools filtering, Website labels in gallery/index and 320/390px gallery controls.

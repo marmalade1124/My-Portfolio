@@ -243,7 +243,7 @@ export function ProjectsSection() {
                               className="inline-flex items-center gap-1 font-mono text-xs uppercase tracking-wider text-black font-semibold hover:underline underline-offset-4"
                             >
                               <ExternalLink size={12} />
-                              Live Demo
+                              {project.liveLabel ?? 'Live Demo'}
                               <ArrowUpRight size={12} />
                             </a>
                           )}
@@ -392,7 +392,7 @@ export function ProjectsSection() {
                               rel="noopener noreferrer"
                               className="text-black font-semibold hover:underline text-[11px] inline-flex items-center gap-1"
                             >
-                              <span>Demo</span>
+                              <span>{project.liveLabel ?? 'Demo'}</span>
                               <ArrowUpRight size={11} />
                             </a>
                           )}

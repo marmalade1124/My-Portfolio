@@ -10,6 +10,7 @@ export interface Project {
   techStack: string[];
   githubUrl?: string;
   liveUrl?: string;
+  liveLabel?: string;
   videoUrl?: string;
   coverImage?: string;
   images?: string[];
@@ -80,6 +81,36 @@ export const PROJECTS: Project[] = [
       'TwentyFour — live web app landing page',
       'Mobile camera interface — public demo with a sample scene',
       'Camera roll and reveal countdown — public demo, no photos uploaded',
+    ],
+  },
+
+  {
+    id: 'picolor',
+    num: '27',
+    title: 'PiColor 3.14',
+    category: 'Windows App / Color Picker & Palette Studio',
+    tag: 'devtools',
+    year: '2026',
+    description: 'A native Windows color picker and palette studio that turns a sampled screen color into a website palette. I built the desktop sampling workflow, semantic light and dark palettes, editable color roles, interface previews, pair-specific contrast checks, and CSS/JSON export. Named palettes, favorites, and backups stay on the device. The gallery shows renders from the native app; the linked website introduces the Windows download.',
+    role: 'Creator & Desktop Application Developer',
+    techStack: ['C#', 'WPF', '.NET Framework 4.8', 'Win32', 'OKLCH'],
+    githubUrl: 'https://github.com/marmalade1124/3.14',
+    liveUrl: 'https://pi-color-studio.vercel.app/',
+    liveLabel: 'Website',
+    coverImage: '/projects/picolor-studio.png',
+    images: [
+      '/projects/picolor-studio.png',
+      '/projects/picolor-editor.png',
+      '/projects/picolor-preview.png',
+      '/projects/picolor-settings.png',
+      '/projects/picolor-website.png',
+    ],
+    imageCaptions: [
+      'Native app render — palette studio, semantic color roles, and CSS/JSON output',
+      'Native app render — HSV color wheel, brightness, and selected-role editing',
+      'Native app render — interface preview and pair-specific contrast checks',
+      'Native app render — local library settings, backup, and recovery tools',
+      '3.14 public website — Windows app introduction and download',
     ],
   },
 
@@ -476,18 +507,6 @@ export const PROJECTS: Project[] = [
     role: 'Extension Author',
     techStack: ['TypeScript', 'VS Code API', 'AST Parsing', 'SVG Canvas', 'Arduino C++'],
     githubUrl: 'https://github.com/marmalade1124/Arduino-Visualizer',
-  },
-  {
-    id: 'picolor',
-    num: '27',
-    title: 'PiColor',
-    category: 'Design Tools / Math Algorithms',
-    tag: 'devtools',
-    year: '2024',
-    description: 'Algorithmic color palette generator for UI/UX designers utilizing the Golden Ratio (phi) formula and mathematical harmonic color space distribution.',
-    role: 'Creator & Algorithm Designer',
-    techStack: ['TypeScript', 'Color Science', 'Golden Ratio Math', 'React'],
-    githubUrl: 'https://github.com/marmalade1124/PiColor',
   },
   {
     id: 'viewportlab',
