@@ -21,5 +21,3 @@ async page => {
   await page.keyboard.press('Escape');
   await page.waitForFunction(()=>document.activeElement?.classList.contains('studio-menu'));
 }
-
-
