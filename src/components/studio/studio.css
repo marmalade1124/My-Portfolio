@@ -148,3 +148,96 @@
 @media (max-height:700px) and (min-width:768px) { .studio-project { width: 210px; top: 51%; } .studio-intro { top: 8px; font-size: 11px; } .studio-caption { bottom: 40px; } .studio-view-slider .studio-project { width: min(50vw,600px); } }
 @media (max-height:700px) and (max-width:767px) { .studio-intro > p, .studio-intro > button { display: none; } .studio-intro { top: 75px; } .studio-project { width: 150px; top: 60%; } .studio-view-slider .studio-project { width: 65vw; } .studio-caption { bottom: 44px; } }
 @media (prefers-reduced-motion:reduce) { .studio-project { transition: none; } }
+/* Continuous ring and case-study presentation. */
+.studio-root { font-family: Archivo, Arial, sans-serif; }
+.studio-header { padding: 14px 20px; }
+.studio-header nav button, .studio-menu { font-size: 12px; }
+.studio-intro { top: 20px; right: 20px; width: 27%; font-size: 13px; }
+.studio-intro > span, .studio-intro > button { display: none; }
+.studio-gallery { perspective: 1100px; touch-action: none; cursor: grab; }
+.studio-gallery:active { cursor: grabbing; }
+.studio-gallery:not([data-ready]) { opacity: 0; }
+.studio-ring { position: absolute; inset: 0; transform-style: preserve-3d; }
+.studio-project, .studio-view-slider .studio-project, .studio-view-list .studio-project { top: 48%; left: 50%; width: 270px; height: 270px; aspect-ratio: 1; transform-style: preserve-3d; transition: none; z-index: auto; }
+.studio-poster { display: block; width: 100%; height: 100%; overflow: hidden; }
+.studio-poster-type, .studio-poster-bottom { display: none; }
+.studio-poster > img, .studio-project-twentyfour .studio-poster > img { width: 100%; height: 100%; padding: 0; object-fit: cover; }
+.studio-project-cad-enclosure .studio-poster > img { object-fit: contain; }
+.studio-project-active .studio-poster::after { content: ''; position: absolute; inset: 0; pointer-events: none; }
+.studio-caption { bottom: 48px; font-size: 11px; }
+.studio-footer { padding: 16px 20px; }
+.studio-browse { opacity: .65; }
+.studio-exit { animation: studio-fall-back .55s cubic-bezier(.5,0,.75,0) forwards; pointer-events: none; }
+@keyframes studio-fall-back { to { transform: translateY(-12vh); opacity: 0; } }
+.studio-not-found { padding: 15vh 10vw; font-size: 24px; }
+.studio-not-found button { margin-top: 32px; text-decoration: underline; }
+.project-page { position: absolute; inset: 0; background: #fff; font-family: Archivo, Arial, sans-serif; }
+.project-header { position: absolute; top: 0; left: 0; right: 0; z-index: 20; display: grid; grid-template-columns: 25% 1fr auto; padding: 14px 20px; align-items: start; gap: 12px; background: #ffffffee; }
+.project-header .studio-wordmark { font-size: 28px; }
+.project-header > button, .project-previous { font-size: 12px; text-transform: uppercase; }
+.project-previous { justify-self: start; background: linear-gradient(to right,#111 var(--fill,0%),#999 var(--fill,0%)); background-clip: text; color: transparent; }
+.project-previous span { color: #999; }
+.project-scroll { position: absolute; inset: 0; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; outline-offset: -3px; scrollbar-width: thin; }
+.project-distance { position: relative; }
+.project-window { position: sticky; top: 0; height: 100dvh; overflow: hidden; }
+.project-track { display: flex; align-items: center; gap: 8px; width: max-content; min-width: 100%; height: 100%; padding: 0 20px; animation: project-enter 1.7s cubic-bezier(.16,1,.3,1) both; }
+.project-from-prev .project-track { animation-name: project-enter-prev; }
+@keyframes project-enter { from { translate: 100vw 0; } to { translate: 0 0; } }
+@keyframes project-enter-prev { from { translate: -100vw 0; } to { translate: 0 0; } }
+.project-leaving .project-track { animation: project-leave .42s cubic-bezier(.5,0,.75,0) forwards; }
+@keyframes project-leave { to { opacity: 0; translate: -6vw 0; } }
+.project-introduction { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; flex: 0 0 calc(50vw - 20px); padding-right: 24px; scroll-margin: 0; }
+.project-introduction h1, .project-introduction h2, .project-reasoning h2 { font-size: 13px; font-weight: 400; text-transform: uppercase; margin: 0 0 18px; line-height: 1.3; }
+.project-introduction p, .project-reasoning p { font-size: 13px; line-height: 1.55; color: #999; max-width: 350px; }
+.project-introduction .project-role { margin-top: 16px; font-size: 11px; }
+.project-links { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 18px; font-size: 11px; }
+.project-links a { padding: 6px 0; }
+.project-visual { flex: 0 0 47vw; width: 47vw; margin: 0; }
+.project-visual img { display: block; width: 100%; height: 46vh; object-fit: contain; background: #f4f4f4; }
+.project-visual figcaption { font-size: 10px; line-height: 1.4; color: #999; padding-top: 12px; max-width: 90%; }
+.project-reasoning { position: relative; display: flex; align-items: center; gap: 50px; margin: 0 60px; }
+.project-reasoning > div { width: 300px; }
+.project-reasoning .project-status { position: absolute; top: -50px; left: 0; font-size: 10px; text-transform: uppercase; white-space: nowrap; max-width: none; }
+.project-next { display: flex; flex-direction: column; align-items: start; justify-content: center; gap: 24px; width: 40vw; padding: 30px 60px; flex-shrink: 0; }
+.project-next > span { text-transform: uppercase; font-size: 13px; color: #999; background: linear-gradient(to right,#111 var(--fill,0%),#999 var(--fill,0%)); background-clip: text; color: transparent; }
+.project-next strong { font-size: clamp(24px,3vw,48px); font-weight: 400; }
+.project-progress { position: absolute; bottom: 18px; left: 50%; font-size: 12px; color: #999; pointer-events: none; }
+.project-home, .project-direct-next { position: absolute; bottom: 14px; display: flex; align-items: center; gap: 8px; font-size: 11px; min-height: 30px; z-index: 15; }
+.project-home { left: 20px; }
+.project-direct-next { right: 20px; }
+.studio-keyboard .project-track { animation: none; }
+@media (hover:hover) and (pointer:fine) { .studio-project-active:hover .studio-poster::after { box-shadow: inset 0 0 0 8px #000; } }
+@media (max-width:767px) {
+ .studio-intro { top: 90px; left: 20px; width: auto; }
+ .studio-gallery .studio-project { top: 58%; }
+ .studio-view-list .studio-project:not(.studio-project-active) { visibility: visible; }
+ .studio-index { width: 32%; z-index: 15; }
+ .studio-view-list .studio-project { left: 68%; }
+ .project-header { grid-template-columns: 1fr auto; padding: 16px 20px; }
+ .project-previous { grid-column: 1/-1; grid-row: 2; margin-top: 15px; font-size: 10px; }
+ .project-scroll { padding-top: 120px; padding-bottom: 65px; }
+ .project-window { position: static; height: auto; overflow: visible; }
+ .project-track { flex-direction: column; width: 100%; height: auto; padding: 0 20px; align-items: stretch; gap: 12px; transform: none !important; animation: project-mobile-enter .85s cubic-bezier(.16,1,.3,1) both; }
+ @keyframes project-mobile-enter { from { opacity: 0; translate: 0 40px; } to { opacity: 1; translate: 0 0; } }
+ .project-introduction { flex: auto; display: block; padding: 15px 0 30px; }
+ .project-introduction > div + div { margin-top: 28px; }
+ .project-introduction p { max-width: none; font-size: 14px; }
+ .project-visual { width: 100%; flex: auto; }
+ .project-visual img { height: auto; max-height: none; object-fit: contain; }
+ .project-visual figcaption { font-size: 11px; padding-bottom: 16px; }
+ .project-reasoning { display: block; margin: 40px 0; }
+ .project-reasoning .project-status { position: static; white-space: normal; margin-bottom: 24px; }
+ .project-reasoning > div { width: auto; margin-bottom: 30px; }
+ .project-reasoning p { font-size: 14px; max-width: none; }
+ .project-next { width: 100%; padding: 35px 0; margin-bottom: 30px; }
+ .project-progress { bottom: 24px; }
+ .project-home, .project-direct-next { bottom: 15px; background: #fffffff0; padding: 8px; }
+}
+@media (prefers-reduced-motion:reduce) { .studio-exit, .project-track, .project-from-prev .project-track, .project-leaving .project-track { animation: none; } }
+.project-introduction { margin-right: 14px; }
+.studio-gallery .studio-project { top: 50%; }
+@media (max-width:767px) {
+ .project-introduction { margin-right: 0; }
+ .project-progress { display: none; }
+ .project-page::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 54px; background: #fff; border-top: 1px solid #eee; z-index: 14; pointer-events: none; }
+}
