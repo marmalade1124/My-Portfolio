@@ -241,3 +241,14 @@
  .project-progress { display: none; }
  .project-page::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 54px; background: #fff; border-top: 1px solid #eee; z-index: 14; pointer-events: none; }
 }
+
+.project-image-frame { position: relative; height: 72dvh; overflow: hidden; background-size: 0; background-color: #e1e4ea; }
+.project-image-frame img { position: relative; z-index: 1; height: 100%; }
+.project-image-frame[data-portrait="true"]::before { content: ''; position: absolute; inset: -30px; background-image: inherit; background-size: cover; background-position: center; filter: blur(24px); opacity: .22; }
+.project-image-frame[data-portrait="true"] img { object-fit: contain; padding: 36px; background: transparent; }
+@media (max-width:767px) {
+ .project-image-frame { height: auto; aspect-ratio: 4 / 3; }
+ .project-image-frame[data-portrait="true"] { height: 75dvh; aspect-ratio: auto; }
+ .project-image-frame img { height: 100%; aspect-ratio: auto; }
+ .project-image-frame[data-portrait="true"] img { padding: 24px; }
+}
