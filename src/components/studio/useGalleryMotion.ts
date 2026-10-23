@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { advanceRing, cardPose, offsetFrom, wrap, type RingState } from './ringPhysics';
 
+const CARD_SIZE = 310;
+
 export type GalleryView = 'Showcase' | 'List' | 'Slider';
 export function useGalleryMotion(view: GalleryView, count: number, enabled: boolean, onActive: (index: number) => void) {
   const viewport = useRef<HTMLDivElement>(null);
@@ -31,7 +33,7 @@ export function useGalleryMotion(view: GalleryView, count: number, enabled: bool
       const width = root.clientWidth; const height = root.clientHeight;
       const mobile = width < 768;
       const baseRadius = mobile ? 338 : 720;
-      settings.scale = Math.min(1, (width - 30) / (baseRadius * 1.08 + 270), height * .76 / 270);
+      settings.scale = Math.min(1, (width - 30) / (baseRadius * 1.08 + CARD_SIZE), height * .76 / CARD_SIZE);
       settings.radius = baseRadius * settings.scale;
       root.style.perspective = `${1100 * Math.max(.55, settings.scale)}px`;
       wake();
@@ -51,7 +53,7 @@ export function useGalleryMotion(view: GalleryView, count: number, enabled: bool
         const card = cards[index]!;
         const distance = offsetFrom(index, s.position, count);
         if (settings.view === 'Showcase') {
-          card.style.width = `${270 * settings.scale}px`; card.style.height = `${270 * settings.scale}px`;
+          card.style.width = `${CARD_SIZE * settings.scale}px`; card.style.height = `${CARD_SIZE * settings.scale}px`;
           card.style.transform = cardPose(index, s, count, settings.radius);
           card.style.opacity = '1';
         } else {

@@ -12,7 +12,7 @@ pnpm build
 
 ## Gallery
 
-Seven featured projects occupy a continuous CSS 3D ring. Wheel input adds velocity; friction decays momentum and softly settles onto a project. Pointer movement directly updates position and vertical tilt, with pointer capture after a drag begins. Motion speed drives skew and scale. Selecting a neighbor travels by the shortest ring path. List and Slider share the continuous position with vertical/horizontal image arrangements; the list also exposes the complete 29-project archive.
+Seven featured projects occupy a continuous CSS 3D ring. Wheel input adds velocity; friction decays momentum and softly settles onto a project. Pointer movement directly updates position and vertical tilt, with pointer capture after a drag begins. Motion speed drives skew and scale. Selecting a neighbor travels by the shortest ring path. List and Slider share the continuous position with vertical/horizontal image arrangements; the list also exposes the complete 31-project archive.
 
 `useGalleryMotion.ts` writes transforms through refs using `requestAnimationFrame`; React updates only when the centered project changes. Frame-time-normalized physics live in `ringPhysics.ts`. The loop sleeps when settled, pauses for overlays/project pages, and cleans up events/observers/frames. Keyboard actions are immediate. Reduced motion removes inertia, tilt, deformation, and page animation.
 

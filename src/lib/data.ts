@@ -146,6 +146,29 @@ export const PROJECTS: Project[] = [
 
   // === TOP FLAGSHIP WORKS (SHOWCASED IN INITIAL 6 CARDS) ===
   {
+    id: 'lapcat-website', num: '30', title: 'Lapcat — Website',
+    category: 'Product Website / Motion Design', tag: 'software', year: '2026',
+    description: 'A launch website for Lapcat, my GPS racing app. Oversized typography, a rotating CSS phone, scroll-driven screen changes and route-line animation introduce the product before leading visitors to the Android download and release notes. The illustrated phone uses sample activity data.',
+    role: 'Designer & Frontend Developer',
+    techStack: ['HTML', 'CSS', 'JavaScript', 'GSAP', 'ScrollTrigger', 'Vercel'],
+    liveUrl: 'https://lapcat-launch.vercel.app/', liveLabel: 'Visit website',
+    coverImage: '/projects/lapcat-website.png',
+    images: ['/projects/lapcat-website.png', '/projects/lapcat-website-releases.png'],
+    imageCaptions: ['Live Lapcat launch website — product introduction and Android download.', 'Live release notes and Android download — product updates and installation guidance.'],
+  },
+  {
+    id: 'lapcat-app', num: '31', title: 'Lapcat — App',
+    category: 'Mobile App / GPS Racing', tag: 'software', year: '2026',
+    description: 'A Flutter app for recording runs, walks and rides, planning routes, racing saved courses and sharing route artwork. I built the app interface, local activity persistence and Supabase-backed profiles, community features and course attempts. Available as a direct Android test build; physical-device GPS and background-recording validation remain pending.',
+    role: 'Creator & App Developer',
+    techStack: ['Flutter', 'Dart', 'Supabase', 'Sembast', 'GPS', 'OpenRouteService'],
+    liveUrl: 'https://lapcat-launch.vercel.app/downloads/lapcat.apk', liveLabel: 'Download Android APK',
+    coverImage: '/projects/lapcat-app-home.png',
+    images: ['/projects/lapcat-app-home.png', '/projects/lapcat-app-profile.png'],
+    imageCaptions: ['Actual Flutter browser preview — Home in an empty activity state.', 'Actual Flutter browser preview — profile and personal activity overview. Android hardware behavior is not demonstrated by these screenshots.'],
+  },
+
+  {
     id: 'the-collegium',
     num: '01',
     title: 'The Collegium',

@@ -18,7 +18,7 @@ async page => {
  check(await page.locator('.project-progress').innerText()!=='0%','Progress did not update');
  await page.goBack(); await page.getByRole('button',{name:'Showcase',exact:true}).waitFor();
  await page.getByRole('button',{name:'List',exact:true}).click();
- check(await page.getByRole('region',{name:'All projects',exact:true}).locator('button').count()===29,'Missing archive');
+ check(await page.getByRole('region',{name:'All projects',exact:true}).locator('button').count()===31,'Missing archive');
  await page.getByRole('region',{name:'All projects',exact:true}).getByRole('button',{name:/Arduino Visualizer/}).click();
  await page.waitForURL('**/work/arduino-visualizer');
  await page.getByRole('button',{name:'All work',exact:true}).click();
@@ -43,6 +43,19 @@ async page => {
    check(images.length===2&&images[1].y>images[0].y,'Mobile gallery is not vertical');
   }
   await page.getByRole('button',{name:'All work',exact:true}).click();
+ }
+ for(const id of ['lapcat-website','lapcat-app']){
+  for(const width of [390,1440]){
+   await page.setViewportSize({width,height:900});
+   await page.goto('http://127.0.0.1:5180/work/'+id);
+   await page.getByRole('heading',{name:/Lapcat/}).waitFor();
+   check(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'Lapcat overflow');
+   for(const img of await page.locator('.project-visual img').all()){
+    await img.scrollIntoViewIfNeeded(); await img.evaluate(el=>el.decode());
+   }
+   const link=page.getByRole('link',{name:id==='lapcat-app'?/Download Android APK/:/Visit website/});
+   check((await link.getAttribute('href')).includes(id==='lapcat-app'?'/downloads/lapcat.apk':'lapcat-launch.vercel.app'),'Lapcat link missing');
+  }
  }
  await page.goto('http://127.0.0.1:5180/work/missing');
  check(await page.getByRole('heading',{name:'Project not found.'}).isVisible(),'Missing route has no fallback');
