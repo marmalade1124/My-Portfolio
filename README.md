@@ -1,162 +1,40 @@
-# RAZIEL SALAMAT // 2026 PORTFOLIO
+# Raziel Salamat — studio portfolio experiment
 
-> **Computer Engineering student · Expected graduation 2027** · *Hardware Systems · 3D CAD Design · Full-Stack Software · Cinematography*
-> *Tagum City / Davao del Norte, PH · GMT+8*
-> **Concept to Creation**
+Experimental redesign on `codex/avea-portfolio-redesign`, based on the spatial gallery direction of [AVEA](https://avea.studio/) and its [Awwwards listing](https://www.awwwards.com/sites/avea). The current production portfolio is preserved on `main`. Do not merge or promote this branch to production until the design is accepted.
 
-[![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen?style=flat-square)](https://github.com/marmalade1124/My-Portfolio)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
-[![React](https://img.shields.io/badge/React-19-61dafb?style=flat-square&logo=react)](https://react.dev/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-38bdf8?style=flat-square&logo=tailwindcss)](https://tailwindcss.com/)
-[![Vite](https://img.shields.io/badge/Vite-6.x-646CFF?style=flat-square&logo=vite)](https://vitejs.dev/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
-
----
-
-## 🧭 Overview
-
-This is the official portfolio and engineering archive of **Raziel Renz C. Salamat**, a Computer Engineering student (expected graduation 2027) working across web applications, Windows tools, CAD concepts, and visual media. This portfolio follows the design direction of **"Concept to Creation"**.
-
-Built using the **Swiss International Typographic Style**, the interface features tactile archival print paper grain textures, dynamic scroll-driven sidebar transitions, interactive multi-view project inspection (Cards Grid & Compact Monospace Index Table), and responsive media lightboxes.
-
----
-
-## ⚡ Core Disciplines & Competencies
-
-### 1. 💻 Full-Stack Software & Systems Architecture
-- **Frontend**: React 19, Next.js, TypeScript, Tailwind CSS v4, Motion (Framer Motion), GSAP ScrollTrigger
-- **Backend & Database**: Node.js, Express, Prisma ORM, PostgreSQL, Supabase, RESTful APIs
-- **Systems & Algorithms**: Operating Systems simulations, CPU Scheduling Visualizers, Memory Management, C/C++, Python
-
-### 2. 📐 3D CAD Design & DFM Mechanical Prototyping
-- **CAD Modeling**: Autodesk Fusion 360, SolidWorks
-- **Engineering Capabilities**: Design for Manufacturing (DFM), CAD Assembly Studies, Enclosure CAD Concepts, Linear Actuation Mechanisms, Gantry Assemblies
-
-### 3. 🔌 Hardware IoT & Embedded Systems
-- **Microcontrollers & SoC**: Arduino, ESP32, Raspberry Pi
-- **Specializations**: IoT Fleet Management, 3D Printing (FDM) telemetry dispatch, sensor integration, automated hopper feeds
-
-### 4. 🎬 Documentary Videography & Visual Media
-- **Cinematography**: Directing, DP camera operation, lighting design
-- **Post-Production**: DaVinci Resolve, Adobe Premiere Pro, After Effects, cinematic color grading, editorial sound design
-
----
-
-## 🏆 Project Archive Highlights
-
-| No. | Project | Category | Key Technologies / Tools | Live Links |
-|:---:|:---|:---|:---|:---:|
-| **27** | **PiColor 3.14** | Windows Color Picker & Palette Studio | C#, WPF, .NET Framework 4.8, Win32, OKLCH | [Website](https://pi-color-studio.vercel.app/) |
-| **29** | **TwentyFour** | Mobile Web / Event Photography | JavaScript, Node.js, Supabase, IndexedDB | [Live App](https://twentyfour-ixyq.onrender.com/) |
-| **01** | **The Collegium** | Digital Newsroom & Media | Next.js, TypeScript, Tailwind CSS, Digital Flipbook | [Live Platform](https://thecollegium.vercel.app/) |
-| **02** | **Industrial Logic Controller Enclosure** | 3D CAD / Rugged Electronics | Fusion 360, CAD Modeling, Assembly Design | Blueprint Specs |
-| **03** | **Mutya ng UMTC 2024: BTS** | Videography & Documentary | Cinematography, DaVinci Resolve, Color Grading | [Watch Stream](https://www.facebook.com/watch/?v=523154220511260) |
-| **04** | **CCPrint** | Hardware / 3D Print Fleet IoT | Next.js, Node.js, WebSocket, OctoPrint API | [GitHub](https://github.com/marmalade1124) |
-| **05** | **CodeCraft Management** | Full-Stack SaaS Ops Portal | Next.js, TypeScript, Tailwind CSS, Supabase | [Live Demo](https://codecraftmanagement.vercel.app/) |
-| **06** | **CPU Scheduler Visualizer** | OS Simulation Workbench | React, TypeScript, Tailwind CSS, Canvas | [Live Demo](https://scheduler-psi.vercel.app/) |
-
-*Explore 29+ categorized works directly in the portfolio interface with direct access to CAD blueprints, GitHub repositories, and media streams.*
-
----
-
-## 🎨 Design System & Interactive Highlights
-
-- **Dynamic Navigation Transition**: The top minimalist banner seamlessly morphs into a floating left sidebar as you scroll down past 80px, displaying numbered sections (`01 WORK`, `02 EXPERIENCE`, `03 EDUCATION`, `04 SKILLS`, `05 RESUME`, `06 CONTACT`) with active section underline indicators.
-- **Dual Display Modes**:
-  - **⊞ Cards Grid**: Curated visual cards with high-resolution screenshot carousels and CAD previews.
-  - **☰ Index Table**: High-density 1-line monospace Swiss archive table to scan all 29 works in a single screen.
-- **Tactile Paper Grain Texture**: Custom SVG fractal noise overlay giving the canvas an archival Swiss linen poster feel.
-- **Interactive Lightbox**: Multi-slide inspection modal supporting photo galleries, CAD schematics, and stream launch buttons.
-
----
-
-## 🛠️ Tech Stack & Tooling
-
-- **Core Framework**: [React 19](https://react.dev/) + [Vite 6](https://vitejs.dev/)
-- **Language**: [TypeScript](https://www.typescriptlang.org/) (Strict Mode)
-- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
-- **Motion & Interactions**: [Motion](https://motion.dev/) (Framer Motion) + [GSAP ScrollTrigger](https://greensock.com/scrolltrigger/)
-- **Typography**: Space Grotesk, Montserrat, JetBrains Mono, Inter, Plus Jakarta Sans
-- **Icons**: [Lucide React](https://lucide.dev/)
-- **Package Manager**: [pnpm](https://pnpm.io/)
-
----
-
-## 🚀 Local Development Setup
-
-### Prerequisites
-- Node.js (v18.0.0 or later)
-- pnpm (`npm install -g pnpm`)
-
-### Installation & Run
-
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/marmalade1124/My-Portfolio.git
-   cd My-Portfolio
-   ```
-
-2. **Install dependencies**:
-   ```bash
-   pnpm install
-   ```
-
-3. **Start the development server**:
-   ```bash
-   pnpm dev
-   ```
-   Open [http://localhost:5173](http://localhost:5173) in your browser.
-
-4. **Production Build**:
-   ```bash
-   pnpm build
-   ```
-
-5. **Preview Production Build**:
-   ```bash
-   pnpm preview
-   ```
-
----
-
-## 📬 Contact & Connect
-
-- **Location**: Tagum City / Davao del Norte, Philippines (GMT+8)
-- **Email**: [razielrenz@gmail.com](mailto:razielrenz@gmail.com)
-- **LinkedIn**: [linkedin.com/in/razielrenz](https://www.linkedin.com/in/razielrenz)
-- **GitHub**: [github.com/marmalade1124](https://github.com/marmalade1124)
-
----
-
-<div align="center">
-  <sub>Designed & Developed with precision by <strong>Raziel Salamat</strong> · © 2026 All Rights Reserved.</sub>
-</div>
-
-### Visitor journey and project archive
-
-The cream editorial hero presents the developer/CAD focus, current student status, and direct Work, Documents, and Contact links. Work immediately follows the hero. Three flagship cards (TwentyFour, PiColor 3.14, and the enclosure CAD study) include native keyboard-accessible case-study disclosures, annotated evidence, delivery status, and limitations. Categories and the full archive retain all 29 projects; the index view remains available. The former standalone concept sequence and TwentyFour strip are no longer mounted, avoiding repeated introductions. Hero motion, gallery transitions, and the contact finale remain, respecting reduced motion.
-
-### Resume and portfolio documents
-
-- `public/resume.pdf`: edited copy of the supplied two-page CAD-focused resume, about 123 KB.
-- `public/portfolio.pdf`: updated 15-page landscape portfolio, about 22.9 MB, including TwentyFour and PiColor 3.14 on pages 11 and 12.
-- Both documents identify current Computer Engineering study and expected graduation in 2027. The confirmed Graphic Designer start date remains 2011. Originals in `Portfolio Files/` and the earlier generated output are preserved.
-- The viewer has dialog semantics, focus containment/return, Escape/Close, and a direct-PDF fallback if a preview fails. Download links provide descriptive filenames.
-- Previews use `resume-preview-01.jpg` through `-02.jpg` and `portfolio-preview-01.jpg` through `-15.jpg`. When replacing documents, regenerate matching previews and update `DOCUMENTS` in `ResumeModal.tsx` (page count, file size, dimensions, description).
-
-Regenerate with Poppler: `pdftoppm -scale-to 1800 -jpeg -jpegopt quality=85 public/portfolio.pdf public/portfolio-preview`. For two-page documents Poppler generates single-digit suffixes; rename them to `-01.jpg` and `-02.jpg` for the viewer.
-
-### Browser verification
-
-With `pnpm dev --host 127.0.0.1 --port 5174` running:
+## Run locally
 
 ```powershell
-npx --yes --package @playwright/cli playwright-cli open http://127.0.0.1:5174/ --browser msedge
-npx --yes --package @playwright/cli playwright-cli run-code --filename=tests/cinematic.browser.js
-npx --yes --package @playwright/cli playwright-cli run-code --filename=tests/cinematic-details.browser.js
-npx --yes --package @playwright/cli playwright-cli run-code --filename=tests/picolor.browser.js
+pnpm install
+pnpm dev --host 127.0.0.1 --port 5180
+pnpm build
 ```
 
-The first check now exercises the shorter visitor journey: three featured projects, keyboard case studies, all 29 archive entries, category reset, both PDF files and previews, focus behavior, preview-load failure, and 320/390/768/1440px layouts. The other checks cover shared gallery motion, keyboard/reduced-motion behavior, contact availability, and all five PiColor images. Browser checks use Edge desktop/emulation; physical-phone performance and Safari remain unverified.
+## Experience
 
-Layout regression check: `tests/layout-stability.browser.js` measures hero text separation from 320px through 2560px and samples category-control positions and scroll offsets during switches between long and short result sets. Project filtering updates immediately without grid layout/exit animation; the shared-image gallery transition is retained. Hero display type scales within its capped canvas rather than the viewport.
+- **Showcase:** six selected projects arranged in a CSS perspective gallery. Scroll, swipe/drag, use the previous/next buttons, or focus the gallery and press arrow keys. Click the centered project to read its details; click a neighboring card to select it.
+- **List:** all 29 projects in a scrollable index, with the selected-work image stack alongside. Every index item opens its project details, including projects without images.
+- **Slider:** a larger, flat preview of the selected work with the same browsing controls.
+- **Menu:** selected work, project index, about/experience/education/leadership/toolkit, documents, and contact.
+- **Project details:** existing descriptions, roles, technology lists, external links, case studies, screenshot evidence, and scope limitations. Screenshot galleries reuse the existing accessible viewer.
+- **Documents:** original current website assets are retained: two-page CAD-focused resume and 15-page visual portfolio. Both keep expected graduation in 2027 and remain separately viewable/downloadable.
+
+The redesign uses your existing assets and content. It does not reuse Avea's proprietary images, logo, or source bundles. CSS perspective recreates the gallery presentation without adding WebGL or other dependencies. Keyboard navigation and reduced-motion preference avoid carousel movement. The former portfolio components remain in source for comparison, but are not mounted by the experimental App.
+
+## Structure
+
+`src/components/studio/StudioPortfolio.tsx` owns the shell, views, and content panels; `studio.css` contains the scoped visual system. Shared project content stays in `src/lib/data.ts`. Existing `ResumeModal` and `ImageLightboxModal` retain document/gallery behavior. `src/App.tsx` mounts the experiment.
+
+## Verify
+
+```powershell
+npx --yes --package @playwright/cli playwright-cli open http://127.0.0.1:5180/ --browser msedge
+npx --yes --package @playwright/cli playwright-cli run-code --filename=tests/studio.browser.js
+npx --yes --package @playwright/cli playwright-cli run-code --filename=tests/studio-motion.browser.js
+```
+
+Covers view changes, selected-project navigation, keyboard/focus behavior, case studies, galleries, all-project index, current education, resume preview, contact links, and 320/390/768/1440/1920px layouts. The older browser scripts target the stable main design. Physical-phone gestures and Safari remain separate device checks.
+
+## Safe review
+
+Push only `codex/avea-portfolio-redesign` for a branch preview. Do not merge into `main`, change the Vercel production branch, or promote a preview during this experiment. To return to the original locally: `git switch main` after saving branch work. Git switching changes this checkout, so close an experimental local preview when returning to main.
