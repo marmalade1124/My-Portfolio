@@ -1,0 +1,33 @@
+{
+  "grammar": "t2_keynote_ui",
+  "duration": 8,
+  "fps": 24,
+  "width": 960,
+  "height": 600,
+  "theme": {
+    "name": "snow",
+    "bg": "#FFFFFF",
+    "surface": "#FFFFFF",
+    "ink": "#111111",
+    "sub": "#777777",
+    "accent": "#00B8B8",
+    "accent2": "#111111"
+  },
+  "cues": [
+    {
+      "at": 0,
+      "kind": "card",
+      "image": "../../public/projects/lapcat-app-home.png"
+    },
+    {
+      "at": 2.6,
+      "kind": "card",
+      "image": "../../public/projects/lapcat-planner.png"
+    },
+    {
+      "at": 5.3,
+      "kind": "card",
+      "image": "../../public/projects/lapcat-app-profile.png"
+    }
+  ]
+}

@@ -48,7 +48,7 @@ async page => {
   for(const width of [390,1440]){
    await page.setViewportSize({width,height:900});
    await page.goto('http://127.0.0.1:5180/work/'+id);
-   await page.getByRole('heading',{name:/Lapcat/}).waitFor();
+   await page.getByRole('heading',{name:/Lapcat/,level:1}).waitFor();
    check(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'Lapcat overflow');
    for(const img of await page.locator('.project-visual img').all()){
     await img.scrollIntoViewIfNeeded(); await img.evaluate(el=>el.decode());

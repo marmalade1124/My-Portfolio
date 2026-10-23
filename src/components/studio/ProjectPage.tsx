@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { ArrowLeft, ArrowRight, ArrowUpRight } from 'lucide-react';
 import { PROJECTS, type Project } from '@/lib/data';
+import { ProductStory, storyKey } from './ProductMotion';
 
 export function ProjectPage({ project, direction, navigate, home, menu }: { project: Project; direction: 'next' | 'prev'; navigate: (project: Project, direction?: 'next' | 'prev', instant?: boolean) => void; home: () => void; menu: () => void }) {
   const scroll = useRef<HTMLDivElement>(null);
@@ -76,6 +77,7 @@ export function ProjectPage({ project, direction, navigate, home, menu }: { proj
       <div ref={distance} className="project-distance"><div className="project-window"><div ref={track} className="project-track">
         <section className="project-introduction"><div><h1>{project.title}</h1><p>{project.description}</p></div><div><h2>Solutions</h2><p>{project.techStack.join(', ')}.</p><p className="project-role">{project.role}</p><div className="project-links">{project.liveUrl && <a href={project.liveUrl} target="_blank" rel="noreferrer">{project.liveLabel ?? 'Visit project'} ↗</a>}{project.githubUrl && <a href={project.githubUrl} target="_blank" rel="noreferrer">Source ↗</a>}{project.videoUrl && <a href={project.videoUrl} target="_blank" rel="noreferrer">Watch ↗</a>}</div></div></section>
         {images.map((image, item) => <figure className="project-visual" key={image}><div className="project-image-frame"><img src={image} alt={project.imageCaptions?.[item] ?? `${project.title} image ${item + 1}`} loading={item < 2 ? 'eager' : 'lazy'} onLoad={event => { const img = event.currentTarget; img.parentElement!.dataset.portrait = String(img.naturalHeight > img.naturalWidth); window.dispatchEvent(new Event('resize')); }} /></div><figcaption>{project.imageCaptions?.[item]}</figcaption></figure>)}
+        {storyKey(project.id) && <ProductStory id={project.id} />}
         {project.caseStudy && <section className="project-reasoning"><p className="project-status">{project.caseStudy.status}</p>{[['The problem',project.caseStudy.problem],['The approach',project.caseStudy.decision],['The result',project.caseStudy.result],['Scope & limitations',project.caseStudy.limitations]].map(([label,text]) => <div key={label}><h2>{label}</h2><p>{text}</p></div>)}</section>}
         <a ref={nextLink} className="project-next" href={`/work/${next.id}`} onClick={event => { event.preventDefault(); go(next, 'next', event.detail === 0); }}><span>Scroll down to next project</span><strong>{next.title}</strong><ArrowRight size={22} /></a>
       </div></div></div>

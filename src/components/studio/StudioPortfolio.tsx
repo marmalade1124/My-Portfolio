@@ -3,6 +3,7 @@ import { ArrowDown, ArrowLeft, ArrowRight, ArrowUpRight, X } from 'lucide-react'
 import { PERSONAL, PROJECTS, EDUCATION, EXPERIENCE, LEADERSHIP, SKILLS, type Project } from '@/lib/data';
 import { ResumeModal, DOCUMENTS, type DocumentKind } from '@/components/ui/ResumeModal';
 import { ProjectPage } from './ProjectPage';
+import { AnimatedCover } from './ProductMotion';
 import { useGalleryMotion, type GalleryView } from './useGalleryMotion';
 import './studio.css';
 
@@ -37,6 +38,7 @@ function Dialog({ title, children, onClose, opener }: { title: string; children:
 export function StudioPortfolio() {
   const [view, setView] = useState<View>('Showcase');
   const [active, setActive] = useState(0);
+  const [coversPaused, setCoversPaused] = useState(false);
   const [panel, setPanel] = useState<Panel>(null);
   const [route, setRoute] = useState(() => window.location.pathname);
   const [direction, setDirection] = useState<'next' | 'prev'>('next');
@@ -87,6 +89,7 @@ export function StudioPortfolio() {
               <div className="studio-poster">
                 <span className="studio-poster-type">{project.tag === 'cad' ? 'FORM / FUNCTION' : project.tag === 'media' ? 'PEOPLE / PERSPECTIVE' : 'DESIGN / DEVELOPMENT'}</span>
                 <img src={project.coverImage} alt={`${project.title} project preview`} draggable={false} loading="eager" />
+                <AnimatedCover id={project.id} active={centered && !modalOpen && !exiting && !coversPaused} />
                 <span className="studio-poster-bottom"><span>{project.title}</span><ArrowUpRight size={14} /></span>
               </div>
             </button>;
@@ -97,7 +100,7 @@ export function StudioPortfolio() {
         <div className="studio-caption" aria-live="polite"><span>{current.category}</span><button onClick={() => openProject(current)}>{current.title} <ArrowUpRight size={13} /></button><span>{current.role}</span><span>R{pad(active + 1)}</span></div>
         <div className="studio-browse"><button aria-label="Previous project" onClick={event => move(-1, event.detail === 0)}><ArrowLeft size={17} /></button><span>{pad(active + 1)} / {pad(FEATURED.length)}</span><button aria-label="Next project" onClick={event => move(1, event.detail === 0)}><ArrowRight size={17} /></button></div>
       </main>
-      <footer className="studio-footer"><button className="studio-talk" onClick={() => setPanel('contact')}>Let's talk <ArrowUpRight size={15} /></button><span className="studio-explore">Drag or scroll to explore <ArrowDown size={12} /></span><span>© {new Date().getFullYear()} Raziel Salamat</span></footer></>}
+      <footer className="studio-footer"><button className="studio-talk" onClick={() => setPanel('contact')}>Let's talk <ArrowUpRight size={15} /></button><span className="studio-explore">Drag or scroll to explore <ArrowDown size={12} /></span><button className="studio-motion-toggle" aria-pressed={coversPaused} onClick={() => setCoversPaused(value => !value)}>{coversPaused ? 'Play cover motion' : 'Pause cover motion'}</button><span>© {new Date().getFullYear()} Raziel Salamat</span></footer></>}
     </div>
 
     {panel && <Dialog opener={lastFocus.current} title={panel === 'menu' ? 'Navigation' : panel === 'documents' ? 'Resume & portfolio' : panel === 'about' ? 'About Raziel' : 'Let’s talk'} onClose={closePanel}>
