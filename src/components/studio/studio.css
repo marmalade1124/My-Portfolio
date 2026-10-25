@@ -316,8 +316,10 @@
 @media (prefers-reduced-motion:reduce) { .studio-enter .studio-gallery[data-ready], .studio-enter .studio-intro, .studio-enter .studio-caption, .studio-enter .studio-footer, .studio-enter .studio-browse { animation: none; } }
 
 .studio-contact-layout { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); gap: 48px; align-items: center; }
-.studio-contact-portrait { position: fixed; right: 0; bottom: 0; display: block; width: min(54vw, 88dvh); height: calc(100dvh - 100px); max-height: none; object-fit: contain; object-position: right bottom; pointer-events: none; }
+.studio-contact-portrait { position: fixed; right: 0; top: 100px; bottom: 0; width: 50vw; overflow: hidden; pointer-events: none; }
+.studio-contact-portrait img { position: absolute; top: 40px; left: 55%; width: auto; max-width: none; height: 190%; transform: translateX(-72%); }
 @media (max-width:900px) {
  .studio-contact-layout { grid-template-columns: minmax(0, 1fr); gap: 32px; }
- .studio-contact-portrait { position: static; width: min(100%, 480px); height: auto; object-position: center; justify-self: center; }
+ .studio-contact-portrait { position: relative; inset: auto; width: min(100%, 480px); aspect-ratio: 4 / 3; justify-self: center; }
+ .studio-contact-portrait img { top: 0; left: auto; right: 0; width: 160%; height: auto; transform: none; }
 }
