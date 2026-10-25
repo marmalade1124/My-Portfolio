@@ -7,6 +7,11 @@ async page => {
  await page.locator('.studio-gallery[data-ready]').waitFor();
  const entrance=await page.locator('.studio-gallery').evaluate(el=>el.getAnimations().some(animation=>animation.animationName==='studio-arrive-gallery'));
  check(entrance,'Missing initial gallery entrance');
+ const frames=await page.locator('.studio-project').first().evaluate(el=>new Promise(resolve=>{
+  const samples=[]; const frame=()=>{samples.push({pose:el.style.transform,scale:new DOMMatrixReadOnly(getComputedStyle(document.querySelector('.studio-gallery')).transform).a});if(samples.length<25)requestAnimationFrame(frame);else resolve(samples)};requestAnimationFrame(frame);
+ }));
+ check(new Set(frames.map(frame=>frame.pose)).size>10,'Intro ring does not spin');
+ check(frames[0].scale<frames.at(-1).scale,'Intro ring does not grow');
  await page.waitForFunction(()=>!document.querySelector('.studio-enter'));
  check(await page.locator('.studio-gallery').evaluate(el=>getComputedStyle(el).opacity)==='1','Gallery did not become visible');
  await page.getByRole('button',{name:'Open TwentyFour',exact:true}).focus();

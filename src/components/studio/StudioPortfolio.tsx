@@ -64,7 +64,7 @@ export function StudioPortfolio() {
   const lastFocus = useRef<HTMLElement | null>(null);
   const current = FEATURED[active]!;
   const modalOpen = !!panel || !!documentKind;
-  const motion = useGalleryMotion(view, FEATURED.length, !modalOpen && !projectRoute, setActive);
+  const motion = useGalleryMotion(view, FEATURED.length, !modalOpen && !projectRoute, setActive, entering);
   const move = motion.move;
 
   const openProject = (project: Project, instant = false) => {

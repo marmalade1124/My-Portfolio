@@ -4,11 +4,11 @@ import { advanceRing, cardPose, offsetFrom, wrap, type RingState } from './ringP
 const CARD_SIZE = 310;
 
 export type GalleryView = 'Showcase' | 'List' | 'Slider';
-export function useGalleryMotion(view: GalleryView, count: number, enabled: boolean, onActive: (index: number) => void) {
+export function useGalleryMotion(view: GalleryView, count: number, enabled: boolean, onActive: (index: number) => void, entering = false) {
   const viewport = useRef<HTMLDivElement>(null);
   const ring = useRef<HTMLDivElement>(null);
   const state = useRef<RingState>({ position: 0, velocity: 0, target: null, tilt: 0, speed: 0 });
-  const runtime = useRef({ view, enabled, reduce: false, radius: 720, scale: 1, dragging: false, lastActive: -1, frame: 0, lastTime: 0 });
+  const runtime = useRef({ view, enabled, reduce: false, radius: 720, scale: 1, dragging: false, lastActive: -1, frame: 0, lastTime: 0, entering: false, introStart: 0 });
   const pointer = useRef({ id: -1, x: 0, y: 0, position: 0, tilt: 0, moved: false });
   const draw = useRef<(time: number) => void>(() => {});
   const wake = useCallback(() => { if (!runtime.current.frame) { runtime.current.lastTime = 0; runtime.current.frame = requestAnimationFrame(time => draw.current(time)); } }, []);
@@ -45,8 +45,13 @@ export function useGalleryMotion(view: GalleryView, count: number, enabled: bool
       if (!settings.enabled) return;
       const dt = settings.lastTime ? Math.min(3, (time - settings.lastTime) / (1000 / 60)) : 1;
       settings.lastTime = time;
-      if (!settings.reduce) advanceRing(s, dt, settings.dragging);
-      const centered = wrap(Math.round(s.position), count);
+      if (settings.entering && !settings.reduce) {
+        if (!settings.introStart) settings.introStart = time;
+        const progress = Math.min(1, (time - settings.introStart) / 1200);
+        s.position = -count * Math.pow(1 - progress, 3);
+        s.speed = 0;
+      } else if (!settings.reduce) advanceRing(s, dt, settings.dragging);
+      const centered = settings.entering ? 0 : wrap(Math.round(s.position), count);
       if (settings.lastActive !== centered) { settings.lastActive = centered; onActive(centered); }
       layer.style.transform = settings.view === 'Showcase' ? `translateZ(${-settings.radius}px) rotateX(${s.tilt}deg)` : '';
       for (let index = 0; index < cards.length; index++) {
@@ -63,7 +68,7 @@ export function useGalleryMotion(view: GalleryView, count: number, enabled: bool
           card.style.opacity = settings.view === 'List' ? String(Math.max(.12, 1 - Math.max(0, Math.abs(distance) - 2.4) * .55)) : '1';
         }
       }
-      if (settings.dragging || s.target !== null || Math.abs(s.velocity) > .00003 || Math.abs(s.position - Math.round(s.position)) > .001 || Math.abs(s.speed) > .00001 || Math.abs(s.tilt) > .001) settings.frame = requestAnimationFrame(time => draw.current(time));
+      if (settings.entering || settings.dragging || s.target !== null || Math.abs(s.velocity) > .00003 || Math.abs(s.position - Math.round(s.position)) > .001 || Math.abs(s.speed) > .00001 || Math.abs(s.tilt) > .001) settings.frame = requestAnimationFrame(time => draw.current(time));
     };
     const wheel = (event: WheelEvent) => {
       if (!settings.enabled || (event.target as HTMLElement).closest('.studio-index')) return;
@@ -77,6 +82,7 @@ export function useGalleryMotion(view: GalleryView, count: number, enabled: bool
     };
     const down = (event: PointerEvent) => {
       if (!settings.enabled || event.button !== 0) return;
+      if (settings.entering) state.current.position = 0;
       pointer.current = { id: event.pointerId, x: event.clientX, y: event.clientY, position: state.current.position, tilt: state.current.tilt, moved: false };
       settings.dragging = true; state.current.target = null; state.current.velocity = 0;
     };
@@ -111,5 +117,10 @@ export function useGalleryMotion(view: GalleryView, count: number, enabled: bool
     };
   }, [count, enabled, move, onActive, wake]);
   useEffect(() => { runtime.current.view = view; runtime.current.enabled = enabled; runtime.current.dragging = false; state.current.velocity = 0; state.current.target = Math.round(state.current.position); wake(); }, [view, enabled, wake]);
+  useEffect(() => {
+    const settings = runtime.current;
+    if (!entering && settings.entering) { state.current.position = 0; state.current.target = null; state.current.velocity = 0; }
+    settings.entering = entering; settings.introStart = 0; wake();
+  }, [entering, wake]);
   return { viewport, ring, move, select, suppressClick };
 }
