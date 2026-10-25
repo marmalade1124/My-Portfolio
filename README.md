@@ -50,3 +50,5 @@ Push only this branch for its protected Vercel preview. Do not merge into `main`
 Product motion trial: see [motion notes](docs/motion/README.md) for playback, provenance, rebuild instructions and checks.
 
 Home entrance: a 1.2-second gallery expansion from quarter size while the ring turns once and eases to rest runs only on an initial home-page load, with a short text stagger. Any pointer, wheel, key or focus interaction skips it. Reduced-motion preference skips it, including preference changes during entry; returning from a project does not replay it. Verify with tests/studio-intro.browser.js.
+
+Certifications & learning: the menu panel separates verified credentials (none published yet) from optional learning resources. Research, provider links and completion requirements are in [free learning paths](docs/FREE_LEARNING_PATHS.md). No enrollment or credential is claimed. Browser checks: tests/certifications.browser.js.

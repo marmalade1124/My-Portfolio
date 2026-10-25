@@ -323,3 +323,16 @@
  .studio-contact-portrait { position: relative; inset: auto; width: min(100%, 480px); aspect-ratio: 4 / 3; justify-self: center; }
  .studio-contact-portrait img { top: 0; left: auto; right: 0; width: 160%; height: auto; transform: none; }
 }
+
+.studio-certifications { max-width: 1152px; }
+.studio-credentials-empty { border-block: 1px solid #ddd; margin: 40px 0; padding: 28px 0; }
+.studio-certifications h3 { font-size: 22px; line-height: 1.25; font-weight: 400; }
+.studio-certifications p:not(.studio-eyebrow) { font-size: 14px; line-height: 1.7; color: #666; max-width: 780px; margin-top: 12px; }
+.studio-learning-resources summary { cursor: pointer; font-size: 18px; padding: 12px 0; }
+.studio-learning-resources summary span { font-size: 11px; color: #777; margin-left: 16px; }
+.studio-learning-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; margin-top: 32px; }
+.studio-learning-grid article { border-top: 1px solid #ddd; padding: 24px 0; }
+.studio-learning-grid .studio-eyebrow { margin-bottom: 16px; }
+.studio-learning-grid a { display: inline-block; margin-top: 20px; padding: 8px 0; text-decoration: underline; text-underline-offset: 4px; }
+.studio-certifications .studio-learning-checked { font-size: 11px; margin-top: 24px; }
+@media (max-width:767px) { .studio-learning-grid { grid-template-columns: 1fr; gap: 16px; } .studio-learning-resources summary span { display: block; margin: 8px 0 0; } }
