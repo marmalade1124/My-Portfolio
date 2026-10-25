@@ -1,6 +1,6 @@
-# Raziel Salamat — spatial portfolio experiment
+# Raziel Salamat — portfolio
 
-Branch: `codex/avea-portfolio-redesign`. Main/production remain on the original portfolio. Design reference: [Avea](https://avea.studio/), its [gallery script](https://avea.studio/script.js?v=139), and [project-page presentation](https://avea.studio/forme-forme).
+Production portfolio: https://razielrenz.vercel.app/. The approved redesign is published from `main`; `codex/avea-portfolio-redesign` retains its preview. Design reference: [Avea](https://avea.studio/), its [gallery script](https://avea.studio/script.js?v=139), and [project-page presentation](https://avea.studio/forme-forme).
 
 ## Run
 

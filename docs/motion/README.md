@@ -1,6 +1,6 @@
 # Product motion trial
 
-Three native CSS/SVG cover loops, three eight-second Huashu-rendered screenshot stories, and native animated workflow explanations. The Lapcat app and website share one app overview. This is on `codex/avea-portfolio-redesign`; main is unchanged.
+Three native CSS/SVG cover loops, three eight-second Huashu-rendered screenshot stories, and native animated workflow explanations. The Lapcat app and website share one app overview. The approved portfolio is published from `main`; the redesign branch retains its preview.
 
 The videos use Huashu Art Motion v1.2.0's `t2_keynote_ui` grammar, 960×600 at24fps, silent H.264. Its blurred surround/shadow are removed in a temporary engine copy to preserve the white portfolio design. No added runtime dependency. Covers and process diagrams use web CSS/SVG; they are not exported Huashu video scenes.
 
