@@ -1,12 +1,12 @@
 # Product motion trial
 
-Three native CSS/SVG cover loops, three eight-second Huashu-rendered screenshot stories, and native animated workflow explanations. The Lapcat app and website share one app overview. The approved portfolio is published from `main`; the redesign branch retains its preview.
+Consistent static logo thumbnails, three eight-second Huashu-rendered screenshot stories, and native animated workflow explanations. The Lapcat app and website share one app overview. The approved portfolio is published from `main`; the redesign branch retains its preview.
 
-The videos use Huashu Art Motion v1.2.0's `t2_keynote_ui` grammar, 960×600 at24fps, silent H.264. Its blurred surround/shadow are removed in a temporary engine copy to preserve the white portfolio design. No added runtime dependency. Covers and process diagrams use web CSS/SVG; they are not exported Huashu video scenes.
+The videos use Huashu Art Motion v1.2.0's `t2_keynote_ui` grammar, 960×600 at24fps, silent H.264. Its blurred surround/shadow are removed in a temporary engine copy to preserve the white portfolio design. No added runtime dependency. Process diagrams use web CSS; they are not exported Huashu video scenes.
 
 ## Behavior
 
-- Only the centered cover animates; Pause cover motion stops it. Reduced-motion preference and hidden tabs disable cover loops.
+- Gallery thumbnails use existing project logos or simple text marks on matching white tiles. The earlier cover overlays and their pause control were removed on October 26, 2026; the ring entrance and browsing motion are retained.
 - Stories wait for native Play controls, preload no video bytes, and pause when offscreen or when the tab is hidden. Browser autoplay permission is never needed. Media errors leave a readable fallback and the original gallery available.
 - Process diagrams play once for eight seconds on request. Reduced motion shows the complete static list. They explain the workflow and do not execute product actions.
 - TwentyFour uses demo photographs. Lapcat uses browser-preview screenshots, not an outdoor recording. 3.14 uses existing native-app renders. Portrait shots in these landscape overview clips are smaller than the original gallery images; fullscreen and the gallery remain available for detail.

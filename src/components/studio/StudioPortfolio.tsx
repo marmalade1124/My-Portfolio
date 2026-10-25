@@ -4,7 +4,6 @@ import { PERSONAL, PROJECTS, EDUCATION, EXPERIENCE, LEADERSHIP, SKILLS, type Pro
 import { ResumeModal, DOCUMENTS, type DocumentKind } from '@/components/ui/ResumeModal';
 import { ProjectPage } from './ProjectPage';
 import { Certifications } from './Certifications';
-import { AnimatedCover } from './ProductMotion';
 import { useGalleryMotion, type GalleryView } from './useGalleryMotion';
 import './studio.css';
 
@@ -39,7 +38,6 @@ function Dialog({ title, children, onClose, opener }: { title: string; children:
 export function StudioPortfolio() {
   const [view, setView] = useState<View>('Showcase');
   const [active, setActive] = useState(0);
-  const [coversPaused, setCoversPaused] = useState(false);
   const [panel, setPanel] = useState<Panel>(null);
   const [route, setRoute] = useState(() => window.location.pathname);
   const [entering, setEntering] = useState(() => window.location.pathname === '/' && !window.matchMedia('(prefers-reduced-motion: reduce)').matches);
@@ -97,11 +95,9 @@ export function StudioPortfolio() {
             return <button key={project.id} className={`studio-project ${centered ? 'studio-project-active' : ''} studio-project-${project.id}`}
               aria-label={`Open ${project.title}`} tabIndex={centered ? 0 : -1}
               onClick={event => { if (motion.suppressClick()) return; if (centered) openProject(project,event.detail === 0); else motion.select(index,event.detail === 0); }}>
-              <div className="studio-poster">
-                <span className="studio-poster-type">{project.tag === 'cad' ? 'FORM / FUNCTION' : project.tag === 'media' ? 'PEOPLE / PERSPECTIVE' : 'DESIGN / DEVELOPMENT'}</span>
-                <img src={project.coverImage} alt={`${project.title} project preview`} draggable={false} loading="eager" />
-                <AnimatedCover id={project.id} active={centered && !modalOpen && !exiting && !coversPaused} />
-                <span className="studio-poster-bottom"><span>{project.title}</span><ArrowUpRight size={14} /></span>
+              <div className="studio-poster studio-logo-tile">
+                {project.logoImage ? <img src={project.logoImage} alt={`${project.title} logo`} draggable={false} loading="eager" /> : <span className="studio-logo-mark">{project.logoText ?? project.title}</span>}
+                <span className="studio-logo-name">{project.title}</span>
               </div>
             </button>;
           })}
@@ -111,7 +107,7 @@ export function StudioPortfolio() {
         <div className="studio-caption" aria-live="polite"><span>{current.category}</span><button onClick={() => openProject(current)}>{current.title} <ArrowUpRight size={13} /></button><span>{current.role}</span><span>R{pad(active + 1)}</span></div>
         <div className="studio-browse"><button aria-label="Previous project" onClick={event => move(-1, event.detail === 0)}><ArrowLeft size={17} /></button><span>{pad(active + 1)} / {pad(FEATURED.length)}</span><button aria-label="Next project" onClick={event => move(1, event.detail === 0)}><ArrowRight size={17} /></button></div>
       </main>
-      <footer className="studio-footer"><button className="studio-talk" onClick={() => setPanel('contact')}>Let's talk <ArrowUpRight size={15} /></button><span className="studio-explore">Drag or scroll to explore <ArrowDown size={12} /></span><button className="studio-motion-toggle" aria-pressed={coversPaused} onClick={() => setCoversPaused(value => !value)}>{coversPaused ? 'Play cover motion' : 'Pause cover motion'}</button><span>© {new Date().getFullYear()} Raziel Salamat</span></footer></>}
+      <footer className="studio-footer"><button className="studio-talk" onClick={() => setPanel('contact')}>Let's talk <ArrowUpRight size={15} /></button><span className="studio-explore">Drag or scroll to explore <ArrowDown size={12} /></span><span>© {new Date().getFullYear()} Raziel Salamat</span></footer></>}
     </div>
 
     {panel && <Dialog opener={lastFocus.current} title={panel === 'menu' ? 'Navigation' : panel === 'documents' ? 'Resume & portfolio' : panel === 'about' ? 'About Raziel' : panel === 'certifications' ? 'Certifications & learning' : 'Let’s talk'} onClose={closePanel}>

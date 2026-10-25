@@ -1,18 +1,24 @@
 async page => {
  const check=(condition,message)=>{if(!condition)throw new Error(message)};
  page.setDefaultTimeout(15000);
- const revealStory=()=>page.locator('.product-story').evaluate(el=>{ const root=document.querySelector('.project-scroll'); for(let parent=el.parentElement;parent;parent=parent.parentElement)parent.scrollLeft=0; root.scrollTop=innerWidth>=768?el.offsetLeft-20:root.scrollTop+el.getBoundingClientRect().top-110; });
+ const revealStory=async()=>{
+  await page.locator('.project-visual img').evaluateAll(imgs=>Promise.all(imgs.map(img=>{img.loading='eager';return img.decode()})));
+  await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+  return page.locator('.product-story').evaluate(el=>{ const root=document.querySelector('.project-scroll'); for(let parent=el.parentElement;parent;parent=parent.parentElement)parent.scrollLeft=0; root.scrollTop=innerWidth>=768?el.offsetLeft-20:root.scrollTop+el.getBoundingClientRect().top-110; }); };
  await page.emulateMedia({reducedMotion:'no-preference'});
  await page.setViewportSize({width:1440,height:900});
  await page.goto('http://127.0.0.1:5180/');
- await page.waitForFunction(()=>document.querySelectorAll('.cover-playing').length===1);
- check(await page.locator('.cover-playing').count()===1,'Only centered cover may animate');
- await page.getByRole('button',{name:'Pause cover motion',exact:true}).click();
- check(await page.locator('.cover-playing').count()===0,'Cover pause failed');
- await page.getByRole('button',{name:'Play cover motion',exact:true}).click();
+ await page.locator('.studio-gallery[data-ready]').waitFor();
+ check(await page.locator('.studio-logo-tile').count()===7,'Missing consistent logo tiles');
+ check(await page.locator('.product-cover').count()===0,'Old animated overlays remain');
+ check(await page.locator('.studio-logo-mark').evaluateAll(els=>els.every(el=>getComputedStyle(el).color==='rgb(17, 17, 17)')),'Text marks are invisible');
+ for(const img of await page.locator('.studio-logo-tile img').all()){
+  await img.evaluate(el=>el.decode());
+  check(await img.evaluate(el=>getComputedStyle(el).objectFit)==='contain','Logo cropped');
+ }
  await page.getByRole('region',{name:'Selected project gallery'}).focus();
  await page.keyboard.press('ArrowRight');
- await page.waitForFunction(()=>document.querySelector('.cover-picolor').classList.contains('cover-playing'));
+ await page.waitForFunction(()=>document.querySelector('.studio-caption').textContent.includes('PiColor'));
  await page.screenshot({path:'output/playwright/product-cover.png'});
  for(const id of ['twentyfour','picolor','lapcat-app','lapcat-website']){
   await page.goto('http://127.0.0.1:5180/work/'+id);

@@ -13,6 +13,8 @@ export interface Project {
   liveLabel?: string;
   videoUrl?: string;
   coverImage?: string;
+  logoImage?: string;
+  logoText?: string;
   images?: string[];
   imageCaptions?: string[];
   caseStudy?: {
@@ -74,6 +76,7 @@ export const PERSONAL = {
 export const PROJECTS: Project[] = [
   {
     id: 'twentyfour',
+    logoImage: '/projects/twentyfour-logo.png',
     caseStudy: {
       status: 'Deployed web app · Public demo',
       problem: 'Event photos are scattered across guests’ phones. TwentyFour gives hosts one invitation and guests a shared, limited-roll camera experience without creating an account.',
@@ -105,6 +108,7 @@ export const PROJECTS: Project[] = [
 
   {
     id: 'picolor',
+    logoImage: '/projects/picolor-logo.svg',
     caseStudy: {
       status: 'Windows desktop app · Download available',
       problem: 'Sampling a color is only the beginning of designing an interface. I wanted a local tool that turns that color into named UI roles, previews, and usable exports.',
@@ -146,7 +150,8 @@ export const PROJECTS: Project[] = [
 
   // === TOP FLAGSHIP WORKS (SHOWCASED IN INITIAL 6 CARDS) ===
   {
-    id: 'lapcat-website', num: '30', title: 'Lapcat — Website',
+    id: 'lapcat-website',
+    logoImage: '/projects/lapcat-logo.png', num: '30', title: 'Lapcat — Website',
     category: 'Product Website / Motion Design', tag: 'software', year: '2026',
     description: 'A launch website for Lapcat, my GPS racing app. Oversized typography, a rotating CSS phone, scroll-driven screen changes and route-line animation introduce the product before leading visitors to the Android download and release notes. The illustrated phone uses sample activity data.',
     role: 'Designer & Frontend Developer',
@@ -157,7 +162,8 @@ export const PROJECTS: Project[] = [
     imageCaptions: ['Live Lapcat launch website — product introduction and Android download.', 'Live release notes and Android download — product updates and installation guidance.'],
   },
   {
-    id: 'lapcat-app', num: '31', title: 'Lapcat — App',
+    id: 'lapcat-app',
+    logoImage: '/projects/lapcat-logo.png', num: '31', title: 'Lapcat — App',
     category: 'Mobile App / GPS Racing', tag: 'software', year: '2026',
     description: 'A Flutter app for recording runs, walks and rides, planning routes, racing saved courses and sharing route artwork. I built the app interface, local activity persistence and Supabase-backed profiles, community features and course attempts. Available as a direct Android test build; physical-device GPS and background-recording validation remain pending.',
     role: 'Creator & App Developer',
@@ -170,6 +176,7 @@ export const PROJECTS: Project[] = [
 
   {
     id: 'the-collegium',
+    logoImage: '/projects/collegium-logo.png',
     num: '01',
     title: 'The Collegium',
     category: 'Digital Newsroom / Web App',
@@ -193,6 +200,7 @@ export const PROJECTS: Project[] = [
   },
   {
     id: 'cad-enclosure',
+    logoText: 'CAD',
     caseStudy: {
       status: 'CAD concept · Unvalidated physical design',
       problem: 'A custom electronics assembly needs a housing that makes space for components, connectors, and assembly access. This study explores that arrangement before fabrication.',
@@ -217,6 +225,7 @@ export const PROJECTS: Project[] = [
   },
   {
     id: 'media-mutya-bts',
+    logoText: 'M / 24',
     num: '03',
     title: 'Mutya ng UMTC 2024: BTS',
     category: 'Videography / Behind The Scenes',

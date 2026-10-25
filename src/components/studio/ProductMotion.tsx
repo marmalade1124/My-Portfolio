@@ -36,18 +36,6 @@ function useMotionAllowed() {
   return allowed;
 }
 
-export function AnimatedCover({ id, active }: { id: string; active: boolean }) {
-  const key = storyKey(id);
-  const allowed = useMotionAllowed();
-  if (!key) return null;
-  return <div aria-hidden="true" className={`product-cover cover-${key} ${active && allowed ? 'cover-playing' : ''}`}>
-    {key === 'lapcat' ? <svg viewBox="0 0 200 90"><path className="cover-route-base" d="M24 68 L45 20 L104 12 L170 37 L150 74 L84 65 L24 68" /><path className="cover-route" pathLength="1" d="M24 68 L45 20 L104 12 L170 37 L150 74 L84 65 L24 68" /><circle cx="24" cy="68" r="4" /></svg>
-      : key === 'picolor' ? <div className="cover-swatches">{['#bd5d3b', '#eac4a0', '#faf5ed', '#356052', '#202820'].map(color => <i key={color} style={{ background: color }} />)}</div>
-        : <div className="cover-shutter"><i /><i /><span>24</span></div>}
-    <small>{key === 'lapcat' ? 'Every route is a race' : key === 'picolor' ? 'Color, full circle' : 'Capture. Wait. Reveal.'}</small>
-  </div>;
-}
-
 export function ProductStory({ id }: { id: string }) {
   const key = storyKey(id);
   const video = useRef<HTMLVideoElement>(null);
