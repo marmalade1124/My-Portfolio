@@ -316,8 +316,8 @@
 @media (prefers-reduced-motion:reduce) { .studio-enter .studio-gallery[data-ready], .studio-enter .studio-intro, .studio-enter .studio-caption, .studio-enter .studio-footer, .studio-enter .studio-browse { animation: none; } }
 
 .studio-contact-layout { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); gap: 48px; align-items: center; }
-.studio-contact-portrait { display: block; width: 100%; height: auto; max-height: 72dvh; object-fit: contain; }
+.studio-contact-portrait { position: fixed; right: 0; bottom: 0; display: block; width: min(54vw, 88dvh); height: calc(100dvh - 100px); max-height: none; object-fit: contain; object-position: right bottom; pointer-events: none; }
 @media (max-width:900px) {
  .studio-contact-layout { grid-template-columns: minmax(0, 1fr); gap: 32px; }
- .studio-contact-portrait { width: min(100%, 480px); max-height: none; justify-self: center; }
+ .studio-contact-portrait { position: static; width: min(100%, 480px); height: auto; object-position: center; justify-self: center; }
 }
