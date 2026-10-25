@@ -41,6 +41,14 @@ export function StudioPortfolio() {
   const [coversPaused, setCoversPaused] = useState(false);
   const [panel, setPanel] = useState<Panel>(null);
   const [route, setRoute] = useState(() => window.location.pathname);
+  const [entering, setEntering] = useState(() => window.location.pathname === '/' && !window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  useEffect(() => {
+    if (!entering) return;
+    const media = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const skip = () => { if (media.matches) setEntering(false); };
+    media.addEventListener('change', skip);
+    return () => media.removeEventListener('change', skip);
+  }, [entering]);
   const [direction, setDirection] = useState<'next' | 'prev'>('next');
   const [exiting, setExiting] = useState(false);
   const [keyboardNav, setKeyboardNav] = useState(false);
@@ -67,7 +75,9 @@ export function StudioPortfolio() {
   const closePanel = () => setPanel(null);
   const openDocument = (kind: DocumentKind) => { setPanel(null); setDocumentKind(kind); };
 
-  return <div className={`studio-root ${keyboardNav ? 'studio-keyboard' : ''}`}>
+  return <div className={`studio-root ${keyboardNav ? 'studio-keyboard' : ''} ${entering ? 'studio-enter' : ''}`}
+    onPointerDownCapture={() => setEntering(false)} onWheelCapture={() => setEntering(false)} onKeyDownCapture={() => setEntering(false)} onFocusCapture={() => setEntering(false)}
+    onAnimationEndCapture={event => { if (event.animationName === 'studio-arrive-gallery') setEntering(false); }}>
     <div className={`studio-shell ${exiting ? 'studio-exit' : ''}`} inert={modalOpen} onFocusCapture={event => { lastFocus.current = event.target as HTMLElement; }}>
       {projectRoute ? <ProjectPage key={projectRoute.id} project={projectRoute} direction={direction} navigate={navigateProject} home={home} menu={() => setPanel('menu')} /> : route !== '/' ? <div className="studio-not-found"><h1>Project not found.</h1><button onClick={home}>Back to work</button></div> : <>
       <header className="studio-header">

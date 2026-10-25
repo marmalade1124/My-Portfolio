@@ -48,3 +48,5 @@ The unit test imports TypeScript with the available Node 24 runtime. It verifies
 Push only this branch for its protected Vercel preview. Do not merge into `main`, change the production branch, or promote the preview until accepted. Returning locally: save branch work, then `git switch main`.
 
 Product motion trial: see [motion notes](docs/motion/README.md) for playback, provenance, rebuild instructions and checks.
+
+Home entrance: a 0.9-second gallery fade/settle runs only on an initial home-page load, with a short text stagger. Any pointer, wheel, key or focus interaction skips it. Reduced-motion preference skips it, including preference changes during entry; returning from a project does not replay it. Verify with tests/studio-intro.browser.js.
