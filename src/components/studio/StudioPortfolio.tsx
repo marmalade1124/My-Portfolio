@@ -9,7 +9,7 @@ import './studio.css';
 
 type View = GalleryView;
 type Panel = 'menu' | 'about' | 'contact' | 'documents' | 'certifications' | null;
-const FEATURED = PROJECTS.slice(0, 7);
+const FEATURED = PROJECTS.slice(0, 8);
 const VIEWS: View[] = ['Showcase', 'List', 'Slider'];
 const pad = (number: number) => String(number).padStart(2, '0');
 

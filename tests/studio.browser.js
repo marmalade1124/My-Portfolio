@@ -18,7 +18,7 @@ async page => {
  check(await page.locator('.project-progress').innerText()!=='0%','Progress did not update');
  await page.goBack(); await page.getByRole('button',{name:'Showcase',exact:true}).waitFor();
  await page.getByRole('button',{name:'List',exact:true}).click();
- check(await page.getByRole('region',{name:'All projects',exact:true}).locator('button').count()===31,'Missing archive');
+ check(await page.getByRole('region',{name:'All projects',exact:true}).locator('button').count()===32,'Missing archive');
  await page.getByRole('region',{name:'All projects',exact:true}).getByRole('button',{name:/Arduino Visualizer/}).click();
  await page.waitForURL('**/work/arduino-visualizer');
  await page.getByRole('button',{name:'All work',exact:true}).click();

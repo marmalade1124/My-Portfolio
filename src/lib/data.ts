@@ -150,6 +150,34 @@ export const PROJECTS: Project[] = [
 
   // === TOP FLAGSHIP WORKS (SHOWCASED IN INITIAL 6 CARDS) ===
   {
+    id: 'quoter', num: '32', title: 'Quoter',
+    logoImage: '/projects/quoter-logo.png',
+    category: 'Windows App / 3D Printing Quotes', tag: 'software', year: '2026',
+    description: 'A local Windows companion that turns Bambu Studio sliced exports into client-ready 3D printing quotes. I built batch import, folder watching, configurable selling rates, per-piece pricing, and branded receipts that can be copied, saved as PNG, or compiled into one batch PDF. Everything stays on the device; quotes are reviewed and sent manually.',
+    role: 'Creator & Desktop Application Developer',
+    techStack: ['C#', 'WPF', '.NET Framework 4.8', '3MF / XML', 'PDF', 'NSIS'],
+    coverImage: '/projects/quoter-batch.png',
+    images: ['/projects/quoter-batch.png', '/projects/quoter-empty.png', '/projects/quoter-receipt.png', '/projects/quoter-batch-pdf.png'],
+    imageCaptions: [
+      'Native WPF app render — reviewing a batch and its individual quote receipts. Synthetic demo files and prices.',
+      'Native WPF app render — empty import state with the local export-folder workflow. Isolated demo profile.',
+      'Actual receipt export — customizable studio branding, print estimates, and per-piece pricing. Synthetic demo data.',
+      'Rendered batch PDF summary — itemized exports and combined total. Synthetic demo files and prices.',
+    ],
+    caseStudy: {
+      status: 'Windows desktop app · Local build 0.2.4',
+      problem: 'Turning sliced 3D print estimates into a clear client quote meant repeatedly calculating prices and formatting the same information by hand.',
+      decision: 'I separated sliced-export parsing, decimal pricing, and receipt rendering in a native WPF app. A watched folder and batch import reduce repeated entry; saved rates stay private while the client receives the final quote.',
+      result: 'The workflow supports multiple sliced exports, editable names and quantities, indexed plate thumbnails, custom receipt titles, clipboard and PNG receipts, and an itemized batch PDF. The app is packaged as a per-user Windows installer.',
+      limitations: 'Requires Windows and .NET Framework 4.8. Input must be a Bambu Studio sliced .gcode.3mf export; unsliced CAD and STL files lack the required estimates. The current batch is held in memory. The gallery uses isolated synthetic demo data, not client quotes. No public download is linked here.',
+      evidence: [
+        { image: '/projects/quoter-batch.png', caption: 'Native batch-review render with synthetic demo data.' },
+        { image: '/projects/quoter-batch-pdf.png', caption: 'Actual generated batch PDF, rendered with synthetic demo data.' },
+      ],
+    },
+  },
+
+  {
     id: 'lapcat-website',
     logoImage: '/projects/lapcat-logo.png', num: '30', title: 'Lapcat — Website',
     category: 'Product Website / Motion Design', tag: 'software', year: '2026',
