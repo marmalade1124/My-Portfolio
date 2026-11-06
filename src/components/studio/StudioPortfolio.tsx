@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { ArrowDown, ArrowLeft, ArrowRight, ArrowUpRight, X } from 'lucide-react';
 import { PERSONAL, PROJECTS, EDUCATION, EXPERIENCE, LEADERSHIP, SKILLS, type Project } from '@/lib/data';
+import { pageSeo } from '@/lib/seo';
 import { ResumeModal, DOCUMENTS, type DocumentKind } from '@/components/ui/ResumeModal';
 import { ProjectPage } from './ProjectPage';
 import { Certifications } from './Certifications';
@@ -53,6 +54,26 @@ export function StudioPortfolio() {
   const [keyboardNav, setKeyboardNav] = useState(false);
   const routeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const projectRoute = PROJECTS.find(project => `/work/${project.id}` === route);
+  useEffect(() => {
+    const { title, tags, canonical, schema } = pageSeo(projectRoute, route !== '/' && !projectRoute);
+    document.title = title;
+    for (const [key, value] of Object.entries(tags)) {
+      const attribute = key.startsWith('og:') ? 'property' : 'name';
+      const meta = document.head.querySelector<HTMLMetaElement>(`meta[${attribute}="${key}"]`) ?? document.createElement('meta');
+      meta.setAttribute(attribute, key);
+      meta.content = value;
+      if (value) document.head.append(meta); else meta.remove();
+    }
+    const link = document.head.querySelector<HTMLLinkElement>('link[rel="canonical"]') ?? document.createElement('link');
+    link.rel = 'canonical';
+    link.href = canonical;
+    if (canonical) document.head.append(link); else link.remove();
+    const script = document.getElementById('page-schema') ?? document.createElement('script');
+    script.id = 'page-schema';
+    script.setAttribute('type', 'application/ld+json');
+    script.textContent = schema;
+    if (schema) document.head.append(script); else script.remove();
+  }, [route, projectRoute]);
   const navigateProject = (project: Project, way: 'next' | 'prev' = 'next', instant = false) => {
     setDirection(way); setKeyboardNav(instant);
     history.pushState({}, '', `/work/${project.id}`); setRoute(window.location.pathname); setExiting(false);

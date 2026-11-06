@@ -20,12 +20,6 @@ export function ProjectPage({ project, direction, navigate, home, menu }: { proj
   const next = PROJECTS[(index + 1) % PROJECTS.length]!;
   const images = project.images ?? (project.coverImage ? [project.coverImage] : []);
 
-  useEffect(() => {
-    const previousTitle = document.title;
-    document.title = `${project.title} — Raziel Salamat`;
-    return () => { document.title = previousTitle; };
-  }, [project.title]);
-
   const go = (item: Project, way: 'next' | 'prev' = 'next', instant = false) => {
     if (edge.current.locked) return;
     edge.current.locked = true;
