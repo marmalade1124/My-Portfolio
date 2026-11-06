@@ -73,6 +73,21 @@ export const PERSONAL = {
   },
 } as const;
 
+export const BUSINESS_OFFER = 'I build websites for small service businesses that make it easy for customers to understand what you offer and request a quote.';
+
+export const BUSINESS_EXAMPLES = [
+  {
+    path: '/work/codecraft-web',
+    title: 'Code & Craft',
+    proof: 'See how a visitor goes from browsing services to choosing a project scope and preparing an inquiry.',
+  },
+  {
+    path: '/work/quoter',
+    title: 'Quoter',
+    proof: 'See how a 3D printing business can turn sliced files into branded quotes and export a batch PDF. The case study shows the app using sample data.',
+  },
+] as const;
+
 export const PROJECTS: Project[] = [
   {
     id: 'twentyfour',

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { ArrowDown, ArrowLeft, ArrowRight, ArrowUpRight, X } from 'lucide-react';
-import { PERSONAL, PROJECTS, EDUCATION, EXPERIENCE, LEADERSHIP, SKILLS, type Project } from '@/lib/data';
+import { BUSINESS_EXAMPLES, BUSINESS_OFFER, PERSONAL, PROJECTS, EDUCATION, EXPERIENCE, LEADERSHIP, SKILLS, type Project } from '@/lib/data';
 import { pageSeo } from '@/lib/seo';
 import { ResumeModal, DOCUMENTS, type DocumentKind } from '@/components/ui/ResumeModal';
 import { ProjectPage } from './ProjectPage';
@@ -9,7 +9,7 @@ import { useGalleryMotion, type GalleryView } from './useGalleryMotion';
 import './studio.css';
 
 type View = GalleryView;
-type Panel = 'menu' | 'about' | 'contact' | 'documents' | 'certifications' | null;
+type Panel = 'menu' | 'about' | 'contact' | 'documents' | 'certifications' | 'business' | null;
 const FEATURED = PROJECTS.slice(0, 8);
 const VIEWS: View[] = ['Showcase', 'List', 'Slider'];
 const pad = (number: number) => String(number).padStart(2, '0');
@@ -107,7 +107,7 @@ export function StudioPortfolio() {
       </header>
       <main className="studio-main">
         <h1 className="sr-only">Raziel Salamat — software, CAD, and visual storytelling</h1>
-        <div className="studio-intro"><span>Independent developer & designer</span><p>I turn ideas into web apps, Windows tools,<br className="studio-desktop" /> and physical concepts. A practice shaped<br className="studio-desktop" /> by engineering, curiosity, and making.</p><button onClick={() => setPanel('about')}>Based in the Philippines ↗</button></div>
+        <div className="studio-intro"><p>{BUSINESS_OFFER}</p></div>
         <div ref={motion.viewport} className={`studio-gallery studio-view-${view.toLowerCase()}`} aria-label="Selected project gallery" role="region" tabIndex={0}
           onKeyDown={event => { if (event.key === 'ArrowRight' || event.key === 'ArrowDown') { event.preventDefault(); move(1, true); } if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') { event.preventDefault(); move(-1, true); } }}>
           <div ref={motion.ring} className="studio-ring">
@@ -128,10 +128,22 @@ export function StudioPortfolio() {
         <div className="studio-caption" aria-live="polite"><span>{current.category}</span><button onClick={() => openProject(current)}>{current.title} <ArrowUpRight size={13} /></button><span>{current.role}</span><span>R{pad(active + 1)}</span></div>
         <div className="studio-browse"><button aria-label="Previous project" onClick={event => move(-1, event.detail === 0)}><ArrowLeft size={17} /></button><span>{pad(active + 1)} / {pad(FEATURED.length)}</span><button aria-label="Next project" onClick={event => move(1, event.detail === 0)}><ArrowRight size={17} /></button></div>
       </main>
-      <footer className="studio-footer"><button className="studio-talk" onClick={() => setPanel('contact')}>Let's talk <ArrowUpRight size={15} /></button><span className="studio-explore">Drag or scroll to explore <ArrowDown size={12} /></span><span>© {new Date().getFullYear()} Raziel Salamat</span></footer></>}
+      <footer className="studio-footer"><button className="studio-talk" onClick={() => setPanel('business')}>For your business <ArrowUpRight size={15} /></button><span className="studio-explore">Drag or scroll to explore <ArrowDown size={12} /></span><span>© {new Date().getFullYear()} Raziel Salamat</span></footer></>}
     </div>
 
-    {panel && <Dialog opener={lastFocus.current} title={panel === 'menu' ? 'Navigation' : panel === 'documents' ? 'Resume & portfolio' : panel === 'about' ? 'About Raziel' : panel === 'certifications' ? 'Certifications & learning' : 'Let’s talk'} onClose={closePanel}>
+    {panel && <Dialog opener={lastFocus.current} title={panel === 'business' ? 'For your business' : panel === 'menu' ? 'Navigation' : panel === 'documents' ? 'Resume & portfolio' : panel === 'about' ? 'About Raziel' : panel === 'certifications' ? 'Certifications & learning' : 'Let’s talk'} onClose={closePanel}>
+      {panel === 'business' && <section>
+        <h2>Make it easier to<br /><em>request a quote.</em></h2>
+        <p className="studio-lead">{BUSINESS_OFFER}</p>
+        <div className="studio-about-grid">
+          {BUSINESS_EXAMPLES.map(example => <article className="studio-info-row" key={example.path}>
+            <h3>{example.title}</h3>
+            <p>{example.proof}</p>
+            <a className="studio-business-link" href={example.path}>View {example.title} case study <ArrowUpRight size={14} /></a>
+          </article>)}
+        </div>
+        <a className="studio-solid" href={`mailto:${PERSONAL.email}?subject=Website%20project`}>Discuss your website <ArrowUpRight size={16} /></a>
+      </section>}
       {panel === 'menu' && <div className="studio-menu-layout"><div className="studio-menu-links"><button onClick={() => { home(); setView('Showcase'); setPanel(null); }}>Selected work <span>01</span></button><button onClick={() => { home(); setView('List'); setPanel(null); }}>Project index <span>02</span></button><button onClick={() => setPanel('about')}>About & experience <span>03</span></button><button onClick={() => setPanel('documents')}>Resume & portfolio <span>04</span></button><button onClick={() => setPanel('certifications')}>Certifications & learning <span>05</span></button><button onClick={() => setPanel('contact')}>Get in touch <span>06</span></button></div><aside><p>{PERSONAL.location}<br />Philippines / GMT+8</p><p>Computer Engineering student.<br />Expected graduation 2027.</p><span className="studio-available">Available for opportunities</span></aside></div>}
       {panel === 'about' && <div className="studio-about"><p className="studio-eyebrow">Concept to creation</p><h2>Building between<br />the physical<br /><em>and the digital.</em></h2><p className="studio-lead">I’m Raziel, a developer and CAD designer based in Tagum City. I build web experiences, desktop tools, and engineering concepts—with an eye for how they look and how they work.</p><div className="studio-about-grid"><div><h3>Experience</h3>{EXPERIENCE.map(item => <div className="studio-info-row" key={item.id}><h4>{item.role}</h4><p>{item.company} · {item.period}</p><ul>{item.bullets.map(bullet => <li key={bullet}>{bullet}</li>)}</ul></div>)}</div><div><h3>Education</h3>{EDUCATION.map(item => <div className="studio-info-row" key={item.id}><h4>{item.degree}</h4><p>{item.school}<br />{item.period}</p></div>)}<h3>Leadership</h3>{LEADERSHIP.map(item => <div className="studio-info-row" key={item.id}><h4>{item.role}</h4><p>{item.org} · {item.period}</p><p>{item.details}</p></div>)}<h3>Toolkit</h3>{SKILLS.map(item => <div className="studio-info-row" key={item.label}><h4>{item.label}</h4><p>{item.items.join(' / ')}</p></div>)}</div></div><button className="studio-solid" onClick={() => setPanel('documents')}>View resume & portfolio <ArrowUpRight size={16} /></button></div>}
       {panel === 'certifications' && <Certifications />}

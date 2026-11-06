@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { PERSONAL, PROJECTS } from '../src/lib/data.ts';
+import { BUSINESS_EXAMPLES, BUSINESS_OFFER, PERSONAL, PROJECTS } from '../src/lib/data.ts';
 import { bio, pageSeo, projectPath, SITE } from '../src/lib/seo.ts';
 
 const escape = value => String(value).replace(/[&<>"']/g, char =>
@@ -35,6 +35,9 @@ function render(project, missing = false) {
       ${study ? [['Problem', study.problem], ['Approach', study.decision], ['Result', study.result], ['Scope and limitations', study.limitations]].map(([label, copy]) => `<h2>${label}</h2><p>${escape(copy)}</p>`).join('') : ''}
       <p>${[project.liveUrl && link(project.liveUrl, project.liveLabel ?? 'Visit project'), project.githubUrl && link(project.githubUrl, 'Source code'), project.videoUrl && link(project.videoUrl, 'Watch video')].filter(Boolean).join(' · ')}</p>`
     : `<h1>${escape(PERSONAL.name)}</h1><p>${escape(bio)}</p>
+      <h2>Websites for service businesses</h2><p>${escape(BUSINESS_OFFER)}</p>
+      <ul>${BUSINESS_EXAMPLES.map(example => `<li>${link(example.path, example.title)}. ${escape(example.proof)}</li>`).join('')}</ul>
+      <p>${link(`mailto:${PERSONAL.email}?subject=Website%20project`, 'Discuss your website')}</p>
       <p>${link(PERSONAL.socials.github, 'GitHub')} · ${link(PERSONAL.socials.linkedin, 'LinkedIn')}</p>
       <h2>Projects</h2><ul>${PROJECTS.map(item => `<li>${link(projectPath(item), item.title)} — ${escape(item.category)}</li>`).join('')}</ul>`;
   return template.replace(/<meta name="description"[^>]*\/>\s*<title>.*?<\/title>/s, () => head)
