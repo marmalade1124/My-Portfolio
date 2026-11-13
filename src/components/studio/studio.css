@@ -332,7 +332,7 @@
   user-select: none;
   color: var(--studio-ink, #111);
 }
-.studio-theme-cord svg { display: block; cursor: grab; }
+.studio-theme-cord svg { display: block; overflow: visible; cursor: grab; }
 .studio-theme-cord[data-grabbing="true"] svg { cursor: grabbing; }
 .studio-theme-cord[data-triggered="true"] rect { stroke: currentColor; stroke-width: 2; }
 .studio-cord-hint {
