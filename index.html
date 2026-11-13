@@ -4,6 +4,15 @@
     <meta charset="UTF-8" />
     <meta name="google-site-verification" content="iIkzwrdcRyaaz6YBELkG9NR6_cqCBGSgCwqX3v96moA" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      (() => {
+        let theme;
+        try { theme = localStorage.getItem('portfolio-theme'); } catch {}
+        document.documentElement.dataset.theme = theme === 'light' || theme === 'dark'
+          ? theme : (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      })();
+    </script>
+    <style>html[data-theme="dark"] { background: #141414; color: #f2f0eb; color-scheme: dark; }</style>
     <meta name="description" content="Raziel Renz Salamat — Computer Engineering student building web apps, Windows tools, and CAD prototypes. Expected graduation 2027." />
     <title>Raziel Salamat — Developer & CAD Designer</title>
 

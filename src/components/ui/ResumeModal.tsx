@@ -45,7 +45,7 @@ export function ResumeModal({ document: kind, onClose }: { document: DocumentKin
   if (!kind) return null;
   const item = DOCUMENTS[kind];
   return createPortal(
-    <div ref={dialogRef} role="dialog" aria-modal="true" aria-label={`${item.title} viewer`} className="fixed inset-0 z-[100] bg-white flex flex-col">
+    <div ref={dialogRef} role="dialog" aria-modal="true" aria-label={`${item.title} viewer`} className="studio-document-viewer fixed inset-0 z-[100] flex flex-col">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-200 px-4 sm:px-6 py-4">
         <span className="font-display font-semibold">{item.title}</span>
         <div className="flex items-center gap-4">

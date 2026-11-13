@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { flushSync } from 'react-dom';
 import { ArrowDown, ArrowLeft, ArrowRight, ArrowUpRight, X } from 'lucide-react';
 import { BUSINESS_EXAMPLES, BUSINESS_OFFER, PERSONAL, PROJECTS, EDUCATION, EXPERIENCE, LEADERSHIP, SKILLS, type Project } from '@/lib/data';
 import { pageSeo } from '@/lib/seo';
 import { ResumeModal, DOCUMENTS, type DocumentKind } from '@/components/ui/ResumeModal';
 import { ProjectPage } from './ProjectPage';
 import { Certifications } from './Certifications';
+import PullCord from './PullCord';
 import { useGalleryMotion, type GalleryView } from './useGalleryMotion';
 import './studio.css';
 
@@ -37,6 +39,37 @@ function Dialog({ title, children, onClose, opener }: { title: string; children:
 }
 
 export function StudioPortfolio() {
+  const [dark, setDark] = useState(() => document.documentElement.dataset.theme === 'dark');
+  const themeTransition = useRef<ViewTransition | null>(null);
+  const changeTheme = (next: boolean, { x, y }: { x: number; y: number }) => {
+    const theme = next ? 'dark' : 'light';
+    const root = document.documentElement;
+    const update = () => {
+      root.dataset.theme = theme;
+      setDark(next);
+      try { localStorage.setItem('portfolio-theme', theme); } catch { /* The current page still switches. */ }
+    };
+    themeTransition.current?.skipTransition();
+    if (!document.startViewTransition || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      update();
+      return;
+    }
+    const radius = Math.hypot(Math.max(x, root.clientWidth - x), Math.max(y, root.clientHeight - y));
+    root.style.setProperty('--theme-reveal-origin', `${x}px ${y}px`);
+    root.style.setProperty('--theme-reveal-radius', `${radius}px`);
+    root.classList.add('studio-theme-revealing');
+    const transition = document.startViewTransition(() => flushSync(update));
+    themeTransition.current = transition;
+    const cleanUp = () => {
+      if (themeTransition.current !== transition) return;
+      themeTransition.current = null;
+      root.classList.remove('studio-theme-revealing');
+      root.style.removeProperty('--theme-reveal-origin');
+      root.style.removeProperty('--theme-reveal-radius');
+    };
+    void transition.ready.catch(() => {});
+    void transition.finished.then(cleanUp, cleanUp);
+  };
   const [view, setView] = useState<View>('Showcase');
   const [active, setActive] = useState(0);
   const [panel, setPanel] = useState<Panel>(null);
@@ -99,6 +132,7 @@ export function StudioPortfolio() {
     onPointerDownCapture={() => setEntering(false)} onWheelCapture={() => setEntering(false)} onKeyDownCapture={() => setEntering(false)} onFocusCapture={() => setEntering(false)}
     onAnimationEndCapture={event => { if (event.animationName === 'studio-arrive-gallery') setEntering(false); }}>
     <div className={`studio-shell ${exiting ? 'studio-exit' : ''}`} inert={modalOpen} onFocusCapture={event => { lastFocus.current = event.target as HTMLElement; }}>
+      <PullCord className="studio-theme-cord" checked={dark} onCheckedChange={changeTheme} label="Dark mode" />
       {projectRoute ? <ProjectPage key={projectRoute.id} project={projectRoute} direction={direction} navigate={navigateProject} home={home} menu={() => setPanel('menu')} /> : route !== '/' ? <div className="studio-not-found"><h1>Project not found.</h1><button onClick={home}>Back to work</button></div> : <>
       <header className="studio-header">
         <a className="studio-wordmark" href="#" aria-label="Raziel Salamat home" onClick={() => { setView('Showcase'); motion.select(0,true); }}>RΛZIEL</a>
