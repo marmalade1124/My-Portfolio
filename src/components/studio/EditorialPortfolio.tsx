@@ -1,24 +1,79 @@
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type MouseEvent } from 'react';
-import { motion, useReducedMotion } from 'motion/react';
-import { ArrowUpRight, Atom, Box, Code2, Database, Figma, GitBranch, Maximize2, Triangle } from 'lucide-react';
+import { motion, useInView } from 'motion/react';
+import { ArrowUpRight, Atom, Box, Check, Code2, Database, Figma, GitBranch, Maximize2, Pause, Play, Triangle } from 'lucide-react';
 import { ImageLightboxModal } from '@/components/ui/ImageLightboxModal';
 import { BUSINESS_OFFER, EDUCATION, EXPERIENCE, PERSONAL, PROJECTS } from '@/lib/data';
 import { ProductStory, storyKey } from './ProductMotion';
 import { projectPath } from '@/lib/seo';
 import { DOCUMENTS } from '@/components/ui/ResumeModal';
+import { WRITING, writingPath } from '@/lib/editorial-writing';
+import { CaseNarration, ChapterRail, EditorialArticle } from './EditorialChapters';
+import { EditorialLab, hasProjectLab } from './EditorialLab';
+import { editorialPath, filipinoPath, localizedPath, FILIPINO } from '@/lib/editorial-language';
 import './editorial.css';
 
 const sections = [
-  { href: '/#work', label: 'Projects' },
+  { href: '/#projects', label: 'Projects' },
   { href: '/#writing', label: 'Writing' },
   { href: '/about', label: 'About' },
   { href: '/media', label: 'Film & Media' },
 ];
 const expertise = ['Web applications', 'Windows tools', '3D CAD', 'Product design', 'Hardware systems', 'Creative production'];
+const mediaProjects = PROJECTS.filter(item => item.tag === 'media');
+const studySections = [
+  ['problem', 'Problem'], ['decision', 'Design decision'], ['result', 'Result'], ['limitations', 'Limitations'],
+] as const;
+const aboutImages = ['/portrait.png', '/images/video-10.png', '/images/cad/enclosure.png', '/projects/collegium-hero.png'];
+const aboutImageCaptions = ['Raziel Salamat', 'UM Tagum College graduation film', 'Electronics enclosure CAD study', 'The Collegium newsroom'];
+const cleanPath = (path: string) => path.replace(/\/+$/, '') || '/';
+const anchorFor = (hash: string) => document.getElementById(hash === '#work' ? 'projects' : hash.slice(1));
+
+function useLiveReducedMotion() {
+  const [reduced, setReduced] = useState(() => matchMedia('(prefers-reduced-motion: reduce)').matches);
+  useEffect(() => {
+    const query = matchMedia('(prefers-reduced-motion: reduce)');
+    const update = () => setReduced(query.matches);
+    update();
+    query.addEventListener('change', update);
+    return () => query.removeEventListener('change', update);
+  }, []);
+  return reduced;
+}
+
+function EmailLink() {
+  const [copied, setCopied] = useState(false);
+  useEffect(() => {
+    if (!copied) return;
+    const timer = setTimeout(() => setCopied(false), 2000);
+    return () => clearTimeout(timer);
+  }, [copied]);
+  return <a className="ed-email" href={`mailto:${PERSONAL.email}`} aria-label={`Copy email ${PERSONAL.email}`} onClick={event => {
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || !navigator.clipboard) return;
+    event.preventDefault();
+    void navigator.clipboard.writeText(PERSONAL.email).then(() => setCopied(true), () => { location.href = `mailto:${PERSONAL.email}`; });
+  }}>
+    <span data-copied={copied || undefined}>{PERSONAL.email}</span>
+    <span role="status">{copied && <><Check size={13} aria-hidden="true" /> Copied</>}</span>
+  </a>;
+}
+
+function BioWords({ text, start = 0 }: { text: string; start?: number }) {
+  return text.split(' ').map((word, index) => <span className="ed-bio-word" key={index} style={{ '--word-delay': `${450 + (start + index) * 35}ms` } as CSSProperties}>{word}{' '}</span>);
+}
+const phoneScreens = new Set([
+  '/projects/twentyfour-camera.png',
+  '/projects/twentyfour-roll.png',
+  '/projects/lapcat-app-home.png',
+  '/projects/lapcat-app-profile.png',
+  '/projects/okuru-mobile.png',
+  '/projects/hitoshii-group.png',
+  '/projects/hitoshii-summary.png',
+]);
 const stack = [
   { label: 'Design', tools: [{ name: 'Figma', icon: Figma }, { name: 'Fusion 360', icon: Box }] },
   { label: 'Development', tools: [{ name: 'React', icon: Atom }, { name: 'TypeScript', mark: 'TS' }, { name: 'Tailwind CSS', icon: Code2 }, { name: 'Flutter', mark: 'F' }, { name: '.NET', mark: 'N' }] },
   { label: 'Backend', tools: [{ name: 'Supabase', icon: Database }] },
+  { label: 'AI tools', tools: [{ name: 'ChatGPT', mark: 'AI' }, { name: 'Codex', icon: Code2 }] },
   { label: 'Version control & deployment', tools: [{ name: 'GitHub', icon: GitBranch }, { name: 'Vercel', icon: Triangle }] },
 ] as const;
 const portraitProject = { id: 'portrait', num: '', title: 'Raziel Salamat', category: 'Portrait', tag: 'media', year: '', description: '', role: '', techStack: [], images: ['/portrait.png'] } as const;
@@ -27,7 +82,7 @@ const featured = [
   { id: 'twentyfour', cover: '/projects/twentyfour-camera.png', tone: 'amber', portrait: true, caption: 'A shared camera for events, with a timed reveal.' },
   { id: 'picolor', tone: 'blue', caption: 'Pick a color and build a palette around it.' },
   { id: 'quoter', tone: 'stone' },
-  { id: 'hitoshii', tone: 'green', portrait: true },
+  { id: 'hitoshii', tone: 'stone', caption: 'A launch site for an Android app that splits shared expenses.' },
   { id: 'lapcat-app', tone: 'green', portrait: true },
   { id: 'lapcat-website', tone: 'blue' },
   { id: 'the-collegium', tone: 'blue' },
@@ -42,7 +97,7 @@ const palettes = [
 
 function PaletteDemo() {
   const [palette, setPalette] = useState(palettes[0]!);
-  return <section className="ed-demo" aria-label="Palette preview">
+  return <section className="ed-demo" id="palette-demo" aria-label="Palette preview">
     <div><h2>Explore a palette</h2><p>An interactive sample inspired by the PiColor palette workflow.</p></div>
     <div className="ed-palette-controls" role="group" aria-label="Sample palettes">
       {palettes.map(item => <button key={item.name} type="button" aria-pressed={palette === item} onClick={() => setPalette(item)}>{item.name}</button>)}
@@ -53,37 +108,55 @@ function PaletteDemo() {
   </section>;
 }
 
-function CoverClip({ clip }: { clip: string }) {
+function CoverClip({ clip, title }: { clip: string; title: string }) {
   const video = useRef<HTMLVideoElement>(null);
+  const [playing, setPlaying] = useState(false);
+  const manual = useRef(false);
   useEffect(() => {
     const element = video.current;
-    const card = element?.closest('a');
+    const card = element?.closest('article');
     if (!element || !card) return;
     const preferences = matchMedia('(hover: hover) and (prefers-reduced-motion: no-preference)');
-    const stop = () => { element.pause(); delete element.dataset.playing; };
+    const stop = () => { manual.current = false; element.pause(); };
     const start = () => {
-      if (!preferences.matches) return;
+      if (!preferences.matches || manual.current) return;
       if (!element.src) element.src = `/motion/${clip}.mp4`;
       void element.play().catch(stop);
     };
     card.addEventListener('pointerenter', start);
-    card.addEventListener('pointerleave', stop);
+    const leave = () => { if (!manual.current) stop(); };
+    card.addEventListener('pointerleave', leave);
+    const observer = new IntersectionObserver(([entry]) => { if (!entry?.isIntersecting) stop(); });
+    observer.observe(card);
     preferences.addEventListener('change', stop);
     document.addEventListener('visibilitychange', stop);
     return () => {
       stop();
       card.removeEventListener('pointerenter', start);
-      card.removeEventListener('pointerleave', stop);
+      card.removeEventListener('pointerleave', leave);
+      observer.disconnect();
       preferences.removeEventListener('change', stop);
       document.removeEventListener('visibilitychange', stop);
     };
   }, [clip]);
-  return <video className="ed-cover-clip" ref={video} muted loop playsInline preload="none" aria-hidden="true" onPlaying={event => { event.currentTarget.dataset.playing = ''; }} />;
+  return <>
+    <video className="ed-cover-clip" ref={video} muted loop playsInline preload="none" aria-hidden="true" data-playing={playing || undefined} onPlaying={() => setPlaying(true)} onPause={() => setPlaying(false)} />
+    <button className="ed-cover-play" type="button" aria-label={`${playing ? 'Pause' : 'Play'} ${title} preview`} onClick={() => {
+      const element = video.current;
+      if (!element) return;
+      manual.current = true;
+      if (!element.paused) element.pause();
+      else {
+        if (!element.src) element.src = `/motion/${clip}.mp4`;
+        void element.play().catch(() => setPlaying(false));
+      }
+    }}>{playing ? <Pause size={16} /> : <Play size={16} />}</button>
+  </>;
 }
 
 function DotField() {
   const canvas = useRef<HTMLCanvasElement>(null);
-  const reduced = useReducedMotion();
+  const reduced = useLiveReducedMotion();
   useEffect(() => {
     const element = canvas.current;
     const context = element?.getContext('2d');
@@ -169,6 +242,7 @@ function DotField() {
     window.addEventListener('pointerup', up);
     window.addEventListener('pointercancel', up);
     window.addEventListener('blur', up);
+    document.addEventListener('visibilitychange', up);
     document.documentElement.addEventListener('pointerleave', leave);
     return () => {
       delete element.dataset.active;
@@ -180,70 +254,153 @@ function DotField() {
       window.removeEventListener('pointerup', up);
       window.removeEventListener('pointercancel', up);
       window.removeEventListener('blur', up);
+      document.removeEventListener('visibilitychange', up);
       document.documentElement.removeEventListener('pointerleave', leave);
     };
   }, [reduced]);
   return <canvas className="ed-dots" ref={canvas} aria-hidden="true" />;
 }
 
+function PhoneShowreel({ screens, onSelect }: { screens: { src: string; index: number; caption: string }[]; onSelect: (index: number) => void }) {
+  const stage = useRef<HTMLDivElement>(null);
+  const inView = useInView(stage, { amount: .15 });
+  const reduced = useLiveReducedMotion();
+  const [started, setStarted] = useState(false);
+  const [paused, setPaused] = useState(false);
+  const [hidden, setHidden] = useState(document.hidden);
+  useEffect(() => { if (inView) setStarted(true); }, [inView]);
+  useEffect(() => {
+    const update = () => setHidden(document.hidden);
+    document.addEventListener('visibilitychange', update);
+    return () => document.removeEventListener('visibilitychange', update);
+  }, []);
+  const tileCount = 9 * 7;
+  const centerTile = Math.floor(tileCount / 2);
+  const firstScreen = screens[0];
+  if (!firstScreen) return null;
+
+  return <figure className="ed-phone-reel" id="app-screens">
+    <div ref={stage} className="ed-reel-stage" aria-hidden="true">
+      <div className="ed-reel-grid" data-playing={started && !reduced ? '' : undefined} data-paused={paused || !inView || hidden ? '' : undefined}>
+        <div className="ed-reel-surround">
+          {Array.from({ length: tileCount }, (_, index) => index === centerTile ? <div key={index} /> : (
+            <div className="ed-reel-screen" key={index}>
+              <img src={(screens[index % screens.length] ?? firstScreen).src} alt="" loading="lazy" decoding="async" />
+            </div>
+          ))}
+        </div>
+        <div className="ed-reel-screen ed-reel-hero">
+          <img src={firstScreen.src} alt="" loading="lazy" decoding="async" />
+        </div>
+      </div>
+    </div>
+    <figcaption>
+      <span>App screen showreel</span>
+      <div className="ed-reel-controls">
+        {screens.map(({ src, index, caption }, position) => (
+          <button key={src} type="button" aria-label={`Enlarge ${caption}`} title={caption} onClick={() => onSelect(index)}>Screen {position + 1}</button>
+        ))}
+        {!reduced && <button type="button" onClick={() => setPaused(value => !value)}>{paused ? 'Resume reel' : 'Pause reel'}</button>}
+      </div>
+    </figcaption>
+  </figure>;
+}
+
 export function EditorialPortfolio() {
-  const [route, setRoute] = useState(() => ({ path: location.pathname, hash: location.hash, internal: false, fade: false }));
-  const project = PROJECTS.find(item => projectPath(item) === route.path);
-  const home = route.path === '/';
-  const about = route.path === '/about';
-  const media = route.path === '/media';
+  const [route, setRoute] = useState(() => ({ path: cleanPath(location.pathname), hash: location.hash, internal: false, fade: false, scroll: undefined as number | undefined }));
+  const filipino = filipinoPath(route.path);
+  const path = editorialPath(route.path);
+  const href = (destination: string) => localizedPath(destination, filipino);
+  const project = PROJECTS.find(item => projectPath(item) === path);
+  const articleIndex = WRITING.findIndex(item => writingPath(item.slug) === path);
+  const article = WRITING[articleIndex];
+  const missing = !project && !article && !['/', '/about', '/media'].includes(path);
+  const reelScreens = project?.images?.flatMap((src, index) => phoneScreens.has(src)
+    ? [{ src, index, caption: project.imageCaptions?.[index] ?? `screen ${index + 1}` }]
+    : []) ?? [];
+  const home = path === '/';
+  const about = path === '/about';
+  const media = path === '/media';
+  const heroWords = filipino ? FILIPINO.role : ['Developer', '&', 'Designer'];
+  const intro = filipino ? FILIPINO.intro : ['I’m Raziel Salamat, a', 'computer engineering student and developer', 'building web apps, Windows tools, and CAD prototypes.'] as const;
   const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined;
-  const internalVisit = route.internal || (navigation?.type === 'navigate' && document.referrer.startsWith(location.origin + '/'));
+  const internalEntry = navigation?.type === 'navigate' && document.referrer.startsWith(location.origin + '/');
+  const internalVisit = route.internal || internalEntry;
   const [zoom, setZoom] = useState<number | null>(null);
   const outgoing = useRef<Animation | null>(null);
-  const reduced = useReducedMotion();
+  const reduced = useLiveReducedMotion();
   useEffect(() => {
-    const restore = () => {
+    const previousRestoration = history.scrollRestoration;
+    history.scrollRestoration = 'manual';
+    const restore = (event: PopStateEvent) => {
       outgoing.current?.cancel();
-      setRoute(previous => previous.path === location.pathname
-        ? previous : { path: location.pathname, hash: location.hash, internal: true, fade: false });
+      setZoom(null);
+      setRoute({ path: cleanPath(location.pathname), hash: location.hash || event.state?.portfolioAnchor || '', internal: true, fade: false, scroll: event.state?.portfolioScroll });
+    };
+    const persistScroll = () => {
+      history.replaceState({ ...history.state, portfolioScroll: scrollY }, '');
     };
     window.addEventListener('popstate', restore);
-    return () => window.removeEventListener('popstate', restore);
+    window.addEventListener('pagehide', persistScroll);
+    return () => {
+      history.scrollRestoration = previousRestoration;
+      window.removeEventListener('popstate', restore);
+      window.removeEventListener('pagehide', persistScroll);
+    };
   }, []);
   useLayoutEffect(() => {
-    const anchor = document.getElementById(route.hash.slice(1));
+    const anchor = anchorFor(route.hash);
     if (route.internal) {
       const main = document.getElementById('content');
       if (main) {
         main.tabIndex = -1;
         main.focus({ preventScroll: true });
       }
-      if (!anchor) window.scrollTo({ top: 0, behavior: 'instant' });
+      if (!anchor) window.scrollTo({ top: route.scroll ?? 0, behavior: 'instant' });
+    }
+    if (route.scroll !== undefined && !location.hash) {
+      window.scrollTo({ top: route.scroll, behavior: 'instant' });
+      return;
     }
     anchor?.scrollIntoView({ behavior: 'instant' });
   }, [route]);
   useEffect(() => {
-    document.title = about ? 'About | Raziel Salamat' : media ? 'Film & Media | Raziel Salamat'
-      : project ? `${project.title} | Raziel Salamat` : home ? 'Raziel Salamat | Developer & CAD Designer' : 'Project not found | Raziel Salamat';
-  }, [about, home, media, project]);
+    document.documentElement.lang = filipino ? 'fil' : 'en';
+    document.title = about ? `${filipino ? FILIPINO.nav[2] : 'About'} | Raziel Salamat` : media ? `${filipino ? FILIPINO.nav[3] : 'Film & Media'} | Raziel Salamat`
+      : project ? `${project.title} | Raziel Salamat` : article ? `${filipino ? FILIPINO.writing[articleIndex]?.[0] : article.title} | Raziel Salamat` : home ? 'Raziel Salamat | Developer & CAD Designer' : 'Page not found | Raziel Salamat';
+  }, [about, article, articleIndex, filipino, home, media, project]);
   const navigate = (event: MouseEvent<HTMLElement>) => {
     const link = (event.target as Element).closest('a');
     if (!link || link.target || link.hasAttribute('download') || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     const url = new URL(link.href);
     if (url.origin !== location.origin) return;
-    const toProject = PROJECTS.some(item => projectPath(item) === url.pathname);
-    if (!toProject && !['/', '/about', '/media'].includes(url.pathname)) return;
+    url.pathname = cleanPath(url.pathname);
+    const destination = editorialPath(url.pathname);
+    const toProject = PROJECTS.some(item => projectPath(item) === destination);
+    const toArticle = WRITING.some(item => writingPath(item.slug) === destination);
+    if (!toProject && !toArticle && !['/', '/about', '/media'].includes(destination)) return;
+    const homeSection = destination === '/' && ['#projects', '#work', '#writing', '#top'].includes(url.hash);
     if (url.pathname === route.path) {
       outgoing.current?.cancel();
-      if (!url.hash) event.preventDefault();
+      if (homeSection) {
+        event.preventDefault();
+        history.replaceState(history.state, '', href('/'));
+        anchorFor(url.hash)?.scrollIntoView({ behavior: reduced ? 'instant' : 'smooth' });
+      } else if (!url.hash) event.preventDefault();
       return;
     }
     event.preventDefault();
     const main = document.getElementById('content');
     const opacity = main ? getComputedStyle(main).opacity : '1';
     outgoing.current?.cancel();
-    const homeSection = url.pathname === '/' && (url.hash === '#work' || url.hash === '#writing');
-    const fade = (toProject || project || ((about || media) && (url.pathname === '/about' || url.pathname === '/media' || homeSection)))
+    const toEditorialPage = destination === '/about' || destination === '/media';
+    const fade = (toProject || project || toArticle || article || toEditorialPage || (about || media) && destination === '/')
       && !reduced && !!main?.animate;
     const open = () => {
-      history.pushState(null, '', url);
-      setRoute({ path: url.pathname, hash: url.hash, internal: true, fade });
+      history.replaceState({ ...history.state, portfolioScroll: scrollY }, '');
+      history.pushState(homeSection ? { portfolioAnchor: url.hash } : null, '', homeSection ? url.pathname : url);
+      setZoom(null);
+      setRoute({ path: url.pathname, hash: url.hash, internal: true, fade, scroll: undefined });
     };
     if (fade && main) {
       const animation = main.animate([{ opacity }, { opacity: 0 }], {
@@ -259,87 +416,122 @@ export function EditorialPortfolio() {
       open();
     }
   };
-  const next = project && PROJECTS[(PROJECTS.indexOf(project) + 1) % PROJECTS.length];
+  const nextFeatured = project ? featured.findIndex(item => item.id === project.id) : -1;
+  const next = project && (nextFeatured >= 0
+    ? PROJECTS.find(item => item.id === featured[(nextFeatured + 1) % featured.length]?.id)
+    : PROJECTS[(PROJECTS.indexOf(project) + 1) % PROJECTS.length]);
+  const projectImages = project?.images ?? (project?.coverImage ? [project.coverImage] : []);
+  const nextClip = next && storyKey(next.id);
+  const chapters = project ? [
+    { id: 'overview', label: 'Overview' },
+    ...(project.id === 'picolor' ? [{ id: 'palette-demo', label: 'Palette demo' }] : []),
+    ...(project.caseStudy ? [{ id: 'narration', label: 'Narration' }] : []),
+    ...(storyKey(project.id) ? [{ id: 'workflow', label: 'Workflow' }] : []),
+    ...(hasProjectLab(project.id) ? [{ id: 'project-lab', label: 'Interactive example' }] : []),
+    ...projectImages.flatMap((src, index) => phoneScreens.has(src) ? [] : [{ id: `preview-${index + 1}`, label: project.imageCaptions?.[index] ?? `Preview ${index + 1}` }]),
+    ...(reelScreens.length ? [{ id: 'app-screens', label: 'App screen showreel' }] : []),
+    ...(project.lead ? [{ id: 'project-details', label: 'Project details' }] : []),
+    ...(project.caseStudy ? studySections.map(([id, label]) => ({ id, label })) : []),
+  ] : [];
   const reveal = reduced ? {} : {
     initial: { opacity: .9, y: 8 },
     whileInView: { opacity: 1, y: 0 },
     viewport: { once: true, amount: .16 },
     transition: { duration: .26, ease: 'easeOut' as const },
   };
-  return <div className="ed-site" id="top" onClick={navigate} data-internal-visit={internalVisit || undefined} data-page-fade={route.fade || undefined}>
+  const renderPreview = (src: string, index: number) => {
+    const caption = project?.imageCaptions?.[index];
+    const image = <img src={src} alt={caption ?? `${project?.title} preview ${index + 1}`} loading={index ? 'lazy' : 'eager'} decoding="async" />;
+    return <motion.figure key={src} id={`preview-${index + 1}`} {...reveal}>
+      <button className="ed-zoom" type="button" aria-label={`Enlarge preview ${index + 1}`} onClick={() => setZoom(index)}>
+        {image}
+        <span aria-hidden="true"><Maximize2 size={16} /></span>
+      </button>
+      {caption && <figcaption>{caption}</figcaption>}
+    </motion.figure>;
+  };
+  if (missing) return <div className="ed-site ed-error" onClick={navigate}><main id="content"><p>404</p><h1>{filipino ? 'Hindi makita ang pahina' : 'Page not found'}</h1><a className="ed-action" href={href('/')}>{filipino ? 'Bumalik sa portfolio' : 'Back to portfolio'} <ArrowUpRight size={16} /></a></main></div>;
+
+  return <div className="ed-site" id="top" onClick={navigate} data-internal-visit={internalVisit || undefined} data-page-fade={route.fade || undefined} data-locale={filipino ? 'fil' : undefined}>
     <DotField />
     <a className="ed-skip" href="#content">Skip to content</a>
-    <header className="ed-nav">
+    <header className="ed-nav" data-enter={!internalEntry || undefined}>
       <nav aria-label="Main navigation">
-        <a href={home ? '#top' : '/'}>Raziel Salamat</a>
-        {sections.map(({ href, label }) => <a key={href} href={href} aria-current={route.path === href ? 'page' : undefined}>{label}</a>)}
+        <a href={href(home ? '/#top' : '/')}>Raziel Salamat</a>
+        {sections.map(({ href: destination, label }, index) => <a key={destination} href={href(destination)} aria-current={path === destination || (article && label === 'Writing') ? 'page' : undefined}>{filipino ? FILIPINO.nav[index] : label}</a>)}
       </nav>
-      <a className="ed-available" href={`mailto:${PERSONAL.email}`}>Open to work</a>
+      <div className="ed-nav-options">
+        <div className="ed-languages" role="group" aria-label={filipino ? 'Wika' : 'Language'}><a href={path} hrefLang="en" lang="en" aria-current={!filipino ? 'true' : undefined} aria-label="English">EN</a><a href={localizedPath(path, true)} hrefLang="fil" lang="fil" aria-current={filipino ? 'true' : undefined} aria-label="Filipino">FIL</a></div>
+        <a className="ed-available" href={`mailto:${PERSONAL.email}`}>{filipino ? 'Bukas sa trabaho' : 'Open to work'}</a>
+      </div>
     </header>
 
+    <div className="ed-route" key={`page:${route.path}`}>
     {home ? <main id="content">
-      <section className="ed-hero" aria-label="Introduction">
+      <section className="ed-hero" data-home-enter={!route.hash || undefined} aria-label="Introduction">
 
         <div className="ed-hero-content">
-          <h1 className="ed-word-reveal" aria-label="Developer & Designer">
-            {['Developer', '&', 'Designer'].map(word => <span key={word} aria-hidden="true"><span>{word}</span></span>)}
+          <h1 className="ed-word-reveal" aria-label={heroWords.join(' ')}>
+            {heroWords.map(word => <span key={word} aria-hidden="true"><span>{word}</span></span>)}
           </h1>
-          <div className="ed-hero-meta"><a href={`mailto:${PERSONAL.email}`}>{PERSONAL.email}</a><span>Based in Tagum City,<br />Philippines</span></div>
+          <div className="ed-hero-meta"><EmailLink /><span>{filipino ? 'Nasa Tagum City,' : 'Based in Tagum City,'}<br />{filipino ? 'Pilipinas' : 'Philippines'}</span></div>
           <div className="ed-intro">
-            <p>I’m Raziel Salamat, a <strong>computer engineering student and developer</strong> building web apps, Windows tools, and CAD prototypes.</p>
-            <div><h2>Expertise</h2><ul>{expertise.map(item => <li key={item}>{item}</li>)}</ul></div>
+            <p><BioWords text={intro[0]} /><strong><BioWords text={intro[1]} start={intro[0].split(' ').length} /></strong><BioWords text={intro[2]} start={intro[0].split(' ').length + intro[1].split(' ').length} /></p>
+            <div><h2>{filipino ? 'Mga kasanayan' : 'Expertise'}</h2><ul>{(filipino ? FILIPINO.expertise : expertise).map(item => <li key={item}>{item}</li>)}</ul></div>
           </div>
         </div>
       </section>
-      <section className="ed-band" id="work">
-        <h2 className="ed-section-title">Selected<br />work</h2>
+      <section className="ed-band" id="projects">
+        <h2 className="ed-section-title">{filipino ? <>Mga piling<br />gawa</> : <>Selected<br />work</>}</h2>
         <div className="ed-grid">
           {featured.map(spec => {
             const item = PROJECTS.find(project => project.id === spec.id)!;
             const portrait = 'portrait' in spec;
-            const clip = !portrait && storyKey(item.id);
+            const clip = storyKey(item.id);
             const image = <img src={('cover' in spec ? spec.cover : item.coverImage) ?? item.images?.[0]} alt="" loading="lazy" decoding="async" />;
             return <motion.article key={item.id} data-portrait={portrait} {...reveal}>
-            <a href={projectPath(item)} className="ed-card">
-              <div className="ed-card-title"><h3>{item.title}</h3><span>{'caption' in spec ? spec.caption : item.role}</span></div>
+              <div className="ed-card-title"><h3><a className="ed-card-link" href={href(projectPath(item))}>{item.title}</a></h3><span>{filipino && FILIPINO.projectLeads[item.id] || ('caption' in spec ? spec.caption : item.role)}</span></div>
               <div className="ed-cover" data-tone={spec.tone}>
                 {portrait ? <div className="ed-cover-phone">{image}</div> : image}
-                {clip && <CoverClip clip={clip} />}
+                {clip && <CoverClip clip={clip} title={item.title} />}
               </div>
               <div className="ed-card-meta"><span>{item.category}</span><span>View <ArrowUpRight size={13} /></span></div>
-            </a>
             </motion.article>;
           })}
         </div>
       </section>
       <section className="ed-band" aria-labelledby="side-title">
-        <h2 className="ed-section-title" id="side-title">Things I make<br />on the side</h2>
+        <div className="ed-section-heading"><h2 className="ed-section-title" id="side-title">{filipino ? <>Iba pang<br />ginagawa ko</> : <>Things I make<br />on the side</>}</h2><small>{filipino ? 'Iba pang proyekto' : 'Side projects'}</small></div>
         <ul className="ed-index">{sideProjects.map((item, index) => <li key={item.id}>
-          <a href={projectPath(item)}><span>{String(index + 1).padStart(2, '0')}</span><strong>{item.title}</strong><span>{item.category}</span><ArrowUpRight size={16} /></a>
+          <a href={item.liveUrl ?? item.githubUrl ?? href(projectPath(item))} target={item.liveUrl || item.githubUrl ? '_blank' : undefined} rel="noreferrer"><span>{String(index + 1).padStart(2, '0')}</span><strong>{item.title}</strong><span>{filipino ? FILIPINO.projectLeads[item.id] ?? item.lead : item.lead}</span><ArrowUpRight size={16} /></a>
         </li>)}</ul>
       </section>
       <section className="ed-band" id="writing">
-        <h2 className="ed-section-title">Writing</h2>
-        <ul className="ed-index">{PROJECTS.filter(item => item.caseStudy).map((item, index) => <li key={item.id}>
-          <a href={`${projectPath(item)}#notes`}><span>{String(index + 1).padStart(2, '0')}</span><strong>{item.title}</strong><span>{item.caseStudy?.status}</span><ArrowUpRight size={16} /></a>
+        <div className="ed-section-heading"><h2 className="ed-section-title">{filipino ? 'Mga sulatin' : 'Writing'}</h2><small>{filipino ? 'Mga tala sa disenyo at engineering' : 'Notes on design and engineering'}</small></div>
+        <ul className="ed-index">{WRITING.map((item, index) => <li key={item.slug}>
+          <a href={href(writingPath(item.slug))}><span>{String(index + 1).padStart(2, '0')}</span><strong>{filipino ? FILIPINO.writing[index]?.[0] : item.title}</strong><span>{filipino ? FILIPINO.writing[index]?.[1] : item.summary}</span><ArrowUpRight size={16} /></a>
         </li>)}</ul>
       </section>
       <section className="ed-band" id="index">
-        <details><summary className="ed-section-title">Project index</summary>
+        <details><summary className="ed-section-title">{filipino ? 'Lahat ng proyekto' : 'Project index'}</summary>
         <ul className="ed-index">{PROJECTS.map((item, index) => <li key={item.id}>
-          <a href={projectPath(item)}><span>{String(index + 1).padStart(2, '0')}</span><strong>{item.title}</strong><span>{item.category}</span><ArrowUpRight size={16} /></a>
+          <a href={href(projectPath(item))}><span>{String(index + 1).padStart(2, '0')}</span><strong>{item.title}</strong><span>{item.category}</span><ArrowUpRight size={16} /></a>
         </li>)}</ul></details>
       </section>
-    </main> : about ? <main key="about" className="ed-band ed-case ed-about" id="content">
-        <span className="ed-eyebrow">About</span>
-        <h1 className="ed-page-title">I’m Raziel, a developer and designer in Tagum City.</h1>
-        <p>I’m a computer engineering student building web apps, Windows tools, and CAD prototypes.</p>
+    </main> : about ? <main key={route.path} className="ed-band ed-case ed-about" id="content">
+        <span className="ed-eyebrow">{filipino ? FILIPINO.nav[2] : 'About'}</span>
+        <h1 className="ed-page-title">{filipino ? FILIPINO.about[0] : 'I’m Raziel, a developer and designer in Tagum City.'}</h1>
+        <div className="ed-about-bio ed-prose">
+          <p>{filipino ? FILIPINO.about[1] : 'I’m a computer engineering student building web apps, Windows tools, and CAD prototypes.'}</p>
+          <p>{filipino ? FILIPINO.about[2] : 'My work at Code & Craft spans graphic design, CAD and prototyping. I also work behind the camera, from filming and editing to helping run live campus productions.'}</p>
+          <p>{filipino ? FILIPINO.about[3] : BUSINESS_OFFER}</p>
+        </div>
         <button className="ed-zoom ed-portrait-trigger" type="button" aria-label="Enlarge portrait" onClick={() => setZoom(0)}>
-          <img className="ed-portrait" src="/portrait.png" alt="Raziel Salamat" />
+          <span className="ed-portrait-collage">{aboutImages.slice(1).map((src, index) => <img src={src} key={src} alt={aboutImageCaptions[index + 1]} loading="lazy" decoding="async" />)}<img className="ed-portrait" src="/portrait.png" alt="Raziel Salamat" decoding="async" /></span>
           <span aria-hidden="true"><Maximize2 size={16} /></span>
         </button>
-        <section className="ed-prose"><h2>Career</h2>{EXPERIENCE.map(item => <div className="ed-career-row" key={item.id}><strong>{item.role}</strong><span>{item.company}</span><span>{item.period}</span></div>)}
-        <h2>Tech stack</h2>
+        <section className="ed-prose"><h2>{filipino ? 'Karanasan' : 'Career'}</h2>{EXPERIENCE.map(item => <div className="ed-career-row" key={item.id}><span className="ed-career-mark" aria-hidden="true">{item.company === 'CODE&CRAFT' ? 'CC' : 'UM'}</span><span><strong>{item.company}</strong><span lang="en">{item.role}</span></span><time lang="en">{item.period}</time></div>)}
+        <h2>{filipino ? 'Mga teknolohiyang ginagamit' : 'Tech stack'}</h2>
         <dl className="ed-tech-stack">{stack.map(group => <div key={group.label}>
           <dt>{group.label}</dt>
           <dd><ul>{group.tools.map(tool => <li key={tool.name}>
@@ -347,60 +539,61 @@ export function EditorialPortfolio() {
             {tool.name}
           </li>)}</ul></dd>
         </div>)}</dl>
-        <p>{BUSINESS_OFFER}</p>
         <p>{EDUCATION[0]?.degree} · Expected graduation 2027</p>
         <div className="ed-document-links"><a href={DOCUMENTS.resume.url}>View résumé <ArrowUpRight size={16} /></a><a href={DOCUMENTS.resume.url} download={DOCUMENTS.resume.filename}>Download résumé</a><a href={DOCUMENTS.portfolio.url}>Portfolio PDF <ArrowUpRight size={16} /></a></div>
         </section>
-    </main> : media ? <main key="media" className="ed-band ed-case" id="content">
-      <span className="ed-eyebrow">Film &amp; Media</span>
-      <h1 className="ed-page-title">I also work behind the camera.</h1>
-      <p className="ed-case-lead">Selected production, editing, and cinematography work.</p>
-      <div className="ed-media">{PROJECTS.filter(item => item.tag === 'media').map(item => <a className="ed-card" key={item.id} href={projectPath(item)}>
+    </main> : media ? <main key={route.path} className="ed-band ed-case" id="content">
+      <div className="ed-media-kicker"><span className="ed-eyebrow">{filipino ? FILIPINO.nav[3] : 'Film & Media'}</span><span>{mediaProjects.length} {filipino ? 'proyekto' : 'projects'}</span></div>
+      <h1 className="ed-page-title">{filipino ? 'Nagtatrabaho rin ako sa likod ng kamera.' : 'I also work behind the camera.'}</h1>
+      <p className="ed-case-lead">{filipino ? 'Mga piling gawa sa produksiyon, pag-edit, at cinematography.' : 'Selected production, editing, and cinematography work.'}</p>
+      <div className="ed-media">{[0, 1].map(lane => <div className="ed-media-lane" key={lane}>{mediaProjects.filter((_, index) => index % 2 === lane).map(item => <motion.a className="ed-card" key={item.id} href={href(projectPath(item))} {...reveal}>
         <div className="ed-cover"><img src={item.coverImage ?? item.images?.[0]} alt="" loading="lazy" decoding="async" /></div>
         <div className="ed-card-meta"><span>{item.title}</span><span>View <ArrowUpRight size={13} /></span></div>
-      </a>)}</div>
-    </main> : project ? <main key={project.id} id="content" className="ed-case ed-band ed-project">
+      </motion.a>)}</div>)}</div>
+    </main> : article ? <EditorialArticle key={route.path} article={article} filipino={filipino} /> : project ? <main key={route.path} id="content" className="ed-case ed-band ed-project" lang="en">
+      <div id="overview">
       <div className="ed-case-kicker"><span>{project.num} / {PROJECTS.length} · Case study</span><span>{project.category}</span></div>
       <h1 className="ed-project-title" aria-label={project.title}>
         {project.title.split(' ').map((word, wordIndex) => <span key={wordIndex} className="ed-project-word" aria-hidden="true">
           {Array.from(word).map((letter, index) => <span key={index} style={{ '--letter-delay': `${((wordIndex * 62 + index * 137) % 380)}ms` } as CSSProperties}>{letter}</span>)}
         </span>)}
       </h1>
-      <p className="ed-case-lead">{project.description}</p>
+      <div className="ed-project-overview"><p className="ed-case-lead" lang={filipino && FILIPINO.projectLeads[project.id] ? 'fil' : undefined}>{filipino && FILIPINO.projectLeads[project.id] || project.lead || project.description}</p>
       <dl className="ed-case-meta"><div><dt>Year</dt><dd>{project.year}</dd></div><div><dt>Role</dt><dd>{project.role}</dd></div><div><dt>Category</dt><dd>{project.category}</dd></div><div><dt>Technology</dt><dd>{project.techStack.join(' · ')}</dd></div></dl>
-      <div className="ed-case-links">{[
+      </div><div className="ed-case-links">{[
         [project.liveUrl, project.liveLabel ?? 'Visit project'],
         [project.githubUrl, 'Source code'],
         [project.videoUrl, 'Watch video'],
       ].map(([url, label]) => url && <a key={url} href={url} target="_blank" rel="noreferrer">{label} <ArrowUpRight size={16} /></a>)}</div>
+      </div>
+      {chapters.length > 1 && <ChapterRail chapters={chapters} />}
       {project.id === 'picolor' && <PaletteDemo />}
-      {storyKey(project.id) && <ProductStory id={project.id} />}
-      {(project.images?.length ?? 0) > 1 && <details className="ed-case-index">
-        <summary>On this page</summary>
-        <ol>{project.images?.map((src, index) => <li key={src}><a href={`#preview-${index + 1}`}>{project.imageCaptions?.[index] ?? `Preview ${index + 1}`}</a></li>)}</ol>
-      </details>}
-      {(project.images ?? (project.coverImage ? [project.coverImage] : [])).map((src, index) => <motion.figure key={src} id={`preview-${index + 1}`} {...reveal}>
-        <button className="ed-zoom" type="button" aria-label={`Enlarge preview ${index + 1}`} onClick={() => setZoom(index)}>
-          <img src={src} alt={project.imageCaptions?.[index] ?? `${project.title} preview ${index + 1}`} loading={index ? 'lazy' : 'eager'} decoding="async" />
-          <span aria-hidden="true"><Maximize2 size={16} /></span>
-        </button>
-        {project.imageCaptions?.[index] && <figcaption>{project.imageCaptions[index]}</figcaption>}
-      </motion.figure>)}
+      {project.caseStudy && <CaseNarration chapters={studySections.map(([id, title]) => ({ title, text: project.caseStudy![id] }))} />}
+      {storyKey(project.id) && <div id="workflow"><ProductStory id={project.id} /></div>}
+      {hasProjectLab(project.id) && <EditorialLab project={project} />}
+      {projectImages.map((src, index) =>
+        !phoneScreens.has(src) && renderPreview(src, index)
+      )}
+      {reelScreens.length > 0 && <PhoneShowreel key={project.id} screens={reelScreens} onSelect={setZoom} />}
+      {project.lead && <section className="ed-case-notes" id="project-details" aria-label="Project details">
+        <h2>Project details</h2>
+        <p>{project.description}</p>
+      </section>}
       {project.caseStudy && <section className="ed-case-notes" id="notes">
         <h2>{project.caseStudy.status}</h2>
-        {([['Problem', 'problem'], ['Design decision', 'decision'], ['Result', 'result'], ['Limitations', 'limitations']] as const).map(([label, key]) => <div key={key}><h3>{label}</h3><p>{project.caseStudy![key]}</p></div>)}
+        {studySections.map(([key, label]) => <section id={key} key={key}><h3>{label}</h3><p>{project.caseStudy![key]}</p></section>)}
       </section>}
-      {next && <a href={projectPath(next)} className="ed-next">
-        <div><span>Next project</span>{next.title} <ArrowUpRight /></div>
-        {(next.coverImage ?? next.images?.[0]) && <img src={next.coverImage ?? next.images?.[0]} alt="" loading="lazy" decoding="async" />}
-      </a>}
-      <a className="ed-back" href="/#work">← All work</a>
-    </main> : <main className="ed-band ed-case" id="content"><h1>Project not found</h1><a href="/#index">View project index</a></main>}
+      {next && <article className="ed-next">
+        <span>Next project</span><div><a className="ed-card-link" href={href(projectPath(next))}>{next.title} <ArrowUpRight /></a><small>{next.lead}</small></div>
+        {(next.coverImage ?? next.images?.[0]) && <div className="ed-cover"><img src={next.coverImage ?? next.images?.[0]} alt="" loading="lazy" decoding="async" />{nextClip && <CoverClip clip={nextClip} title={next.title} />}</div>}
+      </article>}
+    </main> : null}
+    </div>
 
-    <footer className="ed-footer ed-band" id="contact">
-      <div><nav aria-label="Social links"><a href={PERSONAL.socials.linkedin}>LinkedIn</a><a href={PERSONAL.socials.github}>GitHub</a><a href={DOCUMENTS.resume.url}>Résumé</a></nav><a href={`mailto:${PERSONAL.email}`}>{PERSONAL.email}</a></div>
-      <motion.p {...reveal}>Raziel Salamat</motion.p>
+    <footer className="ed-footer ed-band" id="contact" data-case-footer={!!project || undefined}>
+      <div>{project ? <a href={href('/#projects')}>{filipino ? '← Lahat ng gawa' : '← All work'}</a> : <nav aria-label="Social links"><a href={PERSONAL.socials.linkedin} target="_blank" rel="noreferrer">LinkedIn</a><a href={PERSONAL.socials.github} target="_blank" rel="noreferrer">GitHub</a><a href={DOCUMENTS.resume.url}>Résumé</a></nav>}<EmailLink /></div>
+      {!project && <motion.p initial={reduced ? false : { opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: .1 }} transition={reduced ? { duration: 0 } : { opacity: { duration: .9 }, y: { duration: 1.1 }, ease: [.19, 1, .22, 1] }}>Raziel Salamat</motion.p>}
     </footer>
-    <ImageLightboxModal project={about ? { ...portraitProject, techStack: [], images: ['/portrait.png'] } : project ?? null} currentImageIndex={zoom ?? 0} isOpen={zoom !== null} onClose={() => setZoom(null)} onSelectImage={setZoom} />
+    {(about || project) && <ImageLightboxModal key={`gallery:${route.path}`} appearance="editorial" project={about ? { ...portraitProject, techStack: [], images: aboutImages, imageCaptions: aboutImageCaptions } : project ?? null} currentImageIndex={zoom ?? 0} isOpen={zoom !== null} onClose={() => setZoom(null)} onSelectImage={setZoom} />}
   </div>;
 }

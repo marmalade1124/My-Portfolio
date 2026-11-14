@@ -6,6 +6,7 @@ export interface Project {
   tag: 'software' | 'hardware' | 'devtools' | 'cad' | 'media';
   year: string;
   description: string;
+  lead?: string;
   role: string;
   techStack: string[];
   githubUrl?: string;
@@ -91,6 +92,7 @@ export const BUSINESS_EXAMPLES = [
 export const PROJECTS: Project[] = [
   {
     id: 'twentyfour',
+    lead: 'A shared disposable camera for events, with a limited roll for each guest and an album revealed afterward.',
     logoImage: '/projects/twentyfour-logo.png',
     caseStudy: {
       status: 'Deployed web app · Public demo',
@@ -128,7 +130,7 @@ export const PROJECTS: Project[] = [
       status: 'Windows desktop app · Download available',
       problem: 'Sampling a color is only the beginning of designing an interface. I wanted a local tool that turns that color into named UI roles, previews, and usable exports.',
       decision: 'I built a native C#/WPF app with Win32 screen sampling, then organized palettes around semantic roles rather than an unstructured swatch list. Light/dark previews and pair-specific contrast checks give each change context.',
-      result: 'The app provides screen sampling, editable palettes, interface previews, CSS/JSON export, and a local library with favorites and backups. The linked website introduces the Windows download; the repository exposes the implementation.',
+      result: 'You can edit color roles, preview light and dark interfaces, check contrast between selected colors, and export to CSS or JSON. Named palettes, favorites, and backups stay on your device.',
       limitations: 'The gallery contains native app renders, separately labeled from the website screenshot. Windows hardware and display configurations require their own testing; these renders are not a compatibility benchmark.',
       evidence: [
         { image: '/projects/picolor-editor.png', caption: 'Edit: adjust the selected color role with the HSV editor. Native app render.' },
@@ -140,7 +142,7 @@ export const PROJECTS: Project[] = [
     category: 'Windows App / Color Picker & Palette Studio',
     tag: 'devtools',
     year: '2026',
-    description: 'A native Windows color picker and palette studio that turns a sampled screen color into a website palette. I built the desktop sampling workflow, semantic light and dark palettes, editable color roles, interface previews, pair-specific contrast checks, and CSS/JSON export. Named palettes, favorites, and backups stay on the device. The gallery shows renders from the native app; the linked website introduces the Windows download.',
+    description: 'Pick any color on your screen and turn it into a light or dark website palette with PiColor for Windows.',
     role: 'Creator & Desktop Application Developer',
     techStack: ['C#', 'WPF', '.NET Framework 4.8', 'Win32', 'OKLCH'],
     githubUrl: 'https://github.com/marmalade1124/3.14',
@@ -166,6 +168,7 @@ export const PROJECTS: Project[] = [
   // === TOP FLAGSHIP WORKS (SHOWCASED IN INITIAL 6 CARDS) ===
   {
     id: 'quoter', num: '32', title: 'Quoter',
+    lead: 'Turn Bambu Studio exports into client-ready 3D printing quotes on Windows.',
     logoImage: '/projects/quoter-logo.png',
     category: 'Windows App / 3D Printing Quotes', tag: 'software', year: '2026',
     description: 'A local Windows companion that turns Bambu Studio sliced exports into client-ready 3D printing quotes. I built batch import, folder watching, configurable selling rates, per-piece pricing, and branded receipts that can be copied, saved as PNG, or compiled into one batch PDF. Everything stays on the device; quotes are reviewed and sent manually.',
@@ -194,6 +197,7 @@ export const PROJECTS: Project[] = [
 
   {
     id: 'lapcat-website',
+    lead: 'A launch site for a GPS racing app, built around animated routes and phone previews.',
     logoImage: '/projects/lapcat-logo.png', num: '30', title: 'Lapcat — Website',
     category: 'Product Website / Motion Design', tag: 'software', year: '2026',
     description: 'A launch website for Lapcat, my GPS racing app. Oversized typography, a rotating CSS phone, scroll-driven screen changes and route-line animation introduce the product before leading visitors to the Android download and release notes. The illustrated phone uses sample activity data.',
@@ -206,6 +210,7 @@ export const PROJECTS: Project[] = [
   },
   {
     id: 'lapcat-app',
+    lead: 'Record outdoor activities, plan routes, and race saved courses in an Android test build.',
     logoImage: '/projects/lapcat-logo.png', num: '31', title: 'Lapcat — App',
     category: 'Mobile App / GPS Racing', tag: 'software', year: '2026',
     description: 'A Flutter app for recording runs, walks and rides, planning routes, racing saved courses and sharing route artwork. I built the app interface, local activity persistence and Supabase-backed profiles, community features and course attempts. Available as a direct Android test build; physical-device GPS and background-recording validation remain pending.',
@@ -213,12 +218,13 @@ export const PROJECTS: Project[] = [
     techStack: ['Flutter', 'Dart', 'Supabase', 'Sembast', 'GPS', 'OpenRouteService'],
     liveUrl: 'https://lapcat-launch.vercel.app/downloads/lapcat.apk', liveLabel: 'Download Android APK',
     coverImage: '/projects/lapcat-app-home.png',
-    images: ['/projects/lapcat-app-home.png', '/projects/lapcat-app-profile.png'],
-    imageCaptions: ['Actual Flutter browser preview — Home in an empty activity state.', 'Actual Flutter browser preview — profile and personal activity overview. Android hardware behavior is not demonstrated by these screenshots.'],
+    images: ['/projects/lapcat-website.png', '/projects/lapcat-app-home.png', '/projects/lapcat-app-profile.png'],
+    imageCaptions: ['Lapcat launch website', 'Actual Flutter browser preview — Home in an empty activity state.', 'Actual Flutter browser preview — profile and personal activity overview. Android hardware behavior is not demonstrated by these screenshots.'],
   },
 
   {
     id: 'the-collegium',
+    lead: 'A digital newsroom and searchable archive for UM Tagum College’s student publication.',
     logoImage: '/projects/collegium-logo.png',
     num: '01',
     title: 'The Collegium',
@@ -243,6 +249,7 @@ export const PROJECTS: Project[] = [
   },
   {
     id: 'okuru',
+    lead: 'A shared space for friends to save, organize, and find links, notes, and files.',
     num: '33',
     title: 'Okuru',
     category: 'Web App / Shared Link Room',
@@ -255,11 +262,12 @@ export const PROJECTS: Project[] = [
     liveLabel: 'Open Okuru',
     logoImage: '/projects/okuru-logo.svg',
     coverImage: '/projects/okuru-showcase.png',
-    images: ['/projects/okuru-showcase.png'],
-    imageCaptions: ['Okuru showcase with a sample feed'],
+    images: ['/projects/okuru-showcase.png', '/projects/okuru-mobile.png'],
+    imageCaptions: ['Okuru showcase with a sample feed', 'Okuru mobile web feed with sample posts'],
   },
   {
     id: 'hitoshii',
+    lead: 'Split shared expenses in pesos and keep track of who owes what.',
     num: '34',
     title: 'Hitoshii',
     category: 'Android App / Shared Expenses',
@@ -271,12 +279,13 @@ export const PROJECTS: Project[] = [
     liveUrl: 'https://hitoshii.vercel.app/',
     liveLabel: 'Explore Hitoshii',
     logoImage: '/projects/hitoshii-logo.svg',
-    coverImage: '/projects/hitoshii-group.png',
-    images: ['/projects/hitoshii-group.png', '/projects/hitoshii-summary.png'],
-    imageCaptions: ['Group expenses and balance with sample data', 'Settlement summary with sample data'],
+    coverImage: '/projects/hitoshii-website.jpg',
+    images: ['/projects/hitoshii-website.jpg', '/projects/hitoshii-group.png', '/projects/hitoshii-summary.png'],
+    imageCaptions: ['Hitoshii launch website', 'Group expenses and balance with sample data', 'Settlement summary with sample data'],
   },
   {
     id: 'cad-enclosure',
+    lead: 'A CAD concept for housing a custom electronics assembly.',
     logoText: 'CAD',
     caseStudy: {
       status: 'CAD concept · Unvalidated physical design',
@@ -302,6 +311,7 @@ export const PROJECTS: Project[] = [
   },
   {
     id: 'media-mutya-bts',
+    lead: 'A behind-the-scenes film about the people preparing for Mutya ng UMTC 2024.',
     logoText: 'M / 24',
     num: '03',
     title: 'Mutya ng UMTC 2024: BTS',
@@ -318,6 +328,7 @@ export const PROJECTS: Project[] = [
   },
   {
     id: 'ccprint',
+    lead: 'Organize 3D printing jobs and estimate fabrication costs in one workflow.',
     num: '04',
     title: 'CCPrint',
     category: '3D Printing Fleet / IoT',
@@ -333,6 +344,7 @@ export const PROJECTS: Project[] = [
   },
   {
     id: 'codecraft-management',
+    lead: 'A dashboard for tracking software projects, tasks, and milestones.',
     num: '05',
     title: 'CodeCraft Management',
     category: 'Full-Stack / Project Ops Dashboard',
@@ -348,6 +360,7 @@ export const PROJECTS: Project[] = [
   },
   {
     id: 'cpu-scheduler',
+    lead: 'Compare CPU scheduling algorithms through an interactive simulation.',
     num: '06',
     title: 'CPU Scheduler Visualizer',
     category: 'Systems / OS Algorithm Simulator',
@@ -366,6 +379,7 @@ export const PROJECTS: Project[] = [
   // === SOFTWARE & WEB APPLICATIONS ===
   {
     id: 'codecraft-web',
+    lead: 'A studio website that helps visitors explore services and scope a project inquiry.',
     num: '07',
     title: 'Code & Craft',
     category: 'Studio Website / Interactive Product Inquiry',
@@ -381,6 +395,7 @@ export const PROJECTS: Project[] = [
   },
   {
     id: 'ccnote',
+    lead: 'A shared canvas for engineering notes, diagrams, and documentation.',
     num: '08',
     title: 'CCNote',
     category: 'Full-Stack / Spatial Knowledge Canvas',
@@ -400,6 +415,7 @@ export const PROJECTS: Project[] = [
   },
   {
     id: 'sindi',
+    lead: 'A tool that extracts power outage schedules from utility announcements and sends alerts.',
     num: '09',
     title: 'Sindí',
     category: 'AI / Community Outage Monitor',
@@ -412,6 +428,7 @@ export const PROJECTS: Project[] = [
   },
   {
     id: 'lockr',
+    lead: 'An offline password manager with a local vault and biometric authentication.',
     num: '10',
     title: 'Lockr',
     category: 'Security / Biometric Vault',
@@ -424,6 +441,7 @@ export const PROJECTS: Project[] = [
   },
   {
     id: 'audio-watermarking',
+    lead: 'An audio watermarking study using spread spectrum and wavelet transforms.',
     num: '11',
     title: 'MATLAB Audio Watermarking',
     category: 'DSP / Signal Processing',
@@ -437,6 +455,7 @@ export const PROJECTS: Project[] = [
   // === 3D CAD & HARDWARE BLUEPRINTS ===
   {
     id: 'cad-rack-pinion',
+    lead: 'A CAD study of how a rack and pinion convert rotation into linear motion.',
     num: '12',
     title: 'Linear Rack Actuator Mechanism',
     category: '3D CAD / Robotics Motion Control',
@@ -451,6 +470,7 @@ export const PROJECTS: Project[] = [
   },
   {
     id: 'cad-dual-axis',
+    lead: 'A CAD concept for a belt-driven XY gantry for pick-and-place work.',
     num: '13',
     title: 'Dual-Axis Gantry System',
     category: '3D CAD / Automated Mechatronics',
@@ -465,6 +485,7 @@ export const PROJECTS: Project[] = [
   },
   {
     id: 'cad-hopper',
+    lead: 'A CAD concept for a gravity-fed material hopper.',
     num: '14',
     title: 'Automated Hopper Feeder',
     category: '3D CAD / Bulk Material Handling',
@@ -479,6 +500,7 @@ export const PROJECTS: Project[] = [
   },
   {
     id: 'cad-hydraulic',
+    lead: 'An exploded CAD view showing how a hydraulic cylinder fits together.',
     num: '15',
     title: 'Hydraulic Cylinder Assembly',
     category: '3D CAD / Mechanical Systems',
@@ -493,6 +515,7 @@ export const PROJECTS: Project[] = [
   },
   {
     id: 'coinnect',
+    lead: 'A coin-operated kiosk that connects automated dispensing to an inventory dashboard.',
     num: '16',
     title: 'Coinnect Smart Kiosk',
     category: 'IoT / Smart Hardware',
@@ -506,6 +529,7 @@ export const PROJECTS: Project[] = [
   // === VIDEOGRAPHY & MEDIA ARCHIVE ===
   {
     id: 'media-vote-counts',
+    lead: 'A motion graphics campaign encouraging students to vote.',
     num: '17',
     title: 'Your Vote Counts Today',
     category: 'Motion Design / Civic Awareness',
@@ -521,6 +545,7 @@ export const PROJECTS: Project[] = [
   },
   {
     id: 'media-collegium-stories',
+    lead: 'A video journalism series about student achievements, leadership, and community work.',
     num: '18',
     title: 'Collegium: Authentic Stories',
     category: 'Broadcast Journalism / Student Voices',
@@ -536,6 +561,7 @@ export const PROJECTS: Project[] = [
   },
   {
     id: 'media-habang-buhay',
+    lead: 'A music video shaped through lighting, camera blocking, and color grading.',
     num: '19',
     title: 'Habang Buhay (Music Video Cover)',
     category: 'Cinematography / Music Video',
@@ -551,6 +577,7 @@ export const PROJECTS: Project[] = [
   },
   {
     id: 'media-short-film',
+    lead: 'A short film about chance encounters and timing on campus.',
     num: '20',
     title: 'Wa Gyuy Nagdahom',
     category: 'Cinematic / Short Film',
@@ -566,6 +593,7 @@ export const PROJECTS: Project[] = [
   },
   {
     id: 'media-mutya-2024',
+    lead: 'Multi-camera coverage and a highlight reel for the Mutya ng UMTC 2024 coronation.',
     num: '21',
     title: 'Mutya ng UMTC 2024',
     category: 'Event Production / Pageant Broadcast',
@@ -581,6 +609,7 @@ export const PROJECTS: Project[] = [
   },
   {
     id: 'media-queen-journey',
+    lead: 'A documentary following a collegiate titleholder through her year of service.',
     num: '22',
     title: 'Journey of the Reigning Queen',
     category: 'Documentary / Character Feature',
@@ -596,6 +625,7 @@ export const PROJECTS: Project[] = [
   },
   {
     id: 'media-graduation',
+    lead: 'A commencement film capturing the procession, stage honors, and celebrations.',
     num: '23',
     title: 'Graduation Highlights',
     category: 'Commencement / Institutional Media',
@@ -611,6 +641,7 @@ export const PROJECTS: Project[] = [
   },
   {
     id: 'media-mutya-2023',
+    lead: 'Live coverage and a cinematic teaser for the 2023 university pageant.',
     num: '24',
     title: 'Mutya ng UMTC 2023 (Live Coverage & Teaser)',
     category: 'Broadcast / Event Production',
@@ -631,6 +662,7 @@ export const PROJECTS: Project[] = [
   // === DEVELOPER TOOLS ===
   {
     id: 'mdx-readme',
+    lead: 'Build a README from templates, preview it live, and export it as Markdown.',
     num: '25',
     title: 'MDX Readme Studio',
     category: 'Web App / Documentation Tool',
@@ -647,6 +679,7 @@ export const PROJECTS: Project[] = [
   },
   {
     id: 'arduino-visualizer',
+    lead: 'A VS Code extension that turns Arduino source into wiring diagrams.',
     num: '26',
     title: 'Arduino Visualizer',
     category: 'Developer Tools / VS Code Extension',
@@ -659,6 +692,7 @@ export const PROJECTS: Project[] = [
   },
   {
     id: 'viewportlab',
+    lead: 'Test responsive layouts across three synchronized device viewports.',
     num: '28',
     title: 'ViewportLab',
     category: 'Developer Tools / Responsive Testing',

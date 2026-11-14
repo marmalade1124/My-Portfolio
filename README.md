@@ -4,6 +4,8 @@ Production portfolio: https://razielrenz.vercel.app/. The approved redesign is p
 
 ## Run
 
+The `codex/lucas-lima-redesign` branch runs the editorial portfolio. Start it with `pnpm dev -- --port 5193`. The editorial browser regression lives at `tests/editorial-navigation.browser.js` and targets that port. Filipino pages translate the main navigation, introductions, project summaries, and articles. Detailed case notes and interactive demo controls are in English.
+
 ```powershell
 pnpm install
 pnpm dev --host 127.0.0.1 --port 5180

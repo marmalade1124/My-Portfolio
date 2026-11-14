@@ -1,10 +1,11 @@
-import { useEffect, useCallback, useRef } from 'react';
+import { useEffect, useCallback, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
-import { X, ChevronLeft, ChevronRight, ExternalLink, Maximize2, Play } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, ExternalLink, Maximize2, Play, ZoomIn, ZoomOut } from 'lucide-react';
 import { type Project } from '@/lib/data';
 
 interface ImageLightboxModalProps {
+  appearance?: 'editorial';
   sharedImageId?: string;
   project: Project | null;
   currentImageIndex: number;
@@ -14,6 +15,7 @@ interface ImageLightboxModalProps {
 }
 
 export function ImageLightboxModal({
+  appearance,
   sharedImageId,
   project,
   currentImageIndex,
@@ -27,6 +29,10 @@ export function ImageLightboxModal({
   const captions = project?.imageCaptions || [];
   const currentImage = images[currentImageIndex] || '';
   const currentCaption = captions[currentImageIndex] || project?.title || '';
+  const [zoomedImage, setZoomedImage] = useState('');
+  const zoomed = zoomedImage === currentImage && !!currentImage;
+  const backdropTransition = reduceMotion ? { duration: 0 } : undefined;
+  useEffect(() => { if (!isOpen) setZoomedImage(''); }, [isOpen]);
 
   const handleNext = useCallback(() => {
     if (images.length <= 1) return;
@@ -52,7 +58,7 @@ export function ImageLightboxModal({
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
       if (e.key === 'Tab') {
-        const controls = Array.from(dialogRef.current?.querySelectorAll<HTMLElement>('a[href], button:not([disabled])') ?? []);
+        const controls = Array.from(dialogRef.current?.querySelectorAll<HTMLElement>('a[href], button:not([disabled]), [tabindex="0"]') ?? []);
         const first = controls[0];
         const last = controls[controls.length - 1];
         if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last?.focus(); }
@@ -76,14 +82,15 @@ export function ImageLightboxModal({
   return createPortal(
     <AnimatePresence>
       {isOpen && project && (
-        <motion.div layoutRoot ref={dialogRef} role="dialog" aria-modal="true" aria-label={project.title + ' gallery'} className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 md:p-10">
+        <motion.div layoutRoot ref={dialogRef} role="dialog" aria-modal="true" aria-label={project.title + ' gallery'} data-appearance={appearance} className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 md:p-10">
           {/* Backdrop Blur */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={backdropTransition}
             onClick={onClose}
-            className="absolute inset-0 bg-black/90 backdrop-blur-md cursor-pointer"
+            className="gallery-backdrop absolute inset-0 bg-black/90 backdrop-blur-md cursor-pointer"
           />
 
           {/* Modal Container */}
@@ -92,10 +99,10 @@ export function ImageLightboxModal({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: reduceMotion ? 0 : 0.2 }}
-            className="relative z-10 w-full max-w-6xl max-h-[92vh] flex flex-col bg-zinc-950 border border-zinc-800 shadow-2xl overflow-hidden"
+            className="gallery-panel relative z-10 w-full max-w-6xl max-h-[92vh] flex flex-col bg-zinc-950 border border-zinc-800 shadow-2xl overflow-hidden"
           >
             {/* Modal Top Header Bar */}
-            <div className="flex flex-wrap items-center justify-between gap-3 px-4 sm:px-6 py-4 border-b border-zinc-800 bg-black/60 text-white">
+            <div className="gallery-header flex flex-wrap items-center justify-between gap-3 px-4 sm:px-6 py-4 border-b border-zinc-800 bg-black/60 text-white">
               <div className="flex min-w-0 w-full sm:w-auto sm:flex-1 items-center gap-3 font-mono text-xs">
                 <span className="px-2 py-0.5 bg-white text-black font-semibold uppercase tracking-wider">
                   ({project.num})
@@ -141,6 +148,7 @@ export function ImageLightboxModal({
                   </a>
                 )}
 
+                {appearance === 'editorial' && <button type="button" className="p-1.5" aria-label={zoomed ? 'Zoom out' : 'Zoom in'} aria-pressed={zoomed} onClick={() => setZoomedImage(zoomed ? '' : currentImage)}>{zoomed ? <ZoomOut size={18} /> : <ZoomIn size={18} />}</button>}
                 <button
                   onClick={onClose}
                   className="p-1.5 text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors cursor-pointer"
@@ -152,7 +160,7 @@ export function ImageLightboxModal({
             </div>
 
             {/* Main Image Stage */}
-            <div className="relative flex-1 min-h-[320px] max-h-[68vh] bg-zinc-950/80 flex items-center justify-center p-4 sm:p-8 overflow-hidden group">
+            <div className="gallery-stage relative flex-1 min-h-[320px] max-h-[68vh] bg-zinc-950/80 flex items-center justify-center p-4 sm:p-8 overflow-hidden group" data-zoomed={zoomed || undefined} tabIndex={zoomed ? 0 : undefined} aria-label={zoomed ? 'Zoomed image, scroll to inspect' : undefined}>
               <motion.img
                 key={currentImage}
                 layoutId={!reduceMotion && currentImageIndex === 0 ? sharedImageId : undefined}
@@ -193,7 +201,7 @@ export function ImageLightboxModal({
             </div>
 
             {/* Modal Bottom Bar: Caption & Thumbnails */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-6 py-3.5 border-t border-zinc-800 bg-zinc-900/90 text-zinc-300">
+            <div className="gallery-footer flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-6 py-3.5 border-t border-zinc-800 bg-zinc-900/90 text-zinc-300">
               <div className="flex items-center gap-2 text-xs font-mono">
                 <Maximize2 size={13} className="text-zinc-500 shrink-0" />
                 <span className="text-zinc-400 font-medium">{currentCaption}</span>
@@ -205,6 +213,8 @@ export function ImageLightboxModal({
                   {images.map((img, idx) => (
                     <button
                       key={img}
+                      aria-label={`View image ${idx + 1}`}
+                      aria-pressed={idx === currentImageIndex}
                       onClick={() => onSelectImage(idx)}
                       className={`relative w-12 h-8 border overflow-hidden transition-all cursor-pointer ${
                         idx === currentImageIndex
