@@ -54,30 +54,62 @@ function DotField() {
     let height = 0;
     let frame = 0;
     let pointer: { x: number; y: number } | null = null;
-    let previous: { x: number; y: number } | null = null;
-    const draw = () => {
+    let center: { x: number; y: number } | null = null;
+    let strength = 0;
+    let last = 0;
+    const radius = 155;
+    const patch = 178;
+    const draw = (now: number) => {
       frame = 0;
-      if (previous) context.clearRect(previous.x - 192, previous.y - 192, 384, 384);
-      previous = null;
-      if (!pointer) return;
-      const bounds = element.getBoundingClientRect();
-      const local = { x: pointer.x - bounds.left, y: pointer.y - bounds.top };
-      previous = local;
-      for (let y = Math.max(0, Math.ceil((local.y - 175) / 50) * 50); y < Math.min(height, local.y + 175); y += 50) {
-        for (let x = Math.max(0, Math.ceil((local.x - 175) / 50) * 50); x < Math.min(width, local.x + 175); x += 50) {
-          const dx = x - local.x;
-          const dy = y - local.y;
+      if (center) context.clearRect(Math.floor(center.x - patch), Math.floor(center.y - patch), patch * 2 + 1, patch * 2 + 1);
+      const ease = 1 - Math.exp(-Math.min(last ? now - last : 16, 32) / 55);
+      last = now;
+      strength += ((pointer ? 1 : 0) - strength) * ease;
+      let remaining = 0;
+      if (pointer) {
+        const bounds = element.getBoundingClientRect();
+        const x = pointer.x - bounds.left;
+        const y = pointer.y - bounds.top;
+        center ??= { x, y };
+        center.x += (x - center.x) * ease;
+        center.y += (y - center.y) * ease;
+        remaining = Math.hypot(x - center.x, y - center.y);
+      }
+      if (!center || (!pointer && strength < .01)) {
+        center = null;
+        last = 0;
+        return;
+      }
+      const left = Math.floor(center.x - patch);
+      const top = Math.floor(center.y - patch);
+      const size = patch * 2 + 1;
+      context.fillStyle = paper;
+      context.fillRect(left, top, size, size);
+      context.save();
+      context.beginPath();
+      context.rect(left, top, size, size);
+      context.clip();
+      context.fillStyle = '#b8b8b0';
+      context.beginPath();
+      for (let y = Math.max(0, Math.ceil((top - 1) / 50) * 50); y <= Math.min(height, top + size + 1); y += 50) {
+        for (let x = Math.max(0, Math.ceil((left - 1) / 50) * 50); x <= Math.min(width, left + size + 1); x += 50) {
+          const dx = x - center.x;
+          const dy = y - center.y;
           const distance = Math.hypot(dx, dy);
-          if (distance >= 175) continue;
-          const influence = (1 - distance / 175) ** 2;
-          context.fillStyle = `rgba(38, 38, 34, ${influence * .58})`;
-          context.beginPath();
-          context.arc(x + dx * influence * .35, y + dy * influence * .35, 1 + influence * 2, 0, Math.PI * 2);
-          context.fill();
+          const push = 25 * strength * Math.max(0, 1 - distance / radius) ** 2 / Math.max(distance, 1);
+          const dotX = x + dx * push;
+          const dotY = y + dy * push;
+          context.moveTo(dotX + .85, dotY);
+          context.arc(dotX, dotY, .85, 0, Math.PI * 2);
         }
       }
+      context.fill();
+      context.restore();
+      if (!pointer || strength < .99 || remaining > .3) schedule();
+      else last = 0;
     };
     const schedule = () => { if (!frame) frame = requestAnimationFrame(draw); };
+    const paper = getComputedStyle(element).getPropertyValue('--paper').trim();
     const resize = new ResizeObserver(() => {
       width = element.clientWidth;
       height = element.clientHeight;
