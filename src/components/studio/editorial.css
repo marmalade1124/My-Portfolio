@@ -222,16 +222,18 @@ html:has(.ed-site) { color-scheme:light; }
   .ed-hero-meta,.ed-case h1 { animation:ed-enter .65s var(--entrance-ease) .25s both; }
   .ed-intro,.ed-case-lead,.ed-about > p { animation:ed-enter .7s var(--entrance-ease) .38s both; }
   .ed-case-meta,.ed-case-links,.ed-portrait,.ed-media { animation:ed-enter .7s var(--entrance-ease) .45s both; }
-  .ed-site[data-internal-visit] :is(.ed-nav a,.ed-eyebrow,.ed-case-kicker,.ed-word-reveal > span > span,.ed-hero-meta,.ed-intro,.ed-case h1,.ed-case-lead,.ed-about > p,.ed-case-meta,.ed-case-links,.ed-portrait,.ed-media) { animation:none; }
-  .ed-site[data-internal-visit] .ed-eyebrow { animation:ed-page-label .6s var(--entrance-ease) .51s both; }
-  .ed-site[data-internal-visit] .ed-page-title > span {
-    display:inline-block; white-space:pre;
-    animation:ed-page-word 1s var(--entrance-ease) var(--word-delay) both;
+  .ed-site[data-internal-visit][id] :where(.ed-nav a,.ed-eyebrow,.ed-case-kicker,.ed-word-reveal > span > span,.ed-hero-meta,.ed-intro,.ed-case h1,.ed-case-lead,.ed-about > p,.ed-case-meta,.ed-case-links,.ed-portrait,.ed-media) { animation:none; }
+  .ed-site[data-page-fade] > main { animation:ed-page-fade .16s cubic-bezier(.33,.56,.67,.9) backwards; }
+  .ed-site .ed-case .ed-eyebrow { animation:ed-page-label .6s var(--entrance-ease) .18s both; }
+  .ed-site .ed-case h1.ed-page-title {
+    animation:ed-page-fade .9s var(--entrance-ease) .1s backwards,
+              ed-page-rise 1s var(--entrance-ease) .1s backwards;
   }
-  .ed-site[data-internal-visit] :is(.ed-case .ed-page-title + p,.ed-portrait-trigger,.ed-media) {
-    animation:ed-enter .65s var(--entrance-ease) .65s both;
+  .ed-site .ed-case h1.ed-page-title + p {
+    animation:ed-page-fade .8s var(--entrance-ease) backwards,
+              ed-page-rise .9s var(--entrance-ease) backwards;
   }
-  .ed-site[data-internal-visit] .ed-case:focus-within :is(.ed-portrait-trigger:focus-visible,.ed-media:has(:focus-visible)) { animation:none; }
+  .ed-case:has(.ed-page-title) :is(.ed-portrait,.ed-media) { animation:none; }
   .ed-site a:focus-visible { animation:none; }
 }
 @keyframes ed-enter {
@@ -242,10 +244,8 @@ html:has(.ed-site) { color-scheme:light; }
   from { opacity:0; transform:translateY(-8px); }
   to { opacity:1; transform:none; }
 }
-@keyframes ed-page-word {
-  from { opacity:0; transform:translateY(.075em); }
-  to { opacity:1; transform:none; }
-}
+@keyframes ed-page-fade { from { opacity:0; } to { opacity:1; } }
+@keyframes ed-page-rise { from { transform:translateY(18px); } to { transform:none; } }
 @keyframes ed-word-in {
   from { opacity:0; transform:translateY(100%); }
   to { opacity:1; transform:none; }

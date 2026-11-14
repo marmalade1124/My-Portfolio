@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type MouseEvent } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type MouseEvent } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
 import { ArrowUpRight, Atom, Box, Code2, Database, Figma, GitBranch, Maximize2, Triangle } from 'lucide-react';
 import { ImageLightboxModal } from '@/components/ui/ImageLightboxModal';
@@ -186,14 +186,8 @@ function DotField() {
   return <canvas className="ed-dots" ref={canvas} aria-hidden="true" />;
 }
 
-function PageTitle({ title }: { title: string }) {
-  return <h1 className="ed-page-title" aria-label={title}>
-    {title.split(' ').map((word, index) => <span key={index} aria-hidden="true" style={{ '--word-delay': `${450 + index * 35}ms` } as CSSProperties}>{word}{' '}</span>)}
-  </h1>;
-}
-
 export function EditorialPortfolio() {
-  const [route, setRoute] = useState(() => ({ path: location.pathname, hash: location.hash, internal: false }));
+  const [route, setRoute] = useState(() => ({ path: location.pathname, hash: location.hash, internal: false, fade: false }));
   const project = PROJECTS.find(item => projectPath(item) === route.path);
   const home = route.path === '/';
   const about = route.path === '/about';
@@ -201,10 +195,14 @@ export function EditorialPortfolio() {
   const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined;
   const internalVisit = route.internal || (navigation?.type === 'navigate' && document.referrer.startsWith(location.origin + '/'));
   const [zoom, setZoom] = useState<number | null>(null);
+  const outgoing = useRef<Animation | null>(null);
   const reduced = useReducedMotion();
   useEffect(() => {
-    const restore = () => setRoute(previous => previous.path === location.pathname
-      ? previous : { path: location.pathname, hash: location.hash, internal: true });
+    const restore = () => {
+      outgoing.current?.cancel();
+      setRoute(previous => previous.path === location.pathname
+        ? previous : { path: location.pathname, hash: location.hash, internal: true, fade: false });
+    };
     window.addEventListener('popstate', restore);
     return () => window.removeEventListener('popstate', restore);
   }, []);
@@ -228,10 +226,35 @@ export function EditorialPortfolio() {
     const link = (event.target as Element).closest('a');
     if (!link || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     const url = new URL(link.href);
-    if (url.origin !== location.origin || url.pathname === route.path) return;
+    if (url.origin !== location.origin) return;
+    if (url.pathname === route.path) {
+      outgoing.current?.cancel();
+      if (!url.hash) event.preventDefault();
+      return;
+    }
     event.preventDefault();
-    history.pushState(null, '', url);
-    setRoute({ path: url.pathname, hash: url.hash, internal: true });
+    const main = document.getElementById('content');
+    const opacity = main ? getComputedStyle(main).opacity : '1';
+    outgoing.current?.cancel();
+    const fade = (about || media) && (url.pathname === '/about' || url.pathname === '/media')
+      && !reduced && !!main?.animate;
+    const open = () => {
+      history.pushState(null, '', url);
+      setRoute({ path: url.pathname, hash: url.hash, internal: true, fade });
+    };
+    if (fade && main) {
+      const animation = main.animate([{ opacity }, { opacity: 0 }], {
+        duration: 160, easing: 'cubic-bezier(.33,.56,.67,.9)', fill: 'forwards',
+      });
+      outgoing.current = animation;
+      void animation.finished.then(() => {
+        if (outgoing.current !== animation) return;
+        outgoing.current = null;
+        open();
+      }, () => {});
+    } else {
+      open();
+    }
   };
   const next = project && PROJECTS[(PROJECTS.indexOf(project) + 1) % PROJECTS.length];
   const reveal = reduced ? {} : {
@@ -240,7 +263,7 @@ export function EditorialPortfolio() {
     viewport: { once: true, amount: .16 },
     transition: { duration: .26, ease: 'easeOut' as const },
   };
-  return <div className="ed-site" id="top" data-internal-visit={internalVisit || undefined}>
+  return <div className="ed-site" id="top" data-internal-visit={internalVisit || undefined} data-page-fade={route.fade || undefined}>
     <DotField />
     <a className="ed-skip" href="#content">Skip to content</a>
     <header className="ed-nav">
@@ -304,9 +327,9 @@ export function EditorialPortfolio() {
           <a href={projectPath(item)}><span>{String(index + 1).padStart(2, '0')}</span><strong>{item.title}</strong><span>{item.category}</span><ArrowUpRight size={16} /></a>
         </li>)}</ul></details>
       </section>
-    </main> : about ? <main className="ed-band ed-case ed-about" id="content">
+    </main> : about ? <main key="about" className="ed-band ed-case ed-about" id="content">
         <span className="ed-eyebrow">About</span>
-        <PageTitle title="I’m Raziel, a developer and designer in Tagum City." />
+        <h1 className="ed-page-title">I’m Raziel, a developer and designer in Tagum City.</h1>
         <p>I’m a computer engineering student building web apps, Windows tools, and CAD prototypes.</p>
         <button className="ed-zoom ed-portrait-trigger" type="button" aria-label="Enlarge portrait" onClick={() => setZoom(0)}>
           <img className="ed-portrait" src="/portrait.png" alt="Raziel Salamat" />
@@ -325,9 +348,9 @@ export function EditorialPortfolio() {
         <p>{EDUCATION[0]?.degree} · Expected graduation 2027</p>
         <div className="ed-document-links"><a href={DOCUMENTS.resume.url}>View résumé <ArrowUpRight size={16} /></a><a href={DOCUMENTS.resume.url} download={DOCUMENTS.resume.filename}>Download résumé</a><a href={DOCUMENTS.portfolio.url}>Portfolio PDF <ArrowUpRight size={16} /></a></div>
         </section>
-    </main> : media ? <main className="ed-band ed-case" id="content">
+    </main> : media ? <main key="media" className="ed-band ed-case" id="content">
       <span className="ed-eyebrow">Film &amp; Media</span>
-      <PageTitle title="I also work behind the camera." />
+      <h1 className="ed-page-title">I also work behind the camera.</h1>
       <p className="ed-case-lead">Selected production, editing, and cinematography work.</p>
       <div className="ed-media">{PROJECTS.filter(item => item.tag === 'media').map(item => <a className="ed-card" key={item.id} href={projectPath(item)}>
         <div className="ed-cover"><img src={item.coverImage ?? item.images?.[0]} alt="" loading="lazy" decoding="async" /></div>
