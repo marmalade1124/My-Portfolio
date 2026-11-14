@@ -1,6 +1,6 @@
 import { MotionConfig } from 'motion/react';
-import { StudioPortfolio } from './components/studio/StudioPortfolio';
+import { EditorialPortfolio } from './components/studio/EditorialPortfolio';
 
 export default function App() {
-  return <MotionConfig reducedMotion="user"><StudioPortfolio /></MotionConfig>;
+  return <MotionConfig reducedMotion="user"><EditorialPortfolio /></MotionConfig>;
 }
