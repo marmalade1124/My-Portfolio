@@ -185,7 +185,9 @@ export function EditorialPortfolio() {
       <section className="ed-hero" aria-label="Introduction">
 
         <div className="ed-hero-content">
-          <motion.h1 initial={reduced ? false : { opacity: .75, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .32, ease: 'easeOut' }}>Developer &amp; Designer</motion.h1>
+          <h1 className="ed-word-reveal" aria-label="Developer & Designer">
+            {['Developer', '&', 'Designer'].map(word => <span key={word} aria-hidden="true"><span>{word}</span></span>)}
+          </h1>
           <div className="ed-hero-meta"><a href={`mailto:${PERSONAL.email}`}>{PERSONAL.email}</a><span>Based in Tagum City,<br />Philippines</span></div>
           <div className="ed-intro">
             <p>I’m Raziel Salamat, a <strong>computer engineering student and developer</strong> building web apps, Windows tools, and CAD prototypes.</p>
