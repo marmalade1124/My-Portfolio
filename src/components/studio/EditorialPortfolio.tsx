@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
-import { ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight, Maximize2 } from 'lucide-react';
+import { ImageLightboxModal } from '@/components/ui/ImageLightboxModal';
 import { BUSINESS_OFFER, EDUCATION, EXPERIENCE, PERSONAL, PROJECTS } from '@/lib/data';
 import { ProductStory, storyKey } from './ProductMotion';
 import { projectPath } from '@/lib/seo';
@@ -14,6 +15,7 @@ const sections = [
   { href: '/media', label: 'Film & Media' },
 ];
 const expertise = ['Web applications', 'Windows tools', '3D CAD', 'Product design', 'Hardware systems', 'Creative production'];
+const portraitProject = { id: 'portrait', num: '', title: 'Raziel Salamat', category: 'Portrait', tag: 'media', year: '', description: '', role: '', techStack: [], images: ['/portrait.png'] } as const;
 const sideProjects = PROJECTS.filter(item => ['viewportlab', 'mdx-readme', 'arduino-visualizer'].includes(item.id));
 const featured = [
   { id: 'twentyfour', cover: '/projects/twentyfour-camera.png', tone: 'amber', portrait: true, caption: 'A shared camera for events, with a timed reveal.' },
@@ -43,6 +45,34 @@ function PaletteDemo() {
       {palette.colors.map((color, index) => <div key={index} style={{ backgroundColor: color, color: index < 2 ? '#141413' : '#fff' }}><span>{color}</span></div>)}
     </div>
   </section>;
+}
+
+function CoverClip({ clip }: { clip: string }) {
+  const video = useRef<HTMLVideoElement>(null);
+  useEffect(() => {
+    const element = video.current;
+    const card = element?.closest('a');
+    if (!element || !card) return;
+    const preferences = matchMedia('(hover: hover) and (prefers-reduced-motion: no-preference)');
+    const stop = () => { element.pause(); delete element.dataset.playing; };
+    const start = () => {
+      if (!preferences.matches) return;
+      if (!element.src) element.src = `/motion/${clip}.mp4`;
+      void element.play().catch(stop);
+    };
+    card.addEventListener('pointerenter', start);
+    card.addEventListener('pointerleave', stop);
+    preferences.addEventListener('change', stop);
+    document.addEventListener('visibilitychange', stop);
+    return () => {
+      stop();
+      card.removeEventListener('pointerenter', start);
+      card.removeEventListener('pointerleave', stop);
+      preferences.removeEventListener('change', stop);
+      document.removeEventListener('visibilitychange', stop);
+    };
+  }, [clip]);
+  return <video className="ed-cover-clip" ref={video} muted loop playsInline preload="none" aria-hidden="true" onPlaying={event => { event.currentTarget.dataset.playing = ''; }} />;
 }
 
 function DotField() {
@@ -155,6 +185,7 @@ export function EditorialPortfolio() {
   const home = location.pathname === '/';
   const about = location.pathname === '/about';
   const media = location.pathname === '/media';
+  const [zoom, setZoom] = useState<number | null>(null);
   const reduced = useReducedMotion();
   useEffect(() => {
     if (!location.hash) return;
@@ -201,12 +232,14 @@ export function EditorialPortfolio() {
           {featured.map(spec => {
             const item = PROJECTS.find(project => project.id === spec.id)!;
             const portrait = 'portrait' in spec;
+            const clip = !portrait && storyKey(item.id);
             const image = <img src={('cover' in spec ? spec.cover : item.coverImage) ?? item.images?.[0]} alt="" loading="lazy" decoding="async" />;
             return <motion.article key={item.id} data-portrait={portrait} {...reveal}>
             <a href={projectPath(item)} className="ed-card">
               <div className="ed-card-title"><h3>{item.title}</h3><span>{'caption' in spec ? spec.caption : item.role}</span></div>
               <div className="ed-cover" data-tone={spec.tone}>
                 {portrait ? <div className="ed-cover-phone">{image}</div> : image}
+                {clip && <CoverClip clip={clip} />}
               </div>
               <div className="ed-card-meta"><span>{item.category}</span><span>View <ArrowUpRight size={13} /></span></div>
             </a>
@@ -236,7 +269,10 @@ export function EditorialPortfolio() {
         <span className="ed-eyebrow">About</span>
         <h1 className="ed-page-title">I’m Raziel, a developer and designer in Tagum City.</h1>
         <p>I’m a computer engineering student building web apps, Windows tools, and CAD prototypes.</p>
-        <img className="ed-portrait" src="/portrait.png" alt="Raziel Salamat" />
+        <button className="ed-zoom ed-portrait-trigger" type="button" aria-label="Enlarge portrait" onClick={() => setZoom(0)}>
+          <img className="ed-portrait" src="/portrait.png" alt="Raziel Salamat" />
+          <span aria-hidden="true"><Maximize2 size={16} /></span>
+        </button>
         <section className="ed-prose"><h2>Career</h2>{EXPERIENCE.map(item => <div className="ed-career-row" key={item.id}><strong>{item.role}</strong><span>{item.company}</span><span>{item.period}</span></div>)}
         <h2>Tech stack</h2><p>React, TypeScript, Flutter, .NET, Supabase and Fusion 360.</p>
         <p>{BUSINESS_OFFER}</p>
@@ -268,14 +304,20 @@ export function EditorialPortfolio() {
         <ol>{project.images?.map((src, index) => <li key={src}><a href={`#preview-${index + 1}`}>{project.imageCaptions?.[index] ?? `Preview ${index + 1}`}</a></li>)}</ol>
       </details>}
       {(project.images ?? (project.coverImage ? [project.coverImage] : [])).map((src, index) => <motion.figure key={src} id={`preview-${index + 1}`} {...reveal}>
-        <img src={src} alt={project.imageCaptions?.[index] ?? `${project.title} preview ${index + 1}`} loading={index ? 'lazy' : 'eager'} decoding="async" />
+        <button className="ed-zoom" type="button" aria-label={`Enlarge preview ${index + 1}`} onClick={() => setZoom(index)}>
+          <img src={src} alt={project.imageCaptions?.[index] ?? `${project.title} preview ${index + 1}`} loading={index ? 'lazy' : 'eager'} decoding="async" />
+          <span aria-hidden="true"><Maximize2 size={16} /></span>
+        </button>
         {project.imageCaptions?.[index] && <figcaption>{project.imageCaptions[index]}</figcaption>}
       </motion.figure>)}
       {project.caseStudy && <section className="ed-case-notes" id="notes">
         <h2>{project.caseStudy.status}</h2>
         {([['Problem', 'problem'], ['Design decision', 'decision'], ['Result', 'result'], ['Limitations', 'limitations']] as const).map(([label, key]) => <div key={key}><h3>{label}</h3><p>{project.caseStudy![key]}</p></div>)}
       </section>}
-      {next && <a href={projectPath(next)} className="ed-next"><span>Next project</span>{next.title} <ArrowUpRight /></a>}
+      {next && <a href={projectPath(next)} className="ed-next">
+        <div><span>Next project</span>{next.title} <ArrowUpRight /></div>
+        {(next.coverImage ?? next.images?.[0]) && <img src={next.coverImage ?? next.images?.[0]} alt="" loading="lazy" decoding="async" />}
+      </a>}
       <a className="ed-back" href="/#work">← All work</a>
     </main> : <main className="ed-band ed-case" id="content"><h1>Project not found</h1><a href="/#index">View project index</a></main>}
 
@@ -283,5 +325,6 @@ export function EditorialPortfolio() {
       <div><nav aria-label="Social links"><a href={PERSONAL.socials.linkedin}>LinkedIn</a><a href={PERSONAL.socials.github}>GitHub</a><a href={DOCUMENTS.resume.url}>Résumé</a></nav><a href={`mailto:${PERSONAL.email}`}>{PERSONAL.email}</a></div>
       <motion.p {...reveal}>Raziel Salamat</motion.p>
     </footer>
+    <ImageLightboxModal project={about ? { ...portraitProject, techStack: [], images: ['/portrait.png'] } : project ?? null} currentImageIndex={zoom ?? 0} isOpen={zoom !== null} onClose={() => setZoom(null)} onSelectImage={setZoom} />
   </div>;
 }
