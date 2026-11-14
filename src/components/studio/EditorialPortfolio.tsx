@@ -185,6 +185,8 @@ export function EditorialPortfolio() {
   const home = location.pathname === '/';
   const about = location.pathname === '/about';
   const media = location.pathname === '/media';
+  const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined;
+  const internalVisit = navigation?.type === 'navigate' && document.referrer.startsWith(location.origin + '/');
   const [zoom, setZoom] = useState<number | null>(null);
   const reduced = useReducedMotion();
   useEffect(() => {
@@ -201,7 +203,7 @@ export function EditorialPortfolio() {
     viewport: { once: true, amount: .16 },
     transition: { duration: .26, ease: 'easeOut' as const },
   };
-  return <div className="ed-site" id="top">
+  return <div className="ed-site" id="top" data-internal-visit={internalVisit || undefined}>
     <DotField />
     <a className="ed-skip" href="#content">Skip to content</a>
     <header className="ed-nav">

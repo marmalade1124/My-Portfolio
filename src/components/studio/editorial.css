@@ -209,6 +209,7 @@ html:has(.ed-site) { color-scheme:light; }
   .ed-hero-meta,.ed-case h1 { animation:ed-enter .65s var(--entrance-ease) .25s both; }
   .ed-intro,.ed-case-lead,.ed-about > p { animation:ed-enter .7s var(--entrance-ease) .38s both; }
   .ed-case-meta,.ed-case-links,.ed-portrait,.ed-media { animation:ed-enter .7s var(--entrance-ease) .45s both; }
+  .ed-site[data-internal-visit] :is(.ed-nav a,.ed-eyebrow,.ed-case-kicker,.ed-word-reveal > span > span,.ed-hero-meta,.ed-intro,.ed-case h1,.ed-case-lead,.ed-about > p,.ed-case-meta,.ed-case-links,.ed-portrait,.ed-media) { animation:none; }
   .ed-site a:focus-visible { animation:none; }
 }
 @keyframes ed-enter {
@@ -232,13 +233,6 @@ html:has(.ed-site) { color-scheme:light; }
 .ed-zoom > span { position:absolute; bottom:12px; right:12px; padding:9px; border-radius:50%; background:var(--paper); color:var(--ink); }
 .ed-portrait-trigger { width:min(100%,1080px); margin:55px auto; }
 .ed-portrait-trigger .ed-portrait { width:100%; margin:0; }
-@media (prefers-reduced-motion:no-preference) {
-  @view-transition { navigation:auto; }
-  ::view-transition-old(root) { animation:ed-page-out 160ms ease-in both; }
-  ::view-transition-new(root) { animation:ed-page-in 300ms cubic-bezier(.23,1,.32,1) both; }
-}
-@keyframes ed-page-out { to { opacity:0; } }
-@keyframes ed-page-in { from { opacity:0; } }
 .ed-next { display:grid; grid-template-columns:1fr 1.25fr; gap:24px; align-items:center; }
 .ed-next img { width:100%; aspect-ratio:16/9; object-fit:contain; background:var(--paper); border-radius:16px; }
 @media (max-width:760px) { .ed-next { grid-template-columns:1fr; } }
