@@ -234,6 +234,10 @@ html:has(.ed-site) { color-scheme:light; }
               ed-page-rise .9s var(--entrance-ease) backwards;
   }
   .ed-case:has(.ed-page-title) :is(.ed-portrait,.ed-media) { animation:none; }
+  .ed-site .ed-project h1.ed-project-title { animation:none; }
+  .ed-project-word > span { animation:ed-project-letter .5s steps(4) var(--letter-delay) backwards; }
+  .ed-site .ed-project .ed-case-kicker { animation:ed-page-label .6s var(--entrance-ease) .18s backwards; }
+  .ed-site .ed-project :is(.ed-case-lead,.ed-case-meta) { animation:ed-enter .65s var(--entrance-ease) .22s backwards; }
   .ed-site a:focus-visible { animation:none; }
 }
 @keyframes ed-enter {
@@ -245,6 +249,14 @@ html:has(.ed-site) { color-scheme:light; }
   to { opacity:1; transform:none; }
 }
 @keyframes ed-page-fade { from { opacity:0; } to { opacity:1; } }
+@keyframes ed-project-letter {
+  0% { opacity:0; }
+  40% { opacity:.25; }
+  60% { opacity:.1; }
+  100% { opacity:1; }
+}
+.ed-project-title { display:flex; flex-wrap:wrap; column-gap:.23em; }
+.ed-project-word { max-width:100%; }
 @keyframes ed-page-rise { from { transform:translateY(18px); } to { transform:none; } }
 @keyframes ed-word-in {
   from { opacity:0; transform:translateY(100%); }

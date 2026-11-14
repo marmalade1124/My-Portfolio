@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState, type MouseEvent } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type MouseEvent } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
 import { ArrowUpRight, Atom, Box, Code2, Database, Figma, GitBranch, Maximize2, Triangle } from 'lucide-react';
 import { ImageLightboxModal } from '@/components/ui/ImageLightboxModal';
@@ -224,9 +224,11 @@ export function EditorialPortfolio() {
   }, [about, home, media, project]);
   const navigate = (event: MouseEvent<HTMLElement>) => {
     const link = (event.target as Element).closest('a');
-    if (!link || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    if (!link || link.target || link.hasAttribute('download') || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     const url = new URL(link.href);
     if (url.origin !== location.origin) return;
+    const toProject = PROJECTS.some(item => projectPath(item) === url.pathname);
+    if (!toProject && !['/', '/about', '/media'].includes(url.pathname)) return;
     if (url.pathname === route.path) {
       outgoing.current?.cancel();
       if (!url.hash) event.preventDefault();
@@ -237,7 +239,7 @@ export function EditorialPortfolio() {
     const opacity = main ? getComputedStyle(main).opacity : '1';
     outgoing.current?.cancel();
     const homeSection = url.pathname === '/' && (url.hash === '#work' || url.hash === '#writing');
-    const fade = (about || media) && (url.pathname === '/about' || url.pathname === '/media' || homeSection)
+    const fade = (toProject || project || ((about || media) && (url.pathname === '/about' || url.pathname === '/media' || homeSection)))
       && !reduced && !!main?.animate;
     const open = () => {
       history.pushState(null, '', url);
@@ -264,11 +266,11 @@ export function EditorialPortfolio() {
     viewport: { once: true, amount: .16 },
     transition: { duration: .26, ease: 'easeOut' as const },
   };
-  return <div className="ed-site" id="top" data-internal-visit={internalVisit || undefined} data-page-fade={route.fade || undefined}>
+  return <div className="ed-site" id="top" onClick={navigate} data-internal-visit={internalVisit || undefined} data-page-fade={route.fade || undefined}>
     <DotField />
     <a className="ed-skip" href="#content">Skip to content</a>
     <header className="ed-nav">
-      <nav aria-label="Main navigation" onClick={navigate}>
+      <nav aria-label="Main navigation">
         <a href={home ? '#top' : '/'}>Raziel Salamat</a>
         {sections.map(({ href, label }) => <a key={href} href={href} aria-current={route.path === href ? 'page' : undefined}>{label}</a>)}
       </nav>
@@ -357,9 +359,13 @@ export function EditorialPortfolio() {
         <div className="ed-cover"><img src={item.coverImage ?? item.images?.[0]} alt="" loading="lazy" decoding="async" /></div>
         <div className="ed-card-meta"><span>{item.title}</span><span>View <ArrowUpRight size={13} /></span></div>
       </a>)}</div>
-    </main> : project ? <main id="content" className="ed-case ed-band">
+    </main> : project ? <main key={project.id} id="content" className="ed-case ed-band ed-project">
       <div className="ed-case-kicker"><span>{project.num} / {PROJECTS.length} · Case study</span><span>{project.category}</span></div>
-      <h1>{project.title}</h1>
+      <h1 className="ed-project-title" aria-label={project.title}>
+        {project.title.split(' ').map((word, wordIndex) => <span key={wordIndex} className="ed-project-word" aria-hidden="true">
+          {Array.from(word).map((letter, index) => <span key={index} style={{ '--letter-delay': `${((wordIndex * 62 + index * 137) % 380)}ms` } as CSSProperties}>{letter}</span>)}
+        </span>)}
+      </h1>
       <p className="ed-case-lead">{project.description}</p>
       <dl className="ed-case-meta"><div><dt>Year</dt><dd>{project.year}</dd></div><div><dt>Role</dt><dd>{project.role}</dd></div><div><dt>Category</dt><dd>{project.category}</dd></div><div><dt>Technology</dt><dd>{project.techStack.join(' · ')}</dd></div></dl>
       <div className="ed-case-links">{[
