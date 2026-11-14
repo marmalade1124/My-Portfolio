@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
 import { ArrowUpRight } from 'lucide-react';
-import { BUSINESS_OFFER, EDUCATION, PERSONAL, PROJECTS } from '@/lib/data';
+import { BUSINESS_OFFER, EDUCATION, EXPERIENCE, PERSONAL, PROJECTS } from '@/lib/data';
+import { ProductStory, storyKey } from './ProductMotion';
 import { projectPath } from '@/lib/seo';
 import { DOCUMENTS } from '@/components/ui/ResumeModal';
 import './editorial.css';
@@ -13,6 +14,7 @@ const sections = [
   { href: '/media', label: 'Film & Media' },
 ];
 const expertise = ['Web applications', 'Windows tools', '3D CAD', 'Product design', 'Hardware systems', 'Creative production'];
+const sideProjects = PROJECTS.filter(item => ['viewportlab', 'mdx-readme', 'arduino-visualizer'].includes(item.id));
 const featured = [
   { id: 'twentyfour', cover: '/projects/twentyfour-camera.png', tone: 'amber', portrait: true, caption: 'A shared camera for events, with a timed reveal.' },
   { id: 'picolor', tone: 'blue', caption: 'Pick a color and build a palette around it.' },
@@ -210,43 +212,55 @@ export function EditorialPortfolio() {
           })}
         </div>
       </section>
+      <section className="ed-band" aria-labelledby="side-title">
+        <h2 className="ed-section-title" id="side-title">Things I make<br />on the side</h2>
+        <ul className="ed-index">{sideProjects.map((item, index) => <li key={item.id}>
+          <a href={projectPath(item)}><span>{String(index + 1).padStart(2, '0')}</span><strong>{item.title}</strong><span>{item.category}</span><ArrowUpRight size={16} /></a>
+        </li>)}</ul>
+      </section>
       <section className="ed-band" id="writing">
-        <h2 className="ed-section-title">Project notes</h2>
+        <h2 className="ed-section-title">Writing</h2>
         <ul className="ed-index">{PROJECTS.filter(item => item.caseStudy).map((item, index) => <li key={item.id}>
           <a href={`${projectPath(item)}#notes`}><span>{String(index + 1).padStart(2, '0')}</span><strong>{item.title}</strong><span>{item.caseStudy?.status}</span><ArrowUpRight size={16} /></a>
         </li>)}</ul>
       </section>
       <section className="ed-band" id="index">
-        <h2 className="ed-section-title">Project index</h2>
+        <details><summary className="ed-section-title">Project index</summary>
         <ul className="ed-index">{PROJECTS.map((item, index) => <li key={item.id}>
           <a href={projectPath(item)}><span>{String(index + 1).padStart(2, '0')}</span><strong>{item.title}</strong><span>{item.category}</span><ArrowUpRight size={16} /></a>
-        </li>)}</ul>
+        </li>)}</ul></details>
       </section>
     </main> : about ? <main className="ed-band ed-case ed-about" id="content">
-        <h1>About</h1>
-        <p>I’m Raziel Salamat, a computer engineering student and developer in Tagum City, Philippines. I build web apps, Windows tools, and CAD prototypes.</p>
+        <span className="ed-eyebrow">About</span>
+        <h1 className="ed-page-title">I’m Raziel, a developer and designer in Tagum City.</h1>
+        <p>I’m a computer engineering student building web apps, Windows tools, and CAD prototypes.</p>
+        <img className="ed-portrait" src="/portrait.png" alt="Raziel Salamat" />
+        <section className="ed-prose"><h2>Career</h2>{EXPERIENCE.map(item => <div className="ed-career-row" key={item.id}><strong>{item.role}</strong><span>{item.company}</span><span>{item.period}</span></div>)}
+        <h2>Tech stack</h2><p>React, TypeScript, Flutter, .NET, Supabase and Fusion 360.</p>
         <p>{BUSINESS_OFFER}</p>
         <p>{EDUCATION[0]?.degree} · Expected graduation 2027</p>
         <div className="ed-document-links"><a href={DOCUMENTS.resume.url}>View résumé <ArrowUpRight size={16} /></a><a href={DOCUMENTS.resume.url} download={DOCUMENTS.resume.filename}>Download résumé</a><a href={DOCUMENTS.portfolio.url}>Portfolio PDF <ArrowUpRight size={16} /></a></div>
+        </section>
     </main> : media ? <main className="ed-band ed-case" id="content">
-      <h1>Film &amp; Media</h1>
+      <span className="ed-eyebrow">Film &amp; Media</span>
+      <h1 className="ed-page-title">I also work behind the camera.</h1>
       <p className="ed-case-lead">Selected production, editing, and cinematography work.</p>
       <div className="ed-media">{PROJECTS.filter(item => item.tag === 'media').map(item => <a className="ed-card" key={item.id} href={projectPath(item)}>
         <div className="ed-cover"><img src={item.coverImage ?? item.images?.[0]} alt="" loading="lazy" decoding="async" /></div>
         <div className="ed-card-meta"><span>{item.title}</span><span>View <ArrowUpRight size={13} /></span></div>
       </a>)}</div>
     </main> : project ? <main id="content" className="ed-case ed-band">
-      <a className="ed-back" href="/#work">← Selected work</a>
+      <div className="ed-case-kicker"><span>{project.num} / {PROJECTS.length} · Case study</span><span>{project.category}</span></div>
       <h1>{project.title}</h1>
-      <div className="ed-case-meta"><span>{project.role}</span><span>{project.category}</span><span>{project.year}</span></div>
       <p className="ed-case-lead">{project.description}</p>
+      <dl className="ed-case-meta"><div><dt>Year</dt><dd>{project.year}</dd></div><div><dt>Role</dt><dd>{project.role}</dd></div><div><dt>Category</dt><dd>{project.category}</dd></div><div><dt>Technology</dt><dd>{project.techStack.join(' · ')}</dd></div></dl>
       <div className="ed-case-links">{[
         [project.liveUrl, project.liveLabel ?? 'Visit project'],
         [project.githubUrl, 'Source code'],
         [project.videoUrl, 'Watch video'],
       ].map(([url, label]) => url && <a key={url} href={url} target="_blank" rel="noreferrer">{label} <ArrowUpRight size={16} /></a>)}</div>
-      <p className="ed-stack">{project.techStack.join(' · ')}</p>
       {project.id === 'picolor' && <PaletteDemo />}
+      {storyKey(project.id) && <ProductStory id={project.id} />}
       {(project.images?.length ?? 0) > 1 && <details className="ed-case-index">
         <summary>On this page</summary>
         <ol>{project.images?.map((src, index) => <li key={src}><a href={`#preview-${index + 1}`}>{project.imageCaptions?.[index] ?? `Preview ${index + 1}`}</a></li>)}</ol>
@@ -260,6 +274,7 @@ export function EditorialPortfolio() {
         {([['Problem', 'problem'], ['Design decision', 'decision'], ['Result', 'result'], ['Limitations', 'limitations']] as const).map(([label, key]) => <div key={key}><h3>{label}</h3><p>{project.caseStudy![key]}</p></div>)}
       </section>}
       {next && <a href={projectPath(next)} className="ed-next"><span>Next project</span>{next.title} <ArrowUpRight /></a>}
+      <a className="ed-back" href="/#work">← All work</a>
     </main> : <main className="ed-band ed-case" id="content"><h1>Project not found</h1><a href="/#index">View project index</a></main>}
 
     <footer className="ed-footer ed-band" id="contact">
