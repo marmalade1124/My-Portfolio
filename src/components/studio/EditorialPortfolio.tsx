@@ -13,6 +13,16 @@ const sections = [
   { id: 'contact', label: 'Contact' },
 ];
 const expertise = ['Web applications', 'Windows tools', '3D CAD', 'Product design', 'Hardware systems', 'Creative production'];
+const featured = [
+  { id: 'twentyfour', cover: '/projects/twentyfour-camera.png', tone: 'amber', portrait: true, caption: 'A shared camera for events, with a timed reveal.' },
+  { id: 'picolor', tone: 'blue', caption: 'Pick a color and build a palette around it.' },
+  { id: 'quoter', tone: 'stone' },
+  { id: 'hitoshii', tone: 'green', portrait: true },
+  { id: 'lapcat-app', tone: 'green', portrait: true },
+  { id: 'lapcat-website', tone: 'blue' },
+  { id: 'the-collegium', tone: 'blue' },
+  { id: 'okuru', tone: 'amber', portrait: true },
+] as const;
 
 const palettes = [
   { name: 'Clay', colors: ['#f7eee6', '#e5b68c', '#a7472d', '#55251a'] },
@@ -129,15 +139,19 @@ export function EditorialPortfolio() {
       <section className="ed-band" id="work">
         <h2 className="ed-section-title">Selected<br />work</h2>
         <div className="ed-grid">
-          {PROJECTS.slice(0, 8).map(item => <motion.article key={item.id} {...reveal}>
+          {featured.map(spec => {
+            const item = PROJECTS.find(project => project.id === spec.id)!;
+            const portrait = 'portrait' in spec;
+            return <motion.article key={item.id} data-portrait={portrait} {...reveal}>
             <a href={projectPath(item)} className="ed-card">
-              <div className="ed-card-title"><h3>{item.title}</h3><span>{item.role}</span></div>
-              <div className="ed-cover" data-portrait={['hitoshii', 'lapcat-app'].includes(item.id)}>
-                <img src={item.coverImage ?? item.images?.[0]} alt="" loading="lazy" decoding="async" />
+              <div className="ed-card-title"><h3>{item.title}</h3><span>{'caption' in spec ? spec.caption : item.role}</span></div>
+              <div className="ed-cover" data-tone={spec.tone}>
+                <img src={('cover' in spec ? spec.cover : item.coverImage) ?? item.images?.[0]} alt="" loading="lazy" decoding="async" />
               </div>
               <div className="ed-card-meta"><span>{item.category}</span><span>View <ArrowUpRight size={13} /></span></div>
             </a>
-          </motion.article>)}
+            </motion.article>;
+          })}
         </div>
       </section>
       <section className="ed-band" id="index">
