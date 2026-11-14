@@ -49,91 +49,100 @@ function DotField() {
   useEffect(() => {
     const element = canvas.current;
     const context = element?.getContext('2d');
-    if (!element || !context || reduced) return;
+    if (!element || !context || reduced || !matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+    const spacing = 50;
     let width = 0;
     let height = 0;
     let frame = 0;
-    let pointer: { x: number; y: number } | null = null;
-    let center: { x: number; y: number } | null = null;
-    let strength = 0;
-    let last = 0;
-    const radius = 155;
-    const patch = 178;
-    const draw = (now: number) => {
+    let cursor: { x: number; y: number } | null = null;
+    let press = { x: 0, y: 0, from: 0, to: 0, start: 0, duration: 1 };
+    const strengthAt = (time: number) => {
+      const progress = Math.min(1, Math.max(0, (time - press.start) / press.duration));
+      const eased = 1 - (1 - progress) ** (press.to ? 2 : 3);
+      return press.from + (press.to - press.from) * eased;
+    };
+    const offset = (distance: number, radius: number) => {
+      const weight = Math.max(0, 1 - distance / radius);
+      return distance > 0 ? weight * weight * (3 - 2 * weight) / distance : 0;
+    };
+    const render = (time: number) => {
       frame = 0;
-      if (center) context.clearRect(Math.floor(center.x - patch), Math.floor(center.y - patch), patch * 2 + 1, patch * 2 + 1);
-      const ease = 1 - Math.exp(-Math.min(last ? now - last : 16, 32) / 55);
-      last = now;
-      strength += ((pointer ? 1 : 0) - strength) * ease;
-      let remaining = 0;
-      if (pointer) {
-        const bounds = element.getBoundingClientRect();
-        const x = pointer.x - bounds.left;
-        const y = pointer.y - bounds.top;
-        center ??= { x, y };
-        center.x += (x - center.x) * ease;
-        center.y += (y - center.y) * ease;
-        remaining = Math.hypot(x - center.x, y - center.y);
-      }
-      if (!center || (!pointer && strength < .01)) {
-        center = null;
-        last = 0;
-        return;
-      }
-      const left = Math.floor(center.x - patch);
-      const top = Math.floor(center.y - patch);
-      const size = patch * 2 + 1;
-      context.fillStyle = paper;
-      context.fillRect(left, top, size, size);
-      context.save();
+      const pull = strengthAt(time) * 16;
+      context.clearRect(0, 0, width, height);
       context.beginPath();
-      context.rect(left, top, size, size);
-      context.clip();
-      context.fillStyle = '#b8b8b0';
-      context.beginPath();
-      for (let y = Math.max(0, Math.ceil((top - 1) / 50) * 50); y <= Math.min(height, top + size + 1); y += 50) {
-        for (let x = Math.max(0, Math.ceil((left - 1) / 50) * 50); x <= Math.min(width, left + size + 1); x += 50) {
-          const dx = x - center.x;
-          const dy = y - center.y;
-          const distance = Math.hypot(dx, dy);
-          const push = 25 * strength * Math.max(0, 1 - distance / radius) ** 2 / Math.max(distance, 1);
-          const dotX = x + dx * push;
-          const dotY = y + dy * push;
-          context.moveTo(dotX + .85, dotY);
-          context.arc(dotX, dotY, .85, 0, Math.PI * 2);
+      for (let y = -(scrollY % spacing); y <= height + 1; y += spacing) {
+        for (let x = 0; x <= width + 1; x += spacing) {
+          let dx = 0;
+          let dy = 0;
+          if (cursor) {
+            const push = offset(Math.hypot(x - cursor.x, y - cursor.y), 300) * 12.5;
+            dx = (x - cursor.x) * push;
+            dy = (y - cursor.y) * push;
+          }
+          if (pull) {
+            const attraction = offset(Math.hypot(x - press.x, y - press.y), 375) * pull;
+            dx -= (x - press.x) * attraction;
+            dy -= (y - press.y) * attraction;
+          }
+          context.moveTo(x + dx + 1, y + dy);
+          context.arc(x + dx, y + dy, 1, 0, 2 * Math.PI);
         }
       }
       context.fill();
-      context.restore();
-      if (!pointer || strength < .99 || remaining > .3) schedule();
-      else last = 0;
+      if (time - press.start < press.duration) schedule();
     };
-    const schedule = () => { if (!frame) frame = requestAnimationFrame(draw); };
-    const paper = getComputedStyle(element).getPropertyValue('--paper').trim();
-    const resize = new ResizeObserver(() => {
+    const schedule = () => { if (!frame) frame = requestAnimationFrame(render); };
+    const resize = () => {
       width = element.clientWidth;
       height = element.clientHeight;
-      const ratio = Math.min(devicePixelRatio, 2);
-      element.width = width * ratio;
-      element.height = height * ratio;
-      context.setTransform(ratio, 0, 0, ratio, 0, 0);
-      schedule();
-    });
-    const host = element.parentElement!;
-    const move = (event: PointerEvent) => {
-      if (event.pointerType === 'touch') return;
-      pointer = { x: event.clientX, y: event.clientY };
+      const scale = Math.min(devicePixelRatio || 1, 2);
+      element.width = Math.round(width * scale);
+      element.height = Math.round(height * scale);
+      context.setTransform(scale, 0, 0, scale, 0, 0);
+      context.fillStyle = 'rgb(50 50 50 / .35)';
       schedule();
     };
-    const leave = () => { pointer = null; schedule(); };
-    resize.observe(element);
-    host.addEventListener('pointermove', move, { passive: true });
-    host.addEventListener('pointerleave', leave);
+    const move = (event: PointerEvent) => {
+      if (event.pointerType !== 'mouse') return;
+      cursor = { x: event.clientX, y: event.clientY };
+      schedule();
+    };
+    const leave = () => { cursor = null; schedule(); };
+    const down = (event: PointerEvent) => {
+      if (event.pointerType !== 'mouse' || event.button !== 0) return;
+      const start = performance.now();
+      press = { x: event.clientX, y: event.clientY, from: strengthAt(start), to: 1, start, duration: 250 };
+      schedule();
+    };
+    const up = () => {
+      if (press.to === 0) return;
+      const start = performance.now();
+      press = { ...press, from: strengthAt(start), to: 0, start, duration: 600 };
+      schedule();
+    };
+
+    element.dataset.active = '';
+    resize();
+    window.addEventListener('resize', resize);
+    window.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('pointermove', move, { passive: true });
+    window.addEventListener('pointerdown', down, { passive: true });
+    window.addEventListener('pointerup', up);
+    window.addEventListener('pointercancel', up);
+    window.addEventListener('blur', up);
+    document.documentElement.addEventListener('pointerleave', leave);
     return () => {
-      resize.disconnect();
+      delete element.dataset.active;
       cancelAnimationFrame(frame);
-      host.removeEventListener('pointermove', move);
-      host.removeEventListener('pointerleave', leave);
+      window.removeEventListener('resize', resize);
+      window.removeEventListener('scroll', schedule);
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerdown', down);
+      window.removeEventListener('pointerup', up);
+      window.removeEventListener('pointercancel', up);
+      window.removeEventListener('blur', up);
+      document.documentElement.removeEventListener('pointerleave', leave);
     };
   }, [reduced]);
   return <canvas className="ed-dots" ref={canvas} aria-hidden="true" />;
@@ -160,6 +169,7 @@ export function EditorialPortfolio() {
     transition: { duration: .26, ease: 'easeOut' as const },
   };
   return <div className="ed-site" id="top">
+    <DotField />
     <a className="ed-skip" href="#content">Skip to content</a>
     <header className="ed-nav">
       <nav aria-label="Main navigation">
@@ -171,7 +181,7 @@ export function EditorialPortfolio() {
 
     {home ? <main id="content">
       <section className="ed-hero" aria-label="Introduction">
-        <DotField />
+
         <div className="ed-hero-content">
           <motion.h1 initial={reduced ? false : { opacity: .75, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .32, ease: 'easeOut' }}>Developer &amp; Designer</motion.h1>
           <div className="ed-hero-meta"><a href={`mailto:${PERSONAL.email}`}>{PERSONAL.email}</a><span>Based in Tagum City,<br />Philippines</span></div>
