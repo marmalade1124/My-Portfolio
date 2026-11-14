@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState, type MouseEvent } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type MouseEvent } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
 import { ArrowUpRight, Atom, Box, Code2, Database, Figma, GitBranch, Maximize2, Triangle } from 'lucide-react';
 import { ImageLightboxModal } from '@/components/ui/ImageLightboxModal';
@@ -186,6 +186,12 @@ function DotField() {
   return <canvas className="ed-dots" ref={canvas} aria-hidden="true" />;
 }
 
+function PageTitle({ title }: { title: string }) {
+  return <h1 className="ed-page-title" aria-label={title}>
+    {title.split(' ').map((word, index) => <span key={index} aria-hidden="true" style={{ '--word-delay': `${450 + index * 35}ms` } as CSSProperties}>{word}{' '}</span>)}
+  </h1>;
+}
+
 export function EditorialPortfolio() {
   const [route, setRoute] = useState(() => ({ path: location.pathname, hash: location.hash, internal: false }));
   const project = PROJECTS.find(item => projectPath(item) === route.path);
@@ -300,7 +306,7 @@ export function EditorialPortfolio() {
       </section>
     </main> : about ? <main className="ed-band ed-case ed-about" id="content">
         <span className="ed-eyebrow">About</span>
-        <h1 className="ed-page-title">I’m Raziel, a developer and designer in Tagum City.</h1>
+        <PageTitle title="I’m Raziel, a developer and designer in Tagum City." />
         <p>I’m a computer engineering student building web apps, Windows tools, and CAD prototypes.</p>
         <button className="ed-zoom ed-portrait-trigger" type="button" aria-label="Enlarge portrait" onClick={() => setZoom(0)}>
           <img className="ed-portrait" src="/portrait.png" alt="Raziel Salamat" />
@@ -321,7 +327,7 @@ export function EditorialPortfolio() {
         </section>
     </main> : media ? <main className="ed-band ed-case" id="content">
       <span className="ed-eyebrow">Film &amp; Media</span>
-      <h1 className="ed-page-title">I also work behind the camera.</h1>
+      <PageTitle title="I also work behind the camera." />
       <p className="ed-case-lead">Selected production, editing, and cinematography work.</p>
       <div className="ed-media">{PROJECTS.filter(item => item.tag === 'media').map(item => <a className="ed-card" key={item.id} href={projectPath(item)}>
         <div className="ed-cover"><img src={item.coverImage ?? item.images?.[0]} alt="" loading="lazy" decoding="async" /></div>
