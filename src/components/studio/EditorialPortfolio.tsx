@@ -21,7 +21,7 @@ const featured = [
   { id: 'lapcat-app', tone: 'green', portrait: true },
   { id: 'lapcat-website', tone: 'blue' },
   { id: 'the-collegium', tone: 'blue' },
-  { id: 'okuru', tone: 'amber', portrait: true },
+  { id: 'okuru', cover: '/projects/okuru-mobile.png', tone: 'amber', portrait: true },
 ] as const;
 
 const palettes = [
@@ -142,11 +142,12 @@ export function EditorialPortfolio() {
           {featured.map(spec => {
             const item = PROJECTS.find(project => project.id === spec.id)!;
             const portrait = 'portrait' in spec;
+            const image = <img src={('cover' in spec ? spec.cover : item.coverImage) ?? item.images?.[0]} alt="" loading="lazy" decoding="async" />;
             return <motion.article key={item.id} data-portrait={portrait} {...reveal}>
             <a href={projectPath(item)} className="ed-card">
               <div className="ed-card-title"><h3>{item.title}</h3><span>{'caption' in spec ? spec.caption : item.role}</span></div>
               <div className="ed-cover" data-tone={spec.tone}>
-                <img src={('cover' in spec ? spec.cover : item.coverImage) ?? item.images?.[0]} alt="" loading="lazy" decoding="async" />
+                {portrait ? <div className="ed-cover-phone">{image}</div> : image}
               </div>
               <div className="ed-card-meta"><span>{item.category}</span><span>View <ArrowUpRight size={13} /></span></div>
             </a>
