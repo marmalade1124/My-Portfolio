@@ -7,10 +7,10 @@ import { DOCUMENTS } from '@/components/ui/ResumeModal';
 import './editorial.css';
 
 const sections = [
-  { id: 'work', label: 'Projects' },
-  { id: 'index', label: 'Index' },
-  { id: 'about', label: 'About' },
-  { id: 'contact', label: 'Contact' },
+  { href: '/#work', label: 'Projects' },
+  { href: '/#writing', label: 'Writing' },
+  { href: '/about', label: 'About' },
+  { href: '/media', label: 'Film & Media' },
 ];
 const expertise = ['Web applications', 'Windows tools', '3D CAD', 'Product design', 'Hardware systems', 'Creative production'];
 const featured = [
@@ -54,14 +54,19 @@ function DotField() {
     let height = 0;
     let frame = 0;
     let pointer: { x: number; y: number } | null = null;
+    let previous: { x: number; y: number } | null = null;
     const draw = () => {
       frame = 0;
-      context.clearRect(0, 0, width, height);
+      if (previous) context.clearRect(previous.x - 192, previous.y - 192, 384, 384);
+      previous = null;
       if (!pointer) return;
-      for (let y = 0; y < height; y += 50) {
-        for (let x = 0; x < width; x += 50) {
-          const dx = x - pointer.x;
-          const dy = y - pointer.y;
+      const bounds = element.getBoundingClientRect();
+      const local = { x: pointer.x - bounds.left, y: pointer.y - bounds.top };
+      previous = local;
+      for (let y = Math.max(0, Math.ceil((local.y - 175) / 50) * 50); y < Math.min(height, local.y + 175); y += 50) {
+        for (let x = Math.max(0, Math.ceil((local.x - 175) / 50) * 50); x < Math.min(width, local.x + 175); x += 50) {
+          const dx = x - local.x;
+          const dy = y - local.y;
           const distance = Math.hypot(dx, dy);
           if (distance >= 175) continue;
           const influence = (1 - distance / 175) ** 2;
@@ -85,8 +90,7 @@ function DotField() {
     const host = element.parentElement!;
     const move = (event: PointerEvent) => {
       if (event.pointerType === 'touch') return;
-      const bounds = element.getBoundingClientRect();
-      pointer = { x: event.clientX - bounds.left, y: event.clientY - bounds.top };
+      pointer = { x: event.clientX, y: event.clientY };
       schedule();
     };
     const leave = () => { pointer = null; schedule(); };
@@ -106,20 +110,29 @@ function DotField() {
 export function EditorialPortfolio() {
   const project = PROJECTS.find(item => projectPath(item) === location.pathname);
   const home = location.pathname === '/';
+  const about = location.pathname === '/about';
+  const media = location.pathname === '/media';
   const reduced = useReducedMotion();
+  useEffect(() => {
+    if (!location.hash) return;
+    const frame = requestAnimationFrame(() => {
+      document.getElementById(location.hash.slice(1))?.scrollIntoView({ behavior: 'instant' });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, []);
   const next = project && PROJECTS[(PROJECTS.indexOf(project) + 1) % PROJECTS.length];
   const reveal = reduced ? {} : {
-    initial: { opacity: .65, y: 15 },
+    initial: { opacity: .9, y: 8 },
     whileInView: { opacity: 1, y: 0 },
     viewport: { once: true, amount: .16 },
-    transition: { duration: .5, ease: 'easeOut' as const },
+    transition: { duration: .26, ease: 'easeOut' as const },
   };
-  return <div className="ed-site">
+  return <div className="ed-site" id="top">
     <a className="ed-skip" href="#content">Skip to content</a>
     <header className="ed-nav">
       <nav aria-label="Main navigation">
-        <a href="/">Raziel Salamat</a>
-        {sections.map(({ id, label }) => <a key={id} href={`${home ? '' : '/'}#${id}`}>{label}</a>)}
+        <a href={home ? '#top' : '/'}>Raziel Salamat</a>
+        {sections.map(({ href, label }) => <a key={href} href={href} aria-current={location.pathname === href ? 'page' : undefined}>{label}</a>)}
       </nav>
       <a className="ed-available" href={`mailto:${PERSONAL.email}`}>Open to work</a>
     </header>
@@ -128,7 +141,7 @@ export function EditorialPortfolio() {
       <section className="ed-hero" aria-label="Introduction">
         <DotField />
         <div className="ed-hero-content">
-          <motion.h1 initial={reduced ? false : { opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .55 }}>Developer &amp; Designer</motion.h1>
+          <motion.h1 initial={reduced ? false : { opacity: .75, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .32, ease: 'easeOut' }}>Developer &amp; Designer</motion.h1>
           <div className="ed-hero-meta"><a href={`mailto:${PERSONAL.email}`}>{PERSONAL.email}</a><span>Based in Tagum City,<br />Philippines</span></div>
           <div className="ed-intro">
             <p>I’m Raziel Salamat, a <strong>computer engineering student and developer</strong> building web apps, Windows tools, and CAD prototypes.</p>
@@ -155,18 +168,31 @@ export function EditorialPortfolio() {
           })}
         </div>
       </section>
+      <section className="ed-band" id="writing">
+        <h2 className="ed-section-title">Project notes</h2>
+        <ul className="ed-index">{PROJECTS.filter(item => item.caseStudy).map((item, index) => <li key={item.id}>
+          <a href={`${projectPath(item)}#notes`}><span>{String(index + 1).padStart(2, '0')}</span><strong>{item.title}</strong><span>{item.caseStudy?.status}</span><ArrowUpRight size={16} /></a>
+        </li>)}</ul>
+      </section>
       <section className="ed-band" id="index">
         <h2 className="ed-section-title">Project index</h2>
         <ul className="ed-index">{PROJECTS.map((item, index) => <li key={item.id}>
           <a href={projectPath(item)}><span>{String(index + 1).padStart(2, '0')}</span><strong>{item.title}</strong><span>{item.category}</span><ArrowUpRight size={16} /></a>
         </li>)}</ul>
       </section>
-      <section className="ed-band ed-about" id="about">
-        <h2 className="ed-section-title">About</h2>
+    </main> : about ? <main className="ed-band ed-case ed-about" id="content">
+        <h1>About</h1>
+        <p>I’m Raziel Salamat, a computer engineering student and developer in Tagum City, Philippines. I build web apps, Windows tools, and CAD prototypes.</p>
         <p>{BUSINESS_OFFER}</p>
         <p>{EDUCATION[0]?.degree} · Expected graduation 2027</p>
         <div className="ed-document-links"><a href={DOCUMENTS.resume.url}>View résumé <ArrowUpRight size={16} /></a><a href={DOCUMENTS.resume.url} download={DOCUMENTS.resume.filename}>Download résumé</a><a href={DOCUMENTS.portfolio.url}>Portfolio PDF <ArrowUpRight size={16} /></a></div>
-      </section>
+    </main> : media ? <main className="ed-band ed-case" id="content">
+      <h1>Film &amp; Media</h1>
+      <p className="ed-case-lead">Selected production, editing, and cinematography work.</p>
+      <div className="ed-media">{PROJECTS.filter(item => item.tag === 'media').map(item => <a className="ed-card" key={item.id} href={projectPath(item)}>
+        <div className="ed-cover"><img src={item.coverImage ?? item.images?.[0]} alt="" loading="lazy" decoding="async" /></div>
+        <div className="ed-card-meta"><span>{item.title}</span><span>View <ArrowUpRight size={13} /></span></div>
+      </a>)}</div>
     </main> : project ? <main id="content" className="ed-case ed-band">
       <a className="ed-back" href="/#work">← Selected work</a>
       <h1>{project.title}</h1>
@@ -187,7 +213,7 @@ export function EditorialPortfolio() {
         <img src={src} alt={project.imageCaptions?.[index] ?? `${project.title} preview ${index + 1}`} loading={index ? 'lazy' : 'eager'} decoding="async" />
         {project.imageCaptions?.[index] && <figcaption>{project.imageCaptions[index]}</figcaption>}
       </motion.figure>)}
-      {project.caseStudy && <section className="ed-case-notes">
+      {project.caseStudy && <section className="ed-case-notes" id="notes">
         <h2>{project.caseStudy.status}</h2>
         {([['Problem', 'problem'], ['Design decision', 'decision'], ['Result', 'result'], ['Limitations', 'limitations']] as const).map(([label, key]) => <div key={key}><h3>{label}</h3><p>{project.caseStudy![key]}</p></div>)}
       </section>}
