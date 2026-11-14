@@ -190,6 +190,12 @@ html:has(.ed-site) { color-scheme:light; }
 .ed-prose,.ed-case-notes { width:min(100%,540px); margin:70px auto; }
 .ed-prose h2,.ed-case-notes h2 { font-size:36px; line-height:1.08; margin:35px 0 18px; letter-spacing:-.05em; }
 .ed-prose p { margin-block:16px; }
+.ed-tech-stack { display:grid; gap:18px; font-size:17px; }
+.ed-tech-stack dt { color:var(--muted); margin-bottom:3px; }
+.ed-tech-stack ul { display:flex; flex-wrap:wrap; gap:4px 16px; }
+.ed-tech-stack li { display:inline-flex; align-items:center; gap:7px; white-space:nowrap; }
+.ed-tech-mark { display:grid; place-items:center; width:16px; height:16px; background:var(--ink); color:var(--paper); font-size:9px; font-weight:700; }
+.ed-site main:focus { outline:none; }
 .ed-career-row { display:grid; grid-template-columns:1fr 1fr auto; gap:12px; padding:14px 0; border-bottom:1px solid var(--line); font-size:14px; }
 .ed-case .product-story { display:grid; grid-template-columns:1.25fr 1fr; gap:32px; border-block:1px solid var(--line); padding-block:30px; margin-block:35px; }
 .ed-case .product-story video { width:100%; max-height:60vh; background:#171717; margin-block:14px; }

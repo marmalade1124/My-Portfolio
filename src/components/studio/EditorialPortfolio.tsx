@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type MouseEvent } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
-import { ArrowUpRight, Maximize2 } from 'lucide-react';
+import { ArrowUpRight, Atom, Box, Code2, Database, Figma, GitBranch, Maximize2, Triangle } from 'lucide-react';
 import { ImageLightboxModal } from '@/components/ui/ImageLightboxModal';
 import { BUSINESS_OFFER, EDUCATION, EXPERIENCE, PERSONAL, PROJECTS } from '@/lib/data';
 import { ProductStory, storyKey } from './ProductMotion';
@@ -15,6 +15,12 @@ const sections = [
   { href: '/media', label: 'Film & Media' },
 ];
 const expertise = ['Web applications', 'Windows tools', '3D CAD', 'Product design', 'Hardware systems', 'Creative production'];
+const stack = [
+  { label: 'Design', tools: [{ name: 'Figma', icon: Figma }, { name: 'Fusion 360', icon: Box }] },
+  { label: 'Development', tools: [{ name: 'React', icon: Atom }, { name: 'TypeScript', mark: 'TS' }, { name: 'Tailwind CSS', icon: Code2 }, { name: 'Flutter', mark: 'F' }, { name: '.NET', mark: 'N' }] },
+  { label: 'Backend', tools: [{ name: 'Supabase', icon: Database }] },
+  { label: 'Version control & deployment', tools: [{ name: 'GitHub', icon: GitBranch }, { name: 'Vercel', icon: Triangle }] },
+] as const;
 const portraitProject = { id: 'portrait', num: '', title: 'Raziel Salamat', category: 'Portrait', tag: 'media', year: '', description: '', role: '', techStack: [], images: ['/portrait.png'] } as const;
 const sideProjects = PROJECTS.filter(item => ['viewportlab', 'mdx-readme', 'arduino-visualizer'].includes(item.id));
 const featured = [
@@ -181,21 +187,46 @@ function DotField() {
 }
 
 export function EditorialPortfolio() {
-  const project = PROJECTS.find(item => projectPath(item) === location.pathname);
-  const home = location.pathname === '/';
-  const about = location.pathname === '/about';
-  const media = location.pathname === '/media';
+  const [route, setRoute] = useState(() => ({ path: location.pathname, hash: location.hash, internal: false }));
+  const project = PROJECTS.find(item => projectPath(item) === route.path);
+  const home = route.path === '/';
+  const about = route.path === '/about';
+  const media = route.path === '/media';
   const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined;
-  const internalVisit = navigation?.type === 'navigate' && document.referrer.startsWith(location.origin + '/');
+  const internalVisit = route.internal || (navigation?.type === 'navigate' && document.referrer.startsWith(location.origin + '/'));
   const [zoom, setZoom] = useState<number | null>(null);
   const reduced = useReducedMotion();
   useEffect(() => {
-    if (!location.hash) return;
-    const frame = requestAnimationFrame(() => {
-      document.getElementById(location.hash.slice(1))?.scrollIntoView({ behavior: 'instant' });
-    });
-    return () => cancelAnimationFrame(frame);
+    const restore = () => setRoute(previous => previous.path === location.pathname
+      ? previous : { path: location.pathname, hash: location.hash, internal: true });
+    window.addEventListener('popstate', restore);
+    return () => window.removeEventListener('popstate', restore);
   }, []);
+  useLayoutEffect(() => {
+    const anchor = document.getElementById(route.hash.slice(1));
+    if (route.internal) {
+      const main = document.getElementById('content');
+      if (main) {
+        main.tabIndex = -1;
+        main.focus({ preventScroll: true });
+      }
+      if (!anchor) window.scrollTo({ top: 0, behavior: 'instant' });
+    }
+    anchor?.scrollIntoView({ behavior: 'instant' });
+  }, [route]);
+  useEffect(() => {
+    document.title = about ? 'About | Raziel Salamat' : media ? 'Film & Media | Raziel Salamat'
+      : project ? `${project.title} | Raziel Salamat` : home ? 'Raziel Salamat | Developer & CAD Designer' : 'Project not found | Raziel Salamat';
+  }, [about, home, media, project]);
+  const navigate = (event: MouseEvent<HTMLElement>) => {
+    const link = (event.target as Element).closest('a');
+    if (!link || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    const url = new URL(link.href);
+    if (url.origin !== location.origin || url.pathname === route.path) return;
+    event.preventDefault();
+    history.pushState(null, '', url);
+    setRoute({ path: url.pathname, hash: url.hash, internal: true });
+  };
   const next = project && PROJECTS[(PROJECTS.indexOf(project) + 1) % PROJECTS.length];
   const reveal = reduced ? {} : {
     initial: { opacity: .9, y: 8 },
@@ -207,9 +238,9 @@ export function EditorialPortfolio() {
     <DotField />
     <a className="ed-skip" href="#content">Skip to content</a>
     <header className="ed-nav">
-      <nav aria-label="Main navigation">
+      <nav aria-label="Main navigation" onClick={navigate}>
         <a href={home ? '#top' : '/'}>Raziel Salamat</a>
-        {sections.map(({ href, label }) => <a key={href} href={href} aria-current={location.pathname === href ? 'page' : undefined}>{label}</a>)}
+        {sections.map(({ href, label }) => <a key={href} href={href} aria-current={route.path === href ? 'page' : undefined}>{label}</a>)}
       </nav>
       <a className="ed-available" href={`mailto:${PERSONAL.email}`}>Open to work</a>
     </header>
@@ -276,7 +307,14 @@ export function EditorialPortfolio() {
           <span aria-hidden="true"><Maximize2 size={16} /></span>
         </button>
         <section className="ed-prose"><h2>Career</h2>{EXPERIENCE.map(item => <div className="ed-career-row" key={item.id}><strong>{item.role}</strong><span>{item.company}</span><span>{item.period}</span></div>)}
-        <h2>Tech stack</h2><p>React, TypeScript, Flutter, .NET, Supabase and Fusion 360.</p>
+        <h2>Tech stack</h2>
+        <dl className="ed-tech-stack">{stack.map(group => <div key={group.label}>
+          <dt>{group.label}</dt>
+          <dd><ul>{group.tools.map(tool => <li key={tool.name}>
+            {'icon' in tool ? <tool.icon size={16} aria-hidden="true" /> : <span aria-hidden="true" className="ed-tech-mark">{tool.mark}</span>}
+            {tool.name}
+          </li>)}</ul></dd>
+        </div>)}</dl>
         <p>{BUSINESS_OFFER}</p>
         <p>{EDUCATION[0]?.degree} · Expected graduation 2027</p>
         <div className="ed-document-links"><a href={DOCUMENTS.resume.url}>View résumé <ArrowUpRight size={16} /></a><a href={DOCUMENTS.resume.url} download={DOCUMENTS.resume.filename}>Download résumé</a><a href={DOCUMENTS.portfolio.url}>Portfolio PDF <ArrowUpRight size={16} /></a></div>
