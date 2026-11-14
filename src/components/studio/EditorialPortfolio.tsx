@@ -236,7 +236,8 @@ export function EditorialPortfolio() {
     const main = document.getElementById('content');
     const opacity = main ? getComputedStyle(main).opacity : '1';
     outgoing.current?.cancel();
-    const fade = (about || media) && (url.pathname === '/about' || url.pathname === '/media')
+    const homeSection = url.pathname === '/' && (url.hash === '#work' || url.hash === '#writing');
+    const fade = (about || media) && (url.pathname === '/about' || url.pathname === '/media' || homeSection)
       && !reduced && !!main?.animate;
     const open = () => {
       history.pushState(null, '', url);
