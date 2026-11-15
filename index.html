@@ -22,7 +22,9 @@
     <style>
       html[data-theme="dark"] { background: #141414; color: #f2f0eb; color-scheme: dark; }
       html[data-portfolio-starting] { background: #f4f4f2; color-scheme: light; }
+      html[data-portfolio-starting][data-theme="dark"] { background: #181817; color-scheme: dark; }
       html[data-portfolio-starting] #root > [data-static-fallback] { display: none; }
+      html[data-theme="dark"] body:has([data-static-fallback]) { background: #181817; color: #f3f2ee; }
     </style>
     <meta name="description" content="Raziel Renz Salamat — Computer Engineering student building web apps, Windows tools, and CAD prototypes. Expected graduation 2027." />
     <title>Raziel Salamat — Developer & CAD Designer</title>

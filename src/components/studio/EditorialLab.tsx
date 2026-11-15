@@ -51,7 +51,7 @@ export function EditorialLab({ project }: { project: Project }) {
   return <section id="project-lab" className="ed-case-notes ed-lab">
     <h2>{lab.title}</h2><p>{lab.intro}</p>
     <div className="ed-controls" aria-label={lab.title}>{lab.modes.map((label, index) => <button key={label} type="button" aria-pressed={index === mode} onClick={() => setMode(index)}>{label}</button>)}</div>
-    <div className="ed-lab-stage" data-dark={dark || undefined}>
+    <div className="ed-lab-stage" data-dark={project.id === 'picolor' ? dark : undefined}>
       {project.id === 'picolor' && <>
         <div className="ed-controls" aria-label="Theme"><button type="button" aria-pressed={!dark} onClick={() => setDark(false)}>Light</button><button type="button" aria-pressed={dark} onClick={() => setDark(true)}>Dark</button></div>
         <h3>Saved palette</h3>

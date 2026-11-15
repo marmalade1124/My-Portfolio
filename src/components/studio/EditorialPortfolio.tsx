@@ -9,6 +9,7 @@ import { DOCUMENTS } from '@/components/ui/ResumeModal';
 import { WRITING, writingPath } from '@/lib/editorial-writing';
 import { CaseNarration, ChapterRail, EditorialArticle } from './EditorialChapters';
 import { EditorialLab, hasProjectLab } from './EditorialLab';
+import { EditorialThemeButton } from './EditorialThemeButton';
 import { editorialPath, filipinoPath, localizedPath, FILIPINO } from '@/lib/editorial-language';
 import './editorial.css';
 
@@ -461,7 +462,8 @@ export function EditorialPortfolio() {
         {sections.map(({ href: destination, label }, index) => <a key={destination} href={href(destination)} aria-current={path === destination || (article && label === 'Writing') ? 'page' : undefined}>{filipino ? FILIPINO.nav[index] : label}</a>)}
       </nav>
       <div className="ed-nav-options">
-        <div className="ed-languages" role="group" aria-label={filipino ? 'Wika' : 'Language'}><a href={path} hrefLang="en" lang="en" aria-current={!filipino ? 'true' : undefined} aria-label="English">EN</a><a href={localizedPath(path, true)} hrefLang="fil" lang="fil" aria-current={filipino ? 'true' : undefined} aria-label="Filipino">FIL</a></div>
+        <a className="ed-language" href={path} hrefLang="en" lang="en" aria-current={!filipino ? 'true' : undefined} aria-label="English">EN</a>
+        <EditorialThemeButton label={filipino ? 'Madilim na tema' : 'Dark mode'} />
         <a className="ed-available" href={`mailto:${PERSONAL.email}`}>{filipino ? 'Bukas sa trabaho' : 'Open to work'}</a>
       </div>
     </header>

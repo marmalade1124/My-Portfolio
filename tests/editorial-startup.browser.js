@@ -4,9 +4,10 @@ async page => {
   const fallback = '[data-static-fallback]';
   const assert = (value, message) => { if (!value) throw Error(message); };
   await page.bringToFront();
-  await page.emulateMedia({ colorScheme: 'dark', reducedMotion: 'no-preference' });
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
 
-  for (const [path, reload] of [['/', false], ['/', true], ['/work/hitoshii', false], ['/fil/about', false]]) {
+  for (const [path, reload, colorScheme] of [['/', false, 'light'], ['/', true, 'light'], ['/work/hitoshii', false, 'dark'], ['/fil/about', false, 'dark']]) {
+    await page.emulateMedia({ colorScheme });
     let release;
     const hold = new Promise(resolve => { release = resolve; });
     const pauseBundle = route => hold.then(() => route.continue());
@@ -19,7 +20,8 @@ async page => {
         await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
         return [getComputedStyle(node).display, getComputedStyle(document.documentElement).backgroundColor];
       });
-      assert(firstPaint.join('|') === 'none|rgb(244, 244, 242)', `Wrong startup frame for ${path}: ${firstPaint}`);
+      const paper = colorScheme === 'dark' ? 'rgb(24, 24, 23)' : 'rgb(244, 244, 242)';
+      assert(firstPaint.join('|') === `none|${paper}`, `Wrong ${colorScheme} startup frame for ${path}: ${firstPaint}`);
       release();
       await page.locator('.ed-route > main').waitFor();
       assert(await page.locator(fallback).count() === 0, `Stale fallback on ${path}`);
