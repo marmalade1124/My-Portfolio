@@ -18,6 +18,7 @@ export interface Project {
   logoText?: string;
   images?: string[];
   imageCaptions?: string[];
+  desktopScreens?: number[];
   caseStudy?: {
     status: string;
     problem: string;
@@ -149,6 +150,7 @@ export const PROJECTS: Project[] = [
     liveUrl: 'https://pi-color-studio.vercel.app/',
     liveLabel: 'Website',
     coverImage: '/projects/picolor-studio.png',
+    desktopScreens: [0, 1, 2, 3],
     images: [
       '/projects/picolor-studio.png',
       '/projects/picolor-editor.png',
@@ -175,12 +177,20 @@ export const PROJECTS: Project[] = [
     role: 'Creator & Desktop Application Developer',
     techStack: ['C#', 'WPF', '.NET Framework 4.8', '3MF / XML', 'PDF', 'NSIS'],
     coverImage: '/projects/quoter-batch.png',
-    images: ['/projects/quoter-batch.png', '/projects/quoter-empty.png', '/projects/quoter-receipt.png', '/projects/quoter-batch-pdf.png'],
+    desktopScreens: [0, 1, 4, 5, 6],
+    images: [
+      '/projects/quoter-batch.png', '/projects/quoter-empty.png', '/projects/quoter-receipt.png',
+      '/projects/quoter-batch-pdf.png', '/projects/quoter-watched-desktop.webp',
+      '/projects/quoter-many-exports.webp', '/projects/quoter-preferences.webp',
+    ],
     imageCaptions: [
       'Native WPF app render — reviewing a batch and its individual quote receipts. Synthetic demo files and prices.',
       'Native WPF app render — empty import state with the local export-folder workflow. Isolated demo profile.',
       'Actual receipt export — customizable studio branding, print estimates, and per-piece pricing. Synthetic demo data.',
       'Rendered batch PDF summary — itemized exports and combined total. Synthetic demo files and prices.',
+      'Native app render — receipt for a sample file imported through the watched folder.',
+      'Native app render — reviewing a larger batch of sample exports.',
+      'Native app render — pricing and export folder preferences with sample values.',
     ],
     caseStudy: {
       status: 'Windows desktop app · Local build 0.2.4',
@@ -205,6 +215,7 @@ export const PROJECTS: Project[] = [
     techStack: ['HTML', 'CSS', 'JavaScript', 'GSAP', 'ScrollTrigger', 'Vercel'],
     liveUrl: 'https://lapcat-launch.vercel.app/', liveLabel: 'Visit website',
     coverImage: '/projects/lapcat-website.png',
+    desktopScreens: [0, 1],
     images: ['/projects/lapcat-website.png', '/projects/lapcat-website-releases.png'],
     imageCaptions: ['Live Lapcat launch website — product introduction and Android download.', 'Live release notes and Android download — product updates and installation guidance.'],
   },
@@ -236,6 +247,7 @@ export const PROJECTS: Project[] = [
     techStack: ['Next.js', 'TypeScript', 'Tailwind CSS', 'Vercel', 'Digital Publishing'],
     liveUrl: 'https://thecollegium.vercel.app/',
     coverImage: '/projects/collegium-hero.png',
+    desktopScreens: [0, 1, 2],
     images: [
       '/projects/collegium-hero.png',
       '/projects/collegium-article.png',
@@ -262,8 +274,9 @@ export const PROJECTS: Project[] = [
     liveLabel: 'Open Okuru',
     logoImage: '/projects/okuru-logo.svg',
     coverImage: '/projects/okuru-showcase.png',
-    images: ['/projects/okuru-showcase.png', '/projects/okuru-mobile.png'],
-    imageCaptions: ['Okuru showcase with a sample feed', 'Okuru mobile web feed with sample posts'],
+    images: ['/projects/okuru-showcase.png', '/projects/okuru-mobile.png', '/projects/okuru-feed-desktop.webp', '/projects/okuru-collections-desktop.webp'],
+    imageCaptions: ['Okuru showcase with a sample feed', 'Okuru mobile web feed with sample posts', 'Desktop feed with sample posts', 'Desktop collection with a sample post'],
+    desktopScreens: [2, 3],
   },
   {
     id: 'hitoshii',
@@ -339,8 +352,9 @@ export const PROJECTS: Project[] = [
     techStack: ['TypeScript', 'React', 'Node.js', 'Hardware Telemetry', 'REST API'],
     githubUrl: 'https://github.com/marmalade1124/CCPrint',
     coverImage: '/projects/ccprint-quote.png',
-    images: ['/projects/ccprint-quote.png'],
-    imageCaptions: ['Automated 3D Print Job Quoting & Telemetry Cost Estimator'],
+    images: ['/projects/ccprint-quote.png', '/projects/ccprint-pricing-desktop.webp', '/projects/ccprint-jobs-desktop.webp'],
+    imageCaptions: ['Automated 3D Print Job Quoting & Telemetry Cost Estimator', 'Pricing engine in the local app preview', 'Job board in the local app preview'],
+    desktopScreens: [1, 2],
   },
   {
     id: 'codecraft-management',
@@ -355,8 +369,9 @@ export const PROJECTS: Project[] = [
     techStack: ['Next.js', 'TypeScript', 'PostgreSQL', 'Tailwind CSS', 'Supabase'],
     liveUrl: 'https://codecraftmanagement.vercel.app/',
     coverImage: '/images/codecraft-mgmt.png',
-    images: ['/images/codecraft-mgmt.png'],
-    imageCaptions: ['CodeCraft Project Management & Engineering Analytics Dashboard'],
+    images: ['/images/codecraft-mgmt.png', '/projects/codecraft-management-sign-in.webp'],
+    imageCaptions: ['CodeCraft Project Management & Engineering Analytics Dashboard', 'Team workspace sign-in'],
+    desktopScreens: [0, 1],
   },
   {
     id: 'cpu-scheduler',
@@ -372,8 +387,9 @@ export const PROJECTS: Project[] = [
     githubUrl: 'https://github.com/marmalade1124/CPUScheduler',
     liveUrl: 'https://cpu-scheduler-beta-five.vercel.app',
     coverImage: '/projects/cpu-scheduler.png',
-    images: ['/projects/cpu-scheduler.png'],
-    imageCaptions: ['Interactive CPU Simulation Workbench & Process Control Queue'],
+    images: ['/projects/cpu-scheduler.png', '/projects/cpu-timeline-desktop.webp', '/projects/cpu-quiz-desktop.webp'],
+    imageCaptions: ['Interactive CPU Simulation Workbench & Process Control Queue', 'Gantt chart and process metrics with sample processes', 'Scheduling practice quiz'],
+    desktopScreens: [0, 1, 2],
   },
 
   // === SOFTWARE & WEB APPLICATIONS ===
@@ -390,6 +406,7 @@ export const PROJECTS: Project[] = [
     techStack: ['HTML', 'CSS', 'JavaScript', 'GSAP', 'ScrollTrigger', 'Netlify'],
     liveUrl: 'https://codecraftcc.netlify.app/',
     coverImage: '/projects/codecraft-current-home.png',
+    desktopScreens: [0, 1, 2],
     images: ['/projects/codecraft-current-home.png', '/projects/codecraft-current-approach.png', '/projects/codecraft-current-scopes.png'],
     imageCaptions: ['Current live Code & Craft website - halftone hero and studio introduction.', 'Current live website - services and studio approach.', 'Current live website - project scopes, optional add-ons and inquiry summary. No payment is taken here.'],
   },
@@ -407,6 +424,7 @@ export const PROJECTS: Project[] = [
     githubUrl: 'https://github.com/marmalade1124/CCNote',
     liveUrl: 'https://cc-note.vercel.app',
     coverImage: '/images/ccnote-v3.png',
+    desktopScreens: [0, 1],
     images: ['/images/ccnote-v3.png', '/projects/ccnote.png'],
     imageCaptions: [
       'CCNote Infinite Spatial Note-Taking & Architecture Canvas',
@@ -438,6 +456,9 @@ export const PROJECTS: Project[] = [
     role: 'Security & App Developer',
     techStack: ['TypeScript', 'Cryptography', 'Biometrics', 'Computer Vision', 'React'],
     githubUrl: 'https://github.com/marmalade1124/Lockr',
+    images: ['/projects/lockr-vault-desktop.webp', '/projects/lockr-generator-desktop.webp', '/projects/lockr-start-desktop.webp'],
+    imageCaptions: ['Local vault with sample items', 'Password generator in the local app preview', 'New vault setup in the local app preview'],
+    desktopScreens: [0, 1, 2],
   },
   {
     id: 'audio-watermarking',
@@ -674,8 +695,9 @@ export const PROJECTS: Project[] = [
     githubUrl: 'https://github.com/marmalade1124/MDX',
     liveUrl: 'https://read-me-dusky.vercel.app',
     coverImage: '/projects/mdx-readme.png',
-    images: ['/projects/mdx-readme.png'],
-    imageCaptions: ['MDX Readme Studio AI Generator Hub & GitHub Connector'],
+    images: ['/projects/mdx-readme.png', '/projects/mdx-editor-desktop.webp', '/projects/mdx-code-desktop.webp'],
+    imageCaptions: ['MDX Readme Studio AI Generator Hub & GitHub Connector', 'Local editor preview with a sample README', 'Markdown output for the sample README'],
+    desktopScreens: [1, 2],
   },
   {
     id: 'arduino-visualizer',
@@ -689,6 +711,9 @@ export const PROJECTS: Project[] = [
     role: 'Extension Author',
     techStack: ['TypeScript', 'VS Code API', 'AST Parsing', 'SVG Canvas', 'Arduino C++'],
     githubUrl: 'https://github.com/marmalade1124/Arduino-Visualizer',
+    images: ['/projects/arduino-digital-desktop.webp', '/projects/arduino-servo-desktop.webp'],
+    imageCaptions: ['Arduino webview with a sample digital I/O sketch', 'Arduino webview with a sample servo sketch'],
+    desktopScreens: [0, 1],
   },
   {
     id: 'viewportlab',
@@ -702,6 +727,10 @@ export const PROJECTS: Project[] = [
     role: 'Creator',
     techStack: ['TypeScript', 'React', 'Responsive Design', 'Web APIs'],
     githubUrl: 'https://github.com/marmalade1124/ViewportLab',
+    coverImage: '/projects/viewport-dark.webp',
+    images: ['/projects/viewport-dark.webp', '/projects/viewport-focus.webp', '/projects/viewport-privacy.webp'],
+    imageCaptions: ['Synchronized responsive viewports', 'Focused preview of one device', 'Privacy controls for the device previews'],
+    desktopScreens: [0, 1, 2],
   },
 ];
 

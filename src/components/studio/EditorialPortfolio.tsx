@@ -27,7 +27,13 @@ const studySections = [
 const aboutImages = ['/portrait.png', '/images/video-10.png', '/images/cad/enclosure.png', '/projects/collegium-hero.png'];
 const aboutImageCaptions = ['Raziel Salamat', 'UM Tagum College graduation film', 'Electronics enclosure CAD study', 'The Collegium newsroom'];
 const cleanPath = (path: string) => path.replace(/\/+$/, '') || '/';
-const anchorFor = (hash: string) => document.getElementById(hash === '#work' ? 'projects' : hash.slice(1));
+const anchorFor = (hash: string) => {
+  const id = hash === '#work' ? 'projects' : hash.slice(1);
+  const anchor = document.getElementById(id);
+  if (anchor || !id.startsWith('preview-')) return anchor;
+  const reel = document.getElementById('desktop-screens');
+  return reel?.dataset.previewAnchors?.split(' ').includes(id) ? reel : null;
+};
 
 function useLiveReducedMotion() {
   const [reduced, setReduced] = useState(() => matchMedia('(prefers-reduced-motion: reduce)').matches);
@@ -272,7 +278,7 @@ function DotField() {
   return <canvas className="ed-dots" ref={canvas} aria-hidden="true" />;
 }
 
-function PhoneShowreel({ screens, onSelect }: { screens: { src: string; index: number; caption: string }[]; onSelect: (index: number) => void }) {
+function ProjectShowreel({ screens, onSelect, desktop = false }: { screens: { src: string; index: number; caption: string }[]; onSelect: (index: number) => void; desktop?: boolean }) {
   const stage = useRef<HTMLDivElement>(null);
   const inView = useInView(stage, { amount: .15 });
   const reduced = useLiveReducedMotion();
@@ -290,9 +296,29 @@ function PhoneShowreel({ screens, onSelect }: { screens: { src: string; index: n
   const firstScreen = screens[0];
   if (!firstScreen) return null;
 
-  return <figure className="ed-phone-reel" id="app-screens">
-    <div ref={stage} className="ed-reel-stage" aria-hidden="true">
-      <div className="ed-reel-grid" data-playing={started && !reduced ? '' : undefined} data-paused={paused || !inView || hidden ? '' : undefined}>
+  const playing = started && !reduced ? '' : undefined;
+  const still = paused || !inView || hidden ? '' : undefined;
+  const columns = 9;
+  const rowCount = 5;
+  const centerOffset = Math.floor(columns * rowCount / 2) % screens.length;
+  const rows = !desktop || reduced ? [[firstScreen]] : Array.from({ length: rowCount }, (_, row) =>
+    Array.from({ length: columns }, (_, column) =>
+      screens[(row * columns + column + screens.length - centerOffset) % screens.length] ?? firstScreen
+    )
+  );
+
+  return <figure className={desktop ? 'ed-showreel ed-desktop-reel' : 'ed-showreel ed-phone-reel'} id={desktop ? 'desktop-screens' : 'app-screens'}
+    data-preview-anchors={desktop ? screens.map(({ index }) => `preview-${index + 1}`).join(' ') : undefined}>
+    {desktop ? <div ref={stage} className="ed-desktop-stage" aria-hidden="true">
+      <div className="ed-desktop-camera" data-playing={playing} data-paused={still}>
+        {rows.map((row, rowIndex) => <div key={rowIndex} className="ed-desktop-lane">
+          {row.map(({ src }, columnIndex) => <div className="ed-desktop-window" key={columnIndex}>
+            <img src={src} alt="" loading="eager" decoding="async" />
+          </div>)}
+        </div>)}
+      </div>
+    </div> : <div ref={stage} className="ed-reel-stage" aria-hidden="true">
+      <div className="ed-reel-grid" data-playing={playing} data-paused={still}>
         <div className="ed-reel-surround">
           {Array.from({ length: tileCount }, (_, index) => index === centerTile ? <div key={index} /> : (
             <div className="ed-reel-screen" key={index}>
@@ -304,9 +330,9 @@ function PhoneShowreel({ screens, onSelect }: { screens: { src: string; index: n
           <img src={firstScreen.src} alt="" loading="lazy" decoding="async" />
         </div>
       </div>
-    </div>
+    </div>}
     <figcaption>
-      <span>App screen showreel</span>
+      <span>{desktop ? 'Desktop screen showreel' : 'App screen showreel'}</span>
       <div className="ed-reel-controls">
         {screens.map(({ src, index, caption }, position) => (
           <button key={src} type="button" aria-label={`Enlarge ${caption}`} title={caption} onClick={() => onSelect(index)}>Screen {position + 1}</button>
@@ -432,14 +458,19 @@ export function EditorialPortfolio() {
     ? PROJECTS.find(item => item.id === featured[(nextFeatured + 1) % featured.length]?.id)
     : PROJECTS[(PROJECTS.indexOf(project) + 1) % PROJECTS.length]);
   const projectImages = project?.images ?? (project?.coverImage ? [project.coverImage] : []);
+  const desktopScreens = projectImages.flatMap((src, index) => project?.desktopScreens?.includes(index)
+    ? [{ src, index, caption: project.imageCaptions?.[index] ?? `screen ${index + 1}` }]
+    : []);
+  const isReelScreen = (src: string, index: number) => phoneScreens.has(src) || project?.desktopScreens?.includes(index);
   const nextClip = next && storyKey(next.id);
   const chapters = project ? [
     { id: 'overview', label: 'Overview' },
+    ...(desktopScreens.length ? [{ id: 'desktop-screens', label: 'Desktop screen showreel' }] : []),
     ...(project.id === 'picolor' ? [{ id: 'palette-demo', label: 'Palette demo' }] : []),
     ...(project.caseStudy ? [{ id: 'narration', label: 'Narration' }] : []),
     ...(storyKey(project.id) ? [{ id: 'workflow', label: 'Workflow' }] : []),
     ...(hasProjectLab(project.id) ? [{ id: 'project-lab', label: 'Interactive example' }] : []),
-    ...projectImages.flatMap((src, index) => phoneScreens.has(src) ? [] : [{ id: `preview-${index + 1}`, label: project.imageCaptions?.[index] ?? `Preview ${index + 1}` }]),
+    ...projectImages.flatMap((src, index) => isReelScreen(src, index) ? [] : [{ id: `preview-${index + 1}`, label: project.imageCaptions?.[index] ?? `Preview ${index + 1}` }]),
     ...(reelScreens.length ? [{ id: 'app-screens', label: 'App screen showreel' }] : []),
     ...(project.lead ? [{ id: 'project-details', label: 'Project details' }] : []),
     ...(project.caseStudy ? studySections.map(([id, label]) => ({ id, label })) : []),
@@ -579,14 +610,15 @@ export function EditorialPortfolio() {
       ].map(([url, label]) => url && <a key={url} href={url} target="_blank" rel="noreferrer">{label} <ArrowUpRight size={16} /></a>)}</div>
       </div>
       {chapters.length > 1 && <ChapterRail chapters={chapters} />}
+      {desktopScreens.length > 0 && <ProjectShowreel desktop screens={desktopScreens} onSelect={setZoom} />}
       {project.id === 'picolor' && <PaletteDemo />}
       {project.caseStudy && <CaseNarration chapters={studySections.map(([id, title]) => ({ title, text: project.caseStudy![id] }))} />}
       {storyKey(project.id) && <div id="workflow"><ProductStory id={project.id} /></div>}
       {hasProjectLab(project.id) && <EditorialLab project={project} />}
       {projectImages.map((src, index) =>
-        !phoneScreens.has(src) && renderPreview(src, index)
+        !isReelScreen(src, index) && renderPreview(src, index)
       )}
-      {reelScreens.length > 0 && <PhoneShowreel key={project.id} screens={reelScreens} onSelect={setZoom} />}
+      {reelScreens.length > 0 && <ProjectShowreel key={project.id} screens={reelScreens} onSelect={setZoom} />}
       {project.lead && <section className="ed-case-notes" id="project-details" aria-label="Project details">
         <h2>Project details</h2>
         <p>{project.description}</p>

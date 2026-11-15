@@ -56,10 +56,14 @@ async page => {
   await go('/work/picolor#preview-4');
   const rail = page.getByRole('navigation', { name: 'On this page' });
   await rail.getByRole('button').press('Enter');
-  await page.locator('a[href="#preview-2"]').click();
-  await page.waitForURL('**#preview-2');
+  await rail.getByRole('link', { name: 'Palette demo' }).click();
+  await page.waitForURL('**#palette-demo');
   await page.goBack();
-  assert(await page.evaluate(() => location.hash === '#preview-4' && Math.round(document.querySelector('#preview-4').getBoundingClientRect().top) === 84), 'Deep-link Back missed the preview');
+  await page.waitForFunction(() => {
+    const reel = document.querySelector('#desktop-screens');
+    return reel && location.hash === '#preview-4' &&
+      Math.abs(reel.getBoundingClientRect().top - parseFloat(getComputedStyle(reel).scrollMarginTop)) < 2;
+  });
 
   const missing = await go('/missing-editorial-regression');
   assert(missing.status() === 404, 'Unknown page returned a success response');
