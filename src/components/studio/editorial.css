@@ -1,4 +1,4 @@
-html:has(.ed-site) {
+html:has(.ed-site),.ed-ink-layer {
   --paper:#f4f4f2;
   --ink:#141413;
   --muted:#62625c;
@@ -11,12 +11,15 @@ html:has(.ed-site) {
   --pill-active:#20201e;
   --pill-active-text:#fff;
   --dots:rgb(50 50 50 / .35);
+  --dot-filter:none;
+  --available-dot:#41805d;
+  --available-halo:#41805d26;
   --viewer-glow:#fff;
   --viewer-stage:#eaeae6;
   color-scheme:light;
   background:var(--paper);
 }
-html[data-theme=dark]:has(.ed-site) {
+html[data-theme=dark]:has(.ed-site),.ed-ink-layer[data-theme=dark] {
   --paper:#181817;
   --ink:#f3f2ee;
   --muted:#b5b5ad;
@@ -29,6 +32,9 @@ html[data-theme=dark]:has(.ed-site) {
   --pill-active:#f3f2ee;
   --pill-active-text:#181817;
   --dots:rgb(205 205 205 / .35);
+  --dot-filter:invert(1);
+  --available-dot:#76b88d;
+  --available-halo:#76b88d28;
   --viewer-glow:#343431;
   --viewer-stage:#222221;
   color-scheme:dark;
@@ -43,17 +49,15 @@ html:has(.ed-site) body { background:var(--paper); }
   font-family:'General Sans',Inter,Arial,sans-serif;
   letter-spacing:-.025em;
 }
-html[data-theme=dark] .ed-dots { filter:invert(1); }
+.ed-ink-layer { position:fixed; inset:0; z-index:5; overflow:hidden; pointer-events:none; }
+.ed-ink-layer * { pointer-events:none !important; }
 @media (prefers-reduced-motion:no-preference) {
   html:has(.ed-site) { scroll-behavior:smooth; }
   html[data-ed-ink] :is(.ed-nav a,.ed-theme,.ed-document-links a,.ed-case-links a) { transition:none; }
-  html[data-ed-ink]::view-transition { pointer-events:none; }
-  html[data-ed-ink]::view-transition-group(root),
-  html[data-ed-ink]::view-transition-old(root),
-  html[data-ed-ink]::view-transition-new(root) { animation:none; mix-blend-mode:normal; }
-  html[data-ed-ink=""]::view-transition-new(root) { animation:ed-ink-fallback 780ms cubic-bezier(.34,.02,.26,1) both; }
-  html[data-ed-ink=texture]::view-transition-new(root) {
-    mask:var(--ed-ink-mask);
+  .ed-ink-layer[data-ed-ink=contour] { animation:ed-ink-fallback 780ms cubic-bezier(.34,.02,.26,1) both; }
+  .ed-ink-layer[data-ed-ink=texture] {
+    mask:linear-gradient(#000 0 0),var(--ed-ink-mask);
+    mask-composite:subtract;
     animation:ed-ink-bleed 1550ms linear both;
   }
   @keyframes ed-ink-bleed { from,to { opacity:1; } }
@@ -91,11 +95,10 @@ html[data-theme=dark] .ed-dots { filter:invert(1); }
   pointer-events:auto;
 }
 .ed-document-links a:hover,.ed-case-links a:hover { background:var(--ink); color:var(--paper); }
-.ed-available::before { content:''; width:6px; height:6px; background:#41805d; border-radius:50%; box-shadow:0 0 0 3px #41805d26; }
-html[data-theme=dark] .ed-available::before { background:#76b88d; box-shadow:0 0 0 3px #76b88d28; }
+.ed-available::before { content:''; width:6px; height:6px; background:var(--available-dot); border-radius:50%; box-shadow:0 0 0 3px var(--available-halo); }
 .ed-hero { position:relative; padding:clamp(60px,7vw,120px) var(--pad) clamp(100px,11.5vw,175px); }
 .ed-site:has(.ed-dots[data-active]) { background:var(--paper); }
-.ed-dots { display:none; position:fixed; inset:0; z-index:-1; width:100%; height:100%; pointer-events:none; }
+.ed-dots { display:none; position:fixed; inset:0; z-index:-1; width:100%; height:100%; pointer-events:none; filter:var(--dot-filter); }
 .ed-dots[data-active] { display:block; }
 .ed-hero-content { position:relative; }
 .ed-hero h1,.ed-case h1 { font-size:clamp(52px,7.45vw,175px); font-weight:500; text-transform:uppercase; line-height:.94; letter-spacing:-.076em; }
@@ -111,8 +114,8 @@ html[data-theme=dark] .ed-available::before { background:#76b88d; box-shadow:0 0
 .ed-intro li { padding:8px 0; border-bottom:1px solid var(--line); }
 .ed-band { margin-inline:var(--pad); }
 .ed-section-title { border-bottom:1px solid var(--line); font-size:clamp(32px,3.25vw,58px); font-weight:500; letter-spacing:-.065em; line-height:.94; padding-bottom:16px; text-transform:uppercase; }
-.ed-band#projects { position:relative; }
-.ed-band#projects > * { position:relative; }
+.ed-band:is(#projects,[data-ink-id=projects]) { position:relative; }
+.ed-band:is(#projects,[data-ink-id=projects]) > * { position:relative; }
 .ed-grid { display:grid; grid-template-columns:repeat(100,minmax(0,1fr)); row-gap:clamp(42px,5vw,105px); align-items:start; padding-top:34px; }
 .ed-grid article:nth-child(4n+1) { grid-column:1 / 33; }
 .ed-grid article:nth-child(4n+2) { grid-column:43 / -1; }
@@ -253,7 +256,7 @@ html[data-theme=dark] .ed-available::before { background:#76b88d; box-shadow:0 0
 .ed-case .product-kicker,.ed-case .product-process-note { font-size:12px; color:var(--muted); }
 .ed-case .product-process li { padding:9px 0; border-bottom:1px solid var(--line); }
 .ed-case .product-process button { margin-top:14px; border:1px solid var(--line); border-radius:99px; padding:8px 13px; }
-.ed-band#index summary { cursor:pointer; }
+.ed-band:is(#index,[data-ink-id=index]) summary { cursor:pointer; }
 .ed-word-reveal { display:flex; flex-wrap:wrap; column-gap:.22em; }
 .ed-word-reveal > span { display:block; overflow:clip; padding-bottom:.12em; margin-bottom:-.12em; }
 .ed-word-reveal > span > span { display:block; }
@@ -276,7 +279,7 @@ html[data-theme=dark] .ed-available::before { background:#76b88d; box-shadow:0 0
   .ed-case h1 { animation:ed-enter .65s var(--entrance-ease) .25s both; }
   .ed-case-lead { animation:ed-enter .7s var(--entrance-ease) .38s both; }
   .ed-case-meta,.ed-case-links,.ed-portrait,.ed-media { animation:ed-enter .7s var(--entrance-ease) .45s both; }
-  .ed-site[data-internal-visit][id] :where(.ed-eyebrow,.ed-case-kicker,.ed-word-reveal > span > span,.ed-hero-meta > *,.ed-intro > div,.ed-bio-word,.ed-case h1,.ed-case-lead,.ed-case-meta,.ed-case-links,.ed-portrait,.ed-media):not(:where(.ed-hero[data-home-enter] *)) { animation:none; }
+  .ed-site[data-internal-visit]:is([id],[data-ink-id]) :where(.ed-eyebrow,.ed-case-kicker,.ed-word-reveal > span > span,.ed-hero-meta > *,.ed-intro > div,.ed-bio-word,.ed-case h1,.ed-case-lead,.ed-case-meta,.ed-case-links,.ed-portrait,.ed-media):not(:where(.ed-hero[data-home-enter] *)) { animation:none; }
   .ed-site[data-page-fade] > .ed-route > main { animation:ed-page-fade .16s cubic-bezier(.33,.56,.67,.9) backwards; }
   .ed-site .ed-case .ed-eyebrow { animation:ed-page-label .6s var(--entrance-ease) .18s both; }
   .ed-site .ed-case h1.ed-page-title {

@@ -202,6 +202,16 @@ function DotField() {
         }
       }
       context.fill();
+      const inkDots = document.querySelector<HTMLCanvasElement>('.ed-ink-layer .ed-dots');
+      if (inkDots) {
+        if (inkDots.width !== element.width || inkDots.height !== element.height) {
+          inkDots.width = element.width;
+          inkDots.height = element.height;
+        }
+        const inkContext = inkDots.getContext('2d');
+        inkContext?.clearRect(0, 0, inkDots.width, inkDots.height);
+        inkContext?.drawImage(element, 0, 0);
+      }
       if (time - press.start < press.duration) schedule();
     };
     const schedule = () => { if (!frame) frame = requestAnimationFrame(render); };
@@ -463,7 +473,7 @@ export function EditorialPortfolio() {
       </nav>
       <div className="ed-nav-options">
         <a className="ed-language" href={path} hrefLang="en" lang="en" aria-current={!filipino ? 'true' : undefined} aria-label="English">EN</a>
-        <EditorialThemeButton label={filipino ? 'Madilim na tema' : 'Dark mode'} />
+        <EditorialThemeButton label={filipino ? 'Madilim na tema' : 'Dark mode'} routeKey={route.path} />
         <a className="ed-available" href={`mailto:${PERSONAL.email}`}>{filipino ? 'Bukas sa trabaho' : 'Open to work'}</a>
       </div>
     </header>

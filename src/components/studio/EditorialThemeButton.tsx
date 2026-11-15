@@ -1,5 +1,4 @@
-import { useEffect, useRef, useState, type MouseEvent } from 'react';
-import { flushSync } from 'react-dom';
+import { useEffect, useLayoutEffect, useRef, useState, type MouseEvent } from 'react';
 import { Moon, Sun } from 'lucide-react';
 import inkTexture from '@/assets/editorial-ink.webp';
 
@@ -12,7 +11,7 @@ const inkFrames = [
   { size: 1.24, phase: 2.15 },
 ];
 
-function inkContour(x: number, y: number, radius: number, phase: number) {
+function inkCutout(x: number, y: number, radius: number, phase: number, width: number, height: number) {
   const pointCount = 64;
   const points = Array.from({ length: pointCount }, (_, index) => {
     const angle = index * 2 * Math.PI / pointCount;
@@ -28,18 +27,80 @@ function inkContour(x: number, y: number, radius: number, phase: number) {
     const next = at(index + 1);
     return `C ${control(point, next, at(index - 1))} ${control(next, point, at(index + 2))} ${coordinates(next)}`;
   });
-  return `path("M ${coordinates(at(0))} ${curves.join(' ')} Z")`;
+  return `path(evenodd, "M 0 0 H ${width} V ${height} H 0 Z M ${coordinates(at(0))} ${curves.join(' ')} Z")`;
 }
 
-export function EditorialThemeButton({ label }: { label: string }) {
+function makeInkLayer(page: HTMLElement, theme: string) {
+  const layer = document.createElement('div');
+  layer.className = 'ed-ink-layer';
+  layer.dataset.theme = theme;
+  layer.inert = true;
+  layer.setAttribute('aria-hidden', 'true');
+
+  const copy = page.cloneNode(true) as HTMLElement;
+  const originals = [page, ...page.querySelectorAll('*')];
+  const copies = [copy, ...copy.querySelectorAll('*')];
+  const byOriginal = new Map(originals.map((node, index) => [node, copies[index]!]));
+  const byCopy = new Map(copies.map((node, index) => [node, originals[index]!]));
+  for (const node of copies) {
+    if (!node.id) continue;
+    node.setAttribute('data-ink-id', node.id);
+    node.removeAttribute('id');
+  }
+  layer.append(copy);
+  const dots = page.querySelector<HTMLCanvasElement>('.ed-dots[data-active]');
+  if (dots) (byOriginal.get(dots) as HTMLCanvasElement).getContext('2d')?.drawImage(dots, 0, 0);
+
+  const sync = () => { layer.scrollTop = scrollY; };
+  const mirrorStyles = new MutationObserver(changes => {
+    for (const { target } of changes) {
+      const node = target as Element;
+      byOriginal.get(node)?.setAttribute('style', node.getAttribute('style') ?? '');
+    }
+  });
+  const show = () => {
+    document.body.append(layer);
+    sync();
+    window.addEventListener('scroll', sync, { passive: true });
+    mirrorStyles.observe(page, { subtree: true, attributeFilter: ['style'] });
+
+    for (const animation of copy.getAnimations({ subtree: true })) {
+      if (!(animation instanceof CSSAnimation) || !(animation.effect instanceof KeyframeEffect)) continue;
+      const target = animation.effect.target;
+      const original = target && byCopy.get(target)?.getAnimations().find(item =>
+        item instanceof CSSAnimation && item.animationName === animation.animationName);
+      const time = original?.currentTime ?? animation.effect.getComputedTiming().endTime;
+      if (time !== undefined && time !== Infinity) animation.currentTime = time;
+    }
+
+    for (const video of page.querySelectorAll('video')) {
+      const mirror = byOriginal.get(video) as HTMLVideoElement;
+      if (!video.currentSrc) continue;
+      mirror.muted = true;
+      mirror.currentTime = video.currentTime;
+      if (!video.paused) void mirror.play().catch(() => {});
+    }
+  };
+  const remove = () => {
+    mirrorStyles.disconnect();
+    window.removeEventListener('scroll', sync);
+    layer.remove();
+  };
+  return { layer, show, remove };
+}
+
+export function EditorialThemeButton({ label, routeKey }: { label: string; routeKey: string }) {
   const root = document.documentElement;
   const [dark, setDark] = useState(() => root.dataset.theme === 'dark');
   const override = useRef<boolean | null>(null);
-  const active = useRef<ViewTransition | null>(null);
+  const active = useRef<(() => string | undefined) | null>(null);
   const texture = useRef<Blob | null>(null);
+  const supportsTexture = CSS.supports('mask-composite', 'subtract');
+
+  useLayoutEffect(() => () => { active.current?.(); }, [routeKey]);
 
   useEffect(() => {
-    if (!document.startViewTransition) return;
+    if (!supportsTexture) return;
     const request = new AbortController();
     void fetch(inkTexture, { signal: request.signal }).then(response => {
       if (response.ok) return response.blob();
@@ -47,7 +108,7 @@ export function EditorialThemeButton({ label }: { label: string }) {
       if (blob?.size && !request.signal.aborted) texture.current = blob;
     }).catch(() => { /* The clip-path reveal is still available. */ });
     return () => request.abort();
-  }, []);
+  }, [supportsTexture]);
 
   useEffect(() => {
     try {
@@ -75,16 +136,10 @@ export function EditorialThemeButton({ label }: { label: string }) {
       root.dataset.theme = theme;
       setDark(nextDark);
     };
-    const clearInk = () => {
-      delete root.dataset.edInk;
-      root.style.removeProperty('--ed-ink-mask');
-      inkFrames.forEach((_, index) => root.style.removeProperty(`--ed-ink-${index}`));
-    };
-
-    active.current?.skipTransition();
-    if (!document.startViewTransition || matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      active.current = null;
-      clearInk();
+    const outgoingTheme = active.current?.() ?? root.dataset.theme ?? 'light';
+    const page = event.currentTarget.closest<HTMLElement>('.ed-site');
+    const canReveal = texture.current || CSS.supports('clip-path', 'path(evenodd, "M 0 0 H 1 V 1 Z")');
+    if (theme === outgoingTheme || !page || !canReveal || matchMedia('(prefers-reduced-motion: reduce)').matches) {
       update();
       return;
     }
@@ -92,32 +147,45 @@ export function EditorialThemeButton({ label }: { label: string }) {
     const rect = event.currentTarget.getBoundingClientRect();
     const x = event.detail ? event.clientX : rect.left + rect.width / 2;
     const y = event.detail ? event.clientY : rect.top + rect.height / 2;
-    const radius = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+    const width = root.clientWidth;
+    const height = root.clientHeight;
+    const radius = Math.hypot(Math.max(x, width - x), Math.max(y, height - y));
     const maskUrl = texture.current && URL.createObjectURL(texture.current);
-    if (maskUrl) {
-      // The 900 × 800 shader render starts at (690, 90). Scale its reach to the viewport.
-      const scale = Math.max(radius / 690, (innerWidth - x) / 210, y / 90);
-      root.style.setProperty('--ed-ink-mask', `url("${maskUrl}") ${x - 690 * scale}px ${y - 90 * scale}px / ${900 * scale}px ${800 * scale}px no-repeat`);
-      root.dataset.edInk = 'texture';
-    } else {
-      inkFrames.forEach(({ size, phase }, index) => {
-        root.style.setProperty(`--ed-ink-${index}`, inkContour(x, y, radius * size, phase));
-      });
-      root.dataset.edInk = '';
-    }
-
-    const transition = document.startViewTransition(() => {
-      if (active.current === transition) flushSync(update);
-    });
-    active.current = transition;
+    const { layer, show, remove } = makeInkLayer(page, outgoingTheme);
     const finish = () => {
-      if (maskUrl) URL.revokeObjectURL(maskUrl);
-      if (active.current !== transition) return;
+      if (active.current !== finish) return;
       active.current = null;
-      clearInk();
+      remove();
+      if (maskUrl) URL.revokeObjectURL(maskUrl);
+      delete root.dataset.edInk;
+      return layer.hasAttribute('data-ed-ink') ? undefined : outgoingTheme;
     };
-    void transition.ready.catch(() => {});
-    void transition.finished.then(finish, finish);
+    const play = (url: string | null) => {
+      if (active.current !== finish) return;
+      if (url) {
+        // The 900 × 800 shader render starts at (690, 90). Scale its reach to the viewport.
+        const scale = Math.max(radius / 690, (width - x) / 210, y / 90);
+        layer.style.setProperty('--ed-ink-mask', `url("${url}") ${x - 690 * scale}px ${y - 90 * scale}px / ${900 * scale}px ${800 * scale}px no-repeat`);
+        layer.dataset.edInk = 'texture';
+      } else {
+        inkFrames.forEach(({ size, phase }, index) => {
+          layer.style.setProperty(`--ed-ink-${index}`, inkCutout(x, y, radius * size, phase, width, height));
+        });
+        layer.dataset.edInk = 'contour';
+      }
+      void Promise.all(layer.getAnimations().map(animation => animation.finished)).then(finish, finish);
+    };
+
+    root.dataset.edInk = '';
+    active.current = finish;
+    show();
+    update();
+    if (maskUrl) {
+      // A pending image can blank out the composite mask. Keep the old layer solid until it decodes.
+      const image = new Image();
+      image.src = maskUrl;
+      void image.decode().then(() => play(maskUrl), () => play(null));
+    } else play(null);
   }
 
   return <button type="button" className="ed-theme" aria-label={label} aria-pressed={dark} title={label} onClick={toggle}>
