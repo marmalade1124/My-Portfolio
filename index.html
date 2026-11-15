@@ -6,13 +6,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script>
       (() => {
+        const root = document.documentElement;
+        root.dataset.portfolioStarting = '';
+        window.addEventListener('error', event => {
+          if (event.target instanceof HTMLScriptElement && event.target.type === 'module') {
+            delete root.dataset.portfolioStarting;
+          }
+        }, true);
         let theme;
         try { theme = localStorage.getItem('portfolio-theme'); } catch {}
-        document.documentElement.dataset.theme = theme === 'light' || theme === 'dark'
+        root.dataset.theme = theme === 'light' || theme === 'dark'
           ? theme : (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
       })();
     </script>
-    <style>html[data-theme="dark"] { background: #141414; color: #f2f0eb; color-scheme: dark; }</style>
+    <style>
+      html[data-theme="dark"] { background: #141414; color: #f2f0eb; color-scheme: dark; }
+      html[data-portfolio-starting] { background: #f4f4f2; color-scheme: light; }
+      html[data-portfolio-starting] #root > [data-static-fallback] { display: none; }
+    </style>
     <meta name="description" content="Raziel Renz Salamat — Computer Engineering student building web apps, Windows tools, and CAD prototypes. Expected graduation 2027." />
     <title>Raziel Salamat — Developer & CAD Designer</title>
 

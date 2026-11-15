@@ -45,7 +45,7 @@ function render(project, missing = false, section) {
       <p>${link(PERSONAL.socials.github, 'GitHub')} · ${link(PERSONAL.socials.linkedin, 'LinkedIn')}</p>
       <h2>Projects</h2><ul>${PROJECTS.map(item => `<li>${link(projectPath(item), item.title)} — ${escape(item.category)}</li>`).join('')}</ul>`;
   return template.replace(/<meta name="description"[^>]*\/>\s*<title>.*?<\/title>/s, () => head)
-    .replace('<div id="root"></div>', () => `<div id="root"><main style="max-width:46rem;margin:3rem auto;padding:0 1.25rem;line-height:1.6">${content}</main></div>`);
+    .replace('<div id="root"></div>', () => `<div id="root"><main data-static-fallback style="max-width:46rem;margin:3rem auto;padding:0 1.25rem;line-height:1.6">${content}</main></div>`);
 }
 
 mkdirSync('dist/work', { recursive: true });
@@ -78,7 +78,7 @@ for (const project of PROJECTS) {
   const localized = localizedPath(original, true);
   const lead = FILIPINO.projectLeads[project.id];
   writeFileSync(`dist${localized}.html`, render(project).replace('<html lang="en">', '<html lang="fil">')
-    .replace('<main style=', '<main lang="en" style=')
+    .replace('<main data-static-fallback', '<main lang="en" data-static-fallback')
     .replace(`<p>${escape(project.description)}</p>`, () => `${lead ? `<p lang="fil">${escape(lead)}</p>` : ''}<p>${escape(project.description)}</p>`)
     .replace(`rel="canonical" href="${SITE}${original}"`, `rel="canonical" href="${SITE}${lead ? localized : original}"`)
     .replace(`property="og:url" content="${SITE}${original}"`, `property="og:url" content="${SITE}${localized}"`));
