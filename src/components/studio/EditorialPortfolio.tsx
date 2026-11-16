@@ -19,6 +19,7 @@ const sections = [
   { href: '/about', label: 'About' },
   { href: '/media', label: 'Film & Media' },
 ];
+const englishHeroWords = ['Developer', '&', 'Designer'];
 const expertise = ['Web applications', 'Windows tools', '3D CAD', 'Product design', 'Hardware systems', 'Creative production'];
 const mediaProjects = PROJECTS.filter(item => item.tag === 'media');
 const studySections = [
@@ -64,8 +65,160 @@ function EmailLink() {
   </a>;
 }
 
+function WeightText({ text }: { text: string }) {
+  return <>
+    <span className="ed-weight-measure">{text}</span>
+    <span className="ed-weight-ink" aria-hidden="true">
+      {Array.from(text, (letter, index) => <span key={index}>{letter}</span>)}
+    </span>
+  </>;
+}
+
+function TypeTrail({ words, filipino, play }: { words: readonly string[]; filipino: boolean; play: boolean }) {
+  const heading = useRef<HTMLHeadingElement>(null);
+
+  useLayoutEffect(() => {
+    const title = heading.current;
+    if (!play || !title) return;
+    let waiting = true;
+
+    const align = () => {
+      const range = document.createRange();
+      for (const word of title.children) {
+        const text = word.querySelector('.ed-weight-measure')?.firstChild;
+        if (!text) continue;
+        const left = word.getBoundingClientRect().left;
+        let top = 0;
+        word.querySelectorAll<HTMLElement>('.ed-type-letters > span').forEach((letter, index) => {
+          range.setStart(text, index);
+          range.setEnd(text, index + 1);
+          const box = range.getBoundingClientRect();
+          if (index === 0) top = box.top;
+          letter.style.left = `${box.left - left}px`;
+          letter.style.top = `${box.top - top}px`;
+        });
+      }
+    };
+
+    const start = (loaded: boolean) => {
+      if (!waiting) return;
+      waiting = false;
+      clearTimeout(deadline);
+      // Keep the chosen face through the handoff if the web font arrives late.
+      title.toggleAttribute('data-trail-fallback', !loaded);
+      align();
+      title.dataset.trail = 'playing';
+      window.addEventListener('resize', align);
+    };
+
+    const deadline = window.setTimeout(() => start(false), 800);
+    void document.fonts.load('500 1em "General Sans"', words.join(' ').toUpperCase()).then(
+      faces => start(faces.length > 0), () => start(false),
+    );
+    return () => {
+      waiting = false;
+      clearTimeout(deadline);
+      window.removeEventListener('resize', align);
+      title.removeAttribute('data-trail-fallback');
+    };
+  }, [play, words]);
+
+  return <h1 ref={heading} className={filipino ? 'ed-word-reveal' : 'ed-word-reveal ed-type-trail'}
+    data-trail={play ? 'pending' : undefined} aria-label={words.join(' ')}>
+    {words.map((word, wordIndex) => <span key={word} aria-hidden="true">
+      <span className={filipino ? undefined : 'ed-weight-word'}>{filipino ? word : <WeightText text={word} />}</span>
+      {play && <span className="ed-type-letters">
+        {Array.from(word, (letter, index) => <span key={index} data-letter={letter}
+          style={{ '--letter-delay': `${(words.slice(0, wordIndex).join('').length + index) * 21}ms` } as CSSProperties}>{letter}</span>)}
+      </span>}
+    </span>)}
+  </h1>;
+}
+
+function useWeightHover(homePath: string | null) {
+  const intro = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const section = intro.current;
+    if (!homePath || !section) return;
+    const media = matchMedia('(hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference)');
+    const active = new Set<HTMLElement>();
+    let frame = 0;
+
+    const clear = () => {
+      cancelAnimationFrame(frame);
+      for (const word of active) delete word.dataset.weightActive;
+      active.clear();
+    };
+
+    const move = (event: PointerEvent) => {
+      const block = (event.target as Element).closest('.ed-type-trail, .ed-intro > p');
+      if (!media.matches || event.pointerType === 'touch' || !block || !section.contains(block)) {
+        clear();
+        return;
+      }
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const radius = parseFloat(getComputedStyle(block).fontSize) * 1.55;
+        const range = document.createRange();
+        const updates: { word: HTMLElement; letters: { letter: HTMLElement; x: number; strength: number }[] }[] = [];
+
+        // Read the original text positions before writing any variable weights.
+        for (const word of block.querySelectorAll<HTMLElement>('.ed-weight-word')) {
+          const box = word.getBoundingClientRect();
+          if (event.clientX < box.left - radius || event.clientX > box.right + radius ||
+              event.clientY < box.top - radius || event.clientY > box.bottom + radius ||
+              getComputedStyle(word).pointerEvents === 'none') continue;
+          const text = word.querySelector('.ed-weight-measure')?.firstChild;
+          if (!text?.textContent) continue;
+          let offset = 0;
+          const letters = Array.from(word.querySelectorAll<HTMLElement>('.ed-weight-ink > span'), letter => {
+            range.setStart(text, offset);
+            offset += letter.textContent?.length ?? 0;
+            range.setEnd(text, offset);
+            const bounds = range.getBoundingClientRect();
+            const distance = Math.hypot(event.clientX - (bounds.left + bounds.width / 2), event.clientY - (box.top + box.height / 2));
+            const proximity = Math.max(0, 1 - distance / radius);
+            return { letter, x: bounds.left - box.left, strength: proximity ** 2 * (3 - 2 * proximity) };
+          });
+          if (letters.some(({ strength }) => strength > 0)) updates.push({ word, letters });
+        }
+
+        for (const word of active) {
+          if (updates.some(update => update.word === word)) continue;
+          delete word.dataset.weightActive;
+          active.delete(word);
+        }
+        for (const { word, letters } of updates) {
+          for (const { letter, x, strength } of letters) {
+            letter.style.left = `${x}px`;
+            letter.style.setProperty('--weight-strength', strength.toFixed(3));
+          }
+          word.dataset.weightActive = '';
+          active.add(word);
+        }
+      });
+    };
+
+    section.addEventListener('pointermove', move);
+    section.addEventListener('pointerleave', clear);
+    media.addEventListener('change', clear);
+    window.addEventListener('resize', clear);
+    return () => {
+      clear();
+      section.removeEventListener('pointermove', move);
+      section.removeEventListener('pointerleave', clear);
+      media.removeEventListener('change', clear);
+      window.removeEventListener('resize', clear);
+    };
+  }, [homePath]);
+
+  return intro;
+}
+
 function BioWords({ text, start = 0 }: { text: string; start?: number }) {
-  return text.split(' ').map((word, index) => <span className="ed-bio-word" key={index} style={{ '--word-delay': `${450 + (start + index) * 35}ms` } as CSSProperties}>{word}{' '}</span>);
+  return text.split(' ').map((word, index) => <span className="ed-bio-word ed-weight-word" key={index}
+    style={{ '--word-delay': `${450 + (start + index) * 35}ms` } as CSSProperties}><WeightText text={word} />{' '}</span>);
 }
 const phoneScreens = new Set([
   '/projects/twentyfour-camera.png',
@@ -356,9 +509,10 @@ export function EditorialPortfolio() {
     ? [{ src, index, caption: project.imageCaptions?.[index] ?? `screen ${index + 1}` }]
     : []) ?? [];
   const home = path === '/';
+  const weightHover = useWeightHover(home ? route.path : null);
   const about = path === '/about';
   const media = path === '/media';
-  const heroWords = filipino ? FILIPINO.role : ['Developer', '&', 'Designer'];
+  const heroWords = filipino ? FILIPINO.role : englishHeroWords;
   const intro = filipino ? FILIPINO.intro : ['I’m Raziel Salamat, a', 'computer engineering student and developer', 'building web apps, Windows tools, and CAD prototypes.'] as const;
   const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined;
   const internalEntry = navigation?.type === 'navigate' && document.referrer.startsWith(location.origin + '/');
@@ -513,16 +667,8 @@ export function EditorialPortfolio() {
     {home ? <main id="content">
       <section className="ed-hero" data-home-enter={!route.hash || undefined} aria-label="Introduction">
 
-        <div className="ed-hero-content">
-          <h1 className={filipino ? 'ed-word-reveal' : 'ed-word-reveal ed-type-trail'} aria-label={heroWords.join(' ')}>
-            {heroWords.map((word, wordIndex) => <span key={word} aria-hidden="true">
-              <span>{word}</span>
-              {!filipino && !reduced && !route.hash && <span className="ed-type-letters">
-                {Array.from(word, (letter, index) => <span key={index} data-letter={letter}
-                  style={{ '--letter-delay': `${(heroWords.slice(0, wordIndex).join('').length + index) * 21}ms` } as CSSProperties}>{letter}</span>)}
-              </span>}
-            </span>)}
-          </h1>
+        <div className="ed-hero-content" ref={weightHover}>
+          <TypeTrail words={heroWords} filipino={filipino} play={!filipino && !reduced && !route.hash} />
           <div className="ed-hero-meta"><EmailLink /><span>{filipino ? 'Nasa Tagum City,' : 'Based in Tagum City,'}<br />{filipino ? 'Pilipinas' : 'Philippines'}</span></div>
           <div className="ed-intro">
             <p><BioWords text={intro[0]} /><strong><BioWords text={intro[1]} start={intro[0].split(' ').length} /></strong><BioWords text={intro[2]} start={intro[0].split(' ').length + intro[1].split(' ').length} /></p>
