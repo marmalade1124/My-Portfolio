@@ -514,8 +514,14 @@ export function EditorialPortfolio() {
       <section className="ed-hero" data-home-enter={!route.hash || undefined} aria-label="Introduction">
 
         <div className="ed-hero-content">
-          <h1 className="ed-word-reveal" aria-label={heroWords.join(' ')}>
-            {heroWords.map(word => <span key={word} aria-hidden="true"><span>{word}</span></span>)}
+          <h1 className={filipino ? 'ed-word-reveal' : 'ed-word-reveal ed-type-trail'} aria-label={heroWords.join(' ')}>
+            {heroWords.map((word, wordIndex) => <span key={word} aria-hidden="true">
+              <span>{word}</span>
+              {!filipino && !reduced && !route.hash && <span className="ed-type-letters">
+                {Array.from(word, (letter, index) => <span key={index} data-letter={letter}
+                  style={{ '--letter-delay': `${(heroWords.slice(0, wordIndex).join('').length + index) * 21}ms` } as CSSProperties}>{letter}</span>)}
+              </span>}
+            </span>)}
           </h1>
           <div className="ed-hero-meta"><EmailLink /><span>{filipino ? 'Nasa Tagum City,' : 'Based in Tagum City,'}<br />{filipino ? 'Pilipinas' : 'Philippines'}</span></div>
           <div className="ed-intro">
