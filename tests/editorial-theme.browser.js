@@ -4,10 +4,10 @@ async page => {
   await page.bringToFront();
   await page.emulateMedia({ colorScheme: 'light', reducedMotion: 'no-preference' });
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto(base);
+  await page.goto(`${base}/robots.txt`);
   await page.evaluate(() => localStorage.removeItem('portfolio-theme'));
   const inkResponse = page.waitForResponse(/editorial-ink[^/]*\.webp$/);
-  await page.reload();
+  await page.goto(base);
   await (await inkResponse).finished();
   const toggle = page.getByRole('button', { name: 'Dark mode' });
   assert(await page.getByRole('link', { name: 'English', exact: true }).textContent() === 'EN', 'Missing EN pill');
@@ -30,8 +30,8 @@ async page => {
     if (mode === 'dark') {
       const layer = page.locator('.ed-ink-layer[data-theme=light]');
       await layer.waitFor();
-      assert(await layer.evaluate(node => getComputedStyle(node).maskImage === 'none' && node.getAnimations().length === 0),
-        'The outgoing page was masked before the texture decoded');
+      assert(await layer.evaluate(node => getComputedStyle(node).opacity === '0' && document.documentElement.dataset.theme === 'light'),
+        'The outgoing page became visible before the texture decoded');
       await page.evaluate(() => { window.releaseInkDecode(); delete window.releaseInkDecode; });
     }
     await page.waitForFunction(() => document.getAnimations().some(animation => animation.animationName === 'ed-ink-bleed'));
@@ -55,7 +55,13 @@ async page => {
 
   for (const [mode, delta] of [['dark', 680], ['light', -680]]) {
     await toggle.click();
-    await page.waitForFunction(() => document.getAnimations().some(animation => animation.animationName === 'ed-ink-bleed'));
+    await page.waitForFunction(() => {
+      const animation = document.getAnimations().find(item => item.animationName === 'ed-ink-bleed');
+      if (!animation) return false;
+      // Allow time to dispatch the wheel input on software-rendered browsers.
+      animation.updatePlaybackRate(.2);
+      return true;
+    });
     await page.evaluate(() => {
       window.inkScrollFrame = new Promise(resolve => {
         window.addEventListener('scroll', () => requestAnimationFrame(() => {
@@ -78,6 +84,7 @@ async page => {
     assert(frame.offset === offset && frame.inkOffset === offset && frame.inkRunning && Math.abs(frame.layerTop - frame.liveTop) < 2,
       `Ink lost alignment or stopped on the first ${mode} scroll frame: ${JSON.stringify(frame)}`);
     assert(await toggle.getAttribute('aria-pressed') === String(mode === 'dark'), 'Scrolling discarded the chosen theme');
+    await page.locator('.ed-ink-layer').evaluate(node => node.getAnimations()[0]?.updatePlaybackRate(1));
     await page.waitForFunction(() => !document.querySelector('.ed-ink-layer'));
     assert(await page.evaluate(() => scrollY) === offset, 'Ending the reveal moved the page');
   }
@@ -89,6 +96,79 @@ async page => {
   });
   assert(!replayed, 'A second click replayed a reveal before the first mask was ready');
   assert(await toggle.getAttribute('aria-pressed') === 'false', 'Rapid toggles lost the last selection');
+
+  await page.goto(`${base}/work/picolor`);
+  const camera = page.locator('#top .ed-desktop-camera');
+  await page.locator('.ed-desktop-stage').evaluate(node => node.scrollIntoView({ block: 'center', behavior: 'instant' }));
+  await camera.locator('img').evaluateAll(images => Promise.all(images.map(image => image.decode())));
+  await page.waitForFunction(() => document.querySelector('.ed-desktop-camera')?.getAnimations()[0]?.playState === 'running');
+  await page.evaluate(() => {
+    const decode = HTMLImageElement.prototype.decode;
+    const gate = new Promise(resolve => { window.releaseInkImages = resolve; });
+    HTMLImageElement.prototype.decode = function () {
+      const ready = decode.call(this);
+      if (!this.closest('.ed-ink-layer')) return ready;
+      window.inkImagesWaiting = true;
+      return ready.then(() => gate);
+    };
+    window.restoreInkImages = () => {
+      HTMLImageElement.prototype.decode = decode;
+      window.releaseInkImages();
+      delete window.inkImagesWaiting;
+      delete window.releaseInkImages;
+      delete window.restoreInkImages;
+    };
+  });
+  await toggle.click();
+  await page.waitForFunction(() => window.inkImagesWaiting === true);
+  const layer = page.locator('.ed-ink-layer');
+  assert(await layer.evaluate(node => getComputedStyle(node).opacity === '0' && document.documentElement.dataset.theme === 'light'),
+    'The scroll-then-toggle frame showed an unfinished copy');
+  await camera.evaluate(node => node.setAttribute('data-paused', ''));
+  await page.waitForFunction(() => document.querySelector('.ed-ink-layer .ed-desktop-camera')?.getAnimations()[0]?.playState === 'paused');
+  assert(await camera.evaluate(node => getComputedStyle(node).transform === getComputedStyle(document.querySelector('.ed-ink-layer .ed-desktop-camera')).transform),
+    'The outgoing reel reset to a different position when paused');
+  await camera.evaluate(node => node.removeAttribute('data-paused'));
+  await page.waitForFunction(() => {
+    const live = document.querySelector('#top .ed-desktop-camera')?.getAnimations()[0];
+    const mirror = document.querySelector('.ed-ink-layer .ed-desktop-camera')?.getAnimations()[0];
+    return live?.startTime != null && mirror?.startTime === live.startTime;
+  });
+  await page.evaluate(() => window.restoreInkImages());
+  await page.waitForFunction(() => document.documentElement.dataset.theme === 'dark' && !document.querySelector('.ed-ink-layer'));
+  await toggle.click();
+  await page.waitForFunction(() => document.documentElement.dataset.theme === 'light' && !document.querySelector('.ed-ink-layer'));
+
+  const story = page.locator('.product-story video');
+  await story.scrollIntoViewIfNeeded();
+  await story.evaluate(async video => {
+    video.muted = true;
+    await video.play();
+    video.pause();
+  });
+  await page.locator('.ed-lab-stage').evaluate(node => node.scrollIntoView({ block: 'center', behavior: 'instant' }));
+  for (const mode of ['dark', 'light']) {
+    const alignment = await toggle.evaluate(async button => {
+      const site = button.closest('.ed-site');
+      button.click();
+      const layer = document.querySelector('.ed-ink-layer');
+      if (!layer) throw Error('PiColor is missing its ink reveal');
+      let largestGap = 0;
+      const deadline = performance.now() + 3000;
+      while (layer.isConnected && performance.now() < deadline) {
+        for (const selector of ['.product-story video', '.ed-lab-stage']) {
+          const original = site.querySelector(selector).getBoundingClientRect();
+          const copy = layer.querySelector(selector).getBoundingClientRect();
+          largestGap = Math.max(largestGap, Math.abs(original.top - copy.top), Math.abs(original.height - copy.height));
+        }
+        await new Promise(requestAnimationFrame);
+      }
+      if (layer.isConnected) throw Error('PiColor ink layer was not removed');
+      return largestGap;
+    });
+    assert(alignment < 2, `PiColor jumped by ${alignment}px during the ${mode} reveal`);
+    assert(await page.locator('html').getAttribute('data-theme') === mode, `PiColor lost the ${mode} selection`);
+  }
 
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await toggle.focus();
@@ -139,5 +219,5 @@ async page => {
     await fallback.close();
   }
   await page.evaluate(() => localStorage.removeItem('portfolio-theme'));
-  return 'Ink in both directions, live alignment while scrolling, rapid and keyboard toggles, reduced motion, persistence, mobile language, gallery and fallback passed.';
+  return 'Ink in both directions, live alignment while scrolling and below video, rapid and keyboard toggles, reduced motion, persistence, mobile language, gallery and fallback passed.';
 }

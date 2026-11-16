@@ -52,26 +52,44 @@ function makeInkLayer(page: HTMLElement, theme: string) {
   if (dots) (byOriginal.get(dots) as HTMLCanvasElement).getContext('2d')?.drawImage(dots, 0, 0);
 
   const sync = () => { layer.scrollTop = scrollY; };
-  const mirrorStyles = new MutationObserver(changes => {
-    for (const { target } of changes) {
-      const node = target as Element;
-      byOriginal.get(node)?.setAttribute('style', node.getAttribute('style') ?? '');
-    }
-  });
-  const show = () => {
-    document.body.append(layer);
-    sync();
-    window.addEventListener('scroll', sync, { passive: true });
-    mirrorStyles.observe(page, { subtree: true, attributeFilter: ['style'] });
-
-    for (const animation of copy.getAnimations({ subtree: true })) {
+  const syncAnimations = (subtree: HTMLElement) => {
+    for (const animation of subtree.getAnimations({ subtree: true })) {
       if (!(animation instanceof CSSAnimation) || !(animation.effect instanceof KeyframeEffect)) continue;
       const target = animation.effect.target;
       const original = target && byCopy.get(target)?.getAnimations().find(item =>
         item instanceof CSSAnimation && item.animationName === animation.animationName);
       const time = original?.currentTime ?? animation.effect.getComputedTiming().endTime;
       if (time !== undefined && time !== Infinity) animation.currentTime = time;
+      if (original?.playState === 'running' && animation.playState === 'running') {
+        const align = () => {
+          if (layer.isConnected && original.playState === 'running' && original.startTime !== null && animation.playState === 'running') {
+            animation.startTime = original.startTime;
+          }
+        };
+        if (original.pending) void original.ready.then(align, () => {});
+        else align();
+      }
     }
+  };
+  const mirrorChanges = new MutationObserver(changes => {
+    const changedReels = new Set<HTMLElement>();
+    for (const { target, attributeName } of changes) {
+      const node = target as Element;
+      const mirror = byOriginal.get(node);
+      if (!mirror || !attributeName) continue;
+      const value = node.getAttribute(attributeName);
+      if (value === null) mirror.removeAttribute(attributeName);
+      else mirror.setAttribute(attributeName, value);
+      if (attributeName !== 'style' && mirror instanceof HTMLElement) changedReels.add(mirror);
+    }
+    changedReels.forEach(syncAnimations);
+  });
+  const show = () => {
+    document.body.append(layer);
+    sync();
+    window.addEventListener('scroll', sync, { passive: true });
+    mirrorChanges.observe(page, { subtree: true, attributeFilter: ['style', 'data-playing', 'data-paused'] });
+    syncAnimations(copy);
 
     for (const video of page.querySelectorAll('video')) {
       const mirror = byOriginal.get(video) as HTMLVideoElement;
@@ -81,12 +99,21 @@ function makeInkLayer(page: HTMLElement, theme: string) {
       if (!video.paused) void mirror.play().catch(() => {});
     }
   };
+  const decodeVisibleImages = () => Promise.all([...page.querySelectorAll('img')].flatMap(image => {
+    if (!image.complete || !image.naturalWidth) return [];
+    const { top, right, bottom, left, width, height } = image.getBoundingClientRect();
+    if (!width || !height || top >= innerHeight || bottom <= 0 || left >= innerWidth || right <= 0) return [];
+    const mirror = byOriginal.get(image);
+    if (!(mirror instanceof HTMLImageElement)) return [];
+    mirror.loading = 'eager';
+    return [mirror.decode().catch(() => {})];
+  }));
   const remove = () => {
-    mirrorStyles.disconnect();
+    mirrorChanges.disconnect();
     window.removeEventListener('scroll', sync);
     layer.remove();
   };
-  return { layer, show, remove };
+  return { layer, show, remove, decodeVisibleImages };
 }
 
 export function EditorialThemeButton({ label, routeKey }: { label: string; routeKey: string }) {
@@ -151,17 +178,20 @@ export function EditorialThemeButton({ label, routeKey }: { label: string; route
     const height = root.clientHeight;
     const radius = Math.hypot(Math.max(x, width - x), Math.max(y, height - y));
     const maskUrl = texture.current && URL.createObjectURL(texture.current);
-    const { layer, show, remove } = makeInkLayer(page, outgoingTheme);
+    const { layer, show, remove, decodeVisibleImages } = makeInkLayer(page, outgoingTheme);
     const finish = () => {
       if (active.current !== finish) return;
       active.current = null;
       remove();
       if (maskUrl) URL.revokeObjectURL(maskUrl);
       delete root.dataset.edInk;
-      return layer.hasAttribute('data-ed-ink') ? undefined : outgoingTheme;
+      if (layer.hasAttribute('data-ed-ink')) return;
+      if (override.current === nextDark) update();
+      return outgoingTheme;
     };
     const play = (url: string | null) => {
       if (active.current !== finish) return;
+      root.dataset.edInk = '';
       if (url) {
         // The 900 × 800 shader render starts at (690, 90). Scale its reach to the viewport.
         const scale = Math.max(radius / 690, (width - x) / 210, y / 90);
@@ -173,19 +203,25 @@ export function EditorialThemeButton({ label, routeKey }: { label: string; route
         });
         layer.dataset.edInk = 'contour';
       }
+      update();
       void Promise.all(layer.getAnimations().map(animation => animation.finished)).then(finish, finish);
     };
 
-    root.dataset.edInk = '';
     active.current = finish;
     show();
-    update();
-    if (maskUrl) {
-      // A pending image can blank out the composite mask. Keep the old layer solid until it decodes.
+    const startScroll = scrollY;
+    const decodeMask = async () => {
+      if (!maskUrl) return null;
       const image = new Image();
       image.src = maskUrl;
-      void image.decode().then(() => play(maskUrl), () => play(null));
-    } else play(null);
+      return image.decode().then(() => maskUrl, () => null);
+    };
+    // Keep the live page visible until the outgoing copy and the mask can paint together.
+    void Promise.all([decodeMask(), decodeVisibleImages()]).then(async ([url]) => {
+      if (active.current !== finish) return;
+      if (startScroll !== scrollY) await decodeVisibleImages();
+      play(url);
+    });
   }
 
   return <button type="button" className="ed-theme" aria-label={label} aria-pressed={dark} title={label} onClick={toggle}>
