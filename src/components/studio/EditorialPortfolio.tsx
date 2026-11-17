@@ -28,6 +28,14 @@ const studySections = [
 ] as const;
 const aboutImages = ['/portrait.png', '/images/video-10.png', '/images/cad/enclosure.png', '/projects/collegium-hero.png'];
 const aboutImageCaptions = ['Raziel Salamat', 'UM Tagum College graduation film', 'Electronics enclosure CAD study', 'The Collegium newsroom'];
+
+function RRMark() {
+  return <svg aria-hidden="true" width="1em" height="1em" viewBox="64.75 65.12 29.81 29.76" fill="currentColor">
+    <path d="M84.59,66.97v3.25c.02,1.02-.81,1.86-1.83,1.86l-9.16.04c-1.02,0-1.85.84-1.85,1.86l.04,9.15c0,1.02-.82,1.86-1.85,1.86h-3.25c-1.02.02-1.86-.81-1.86-1.83l-.07-16.11c0-1.02.82-1.86,1.85-1.86l16.12-.07c1.02,0,1.86.82,1.86,1.85Z" />
+    <path d="M94.55,76.84v3.25c.02,1.02-.81,1.86-1.83,1.86l-9.16.04c-1.02,0-1.85.84-1.85,1.86l.04,9.15c0,1.02-.82,1.86-1.85,1.86h-3.25c-1.02.02-1.86-.81-1.86-1.83l-.07-16.11c0-1.02.82-1.86,1.85-1.86l16.12-.07c1.02,0,1.86.82,1.86,1.85Z" />
+  </svg>;
+}
+
 const cleanPath = (path: string) => path.replace(/\/+$/, '') || '/';
 const anchorFor = (hash: string) => {
   const id = hash === '#work' ? 'projects' : hash.slice(1);
@@ -667,10 +675,7 @@ export function EditorialPortfolio() {
     <header className="ed-nav" data-enter={!internalEntry || undefined}>
       <nav aria-label="Main navigation">
         <a href={href(home ? '/#top' : '/')}>
-          <svg aria-hidden="true" width="1em" height="1em" viewBox="64.75 65.12 29.81 29.76" fill="currentColor">
-            <path d="M84.59,66.97v3.25c.02,1.02-.81,1.86-1.83,1.86l-9.16.04c-1.02,0-1.85.84-1.85,1.86l.04,9.15c0,1.02-.82,1.86-1.85,1.86h-3.25c-1.02.02-1.86-.81-1.86-1.83l-.07-16.11c0-1.02.82-1.86,1.85-1.86l16.12-.07c1.02,0,1.86.82,1.86,1.85Z"/>
-            <path d="M94.55,76.84v3.25c.02,1.02-.81,1.86-1.83,1.86l-9.16.04c-1.02,0-1.85.84-1.85,1.86l.04,9.15c0,1.02-.82,1.86-1.85,1.86h-3.25c-1.02.02-1.86-.81-1.86-1.83l-.07-16.11c0-1.02.82-1.86,1.85-1.86l16.12-.07c1.02,0,1.86.82,1.86,1.85Z"/>
-          </svg>
+          <RRMark />
           Raziel Salamat
         </a>
         {sections.map(({ href: destination, label }, index) => <a key={destination} href={href(destination)} aria-current={path === destination || (article && label === 'Writing') ? 'page' : undefined}>{filipino ? FILIPINO.nav[index] : label}</a>)}
@@ -807,7 +812,10 @@ export function EditorialPortfolio() {
 
     <footer className="ed-footer ed-band" id="contact" data-case-footer={!!project || undefined}>
       <div>{project ? <a href={href('/#projects')}>{filipino ? '← Lahat ng gawa' : '← All work'}</a> : <nav aria-label="Social links"><a href={PERSONAL.socials.linkedin} target="_blank" rel="noreferrer">LinkedIn</a><a href={PERSONAL.socials.github} target="_blank" rel="noreferrer">GitHub</a><a href={DOCUMENTS.resume.url}>Résumé</a></nav>}<EmailLink /></div>
-      {!project && <motion.p initial={reduced ? false : { opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: .1 }} transition={reduced ? { duration: 0 } : { opacity: { duration: .9 }, y: { duration: 1.1 }, ease: [.19, 1, .22, 1] }}>Raziel Salamat</motion.p>}
+      {!project && <motion.p className="ed-footer-wordmark" initial={reduced ? false : { opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: .1 }} transition={reduced ? { duration: 0 } : { opacity: { duration: .9 }, y: { duration: 1.1 }, ease: [.19, 1, .22, 1] }}>
+        <RRMark />
+        <span>Raziel Salamat</span>
+      </motion.p>}
     </footer>
     {(about || project) && <ImageLightboxModal key={`gallery:${route.path}`} appearance="editorial" project={about ? { ...portraitProject, techStack: [], images: aboutImages, imageCaptions: aboutImageCaptions } : project ?? null} currentImageIndex={zoom ?? 0} isOpen={zoom !== null} onClose={() => setZoom(null)} onSelectImage={setZoom} />}
   </div>;

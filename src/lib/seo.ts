@@ -13,6 +13,8 @@ export function pageSeo(project?: Project, missing = false) {
     ? project.description.match(/^.*?[.!?](?=\s|$)/)?.[0] ?? project.description
     : bio;
   const image = SITE + (project?.coverImage ?? project?.images?.[0] ?? '/portrait.png');
+  const shareImage = project ? image : SITE + '/portfolio-share.jpg';
+  const shareImageAlt = project ? `${project.title} project preview` : 'RR logo beside Raziel Salamat’s name and portrait';
   const person = {
     '@type': 'Person', '@id': `${SITE}/#raziel`, name: PERSONAL.name,
     alternateName: 'Raziel Salamat', url: SITE + '/',
@@ -33,8 +35,9 @@ export function pageSeo(project?: Project, missing = false) {
       description, robots: missing ? 'noindex' : 'index, follow, max-image-preview:large',
       'og:type': project ? 'article' : 'profile', 'og:site_name': 'Raziel Salamat',
       'og:title': title, 'og:description': description, 'og:url': missing ? '' : url,
-      'og:image': image, 'og:image:alt': project ? `${project.title} project preview` : 'Portrait of Raziel Salamat',
-      'twitter:card': 'summary_large_image',
+      'og:image': shareImage, 'og:image:alt': shareImageAlt,
+      ...(!project && { 'og:image:width': '1200', 'og:image:height': '630' }),
+      'twitter:card': 'summary_large_image', 'twitter:image': shareImage, 'twitter:image:alt': shareImageAlt,
     },
   };
 }
