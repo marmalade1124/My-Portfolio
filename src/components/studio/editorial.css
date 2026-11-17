@@ -10,7 +10,7 @@ html:has(.ed-site),.ed-ink-layer {
   --pill-hover:#dcdcd7;
   --pill-active:#20201e;
   --pill-active-text:#fff;
-  --dots:rgb(50 50 50 / .35);
+  --rr-pattern:url('./rr-pattern.svg?no-inline');
   --dot-filter:none;
   --available-dot:#41805d;
   --available-halo:#41805d26;
@@ -31,7 +31,7 @@ html[data-theme=dark]:has(.ed-site),.ed-ink-layer[data-theme=dark] {
   --pill-hover:#464640;
   --pill-active:#f3f2ee;
   --pill-active-text:#181817;
-  --dots:rgb(205 205 205 / .35);
+  --rr-pattern:url('./rr-pattern.svg?no-inline#dark');
   --dot-filter:invert(1);
   --available-dot:#76b88d;
   --available-halo:#76b88d28;
@@ -42,7 +42,7 @@ html[data-theme=dark]:has(.ed-site),.ed-ink-layer[data-theme=dark] {
 html:has(.ed-site) body { background:var(--paper); }
 .ed-site {
   --pad:clamp(18px,1.12vw,24px);
-  background:radial-gradient(circle,var(--dots) .8px,transparent 1px) -25px -25px/50px 50px,var(--paper);
+  background:var(--rr-pattern) -25px -25px/50px 50px,var(--paper);
   isolation:isolate;
   color:var(--ink);
   min-height:100vh;

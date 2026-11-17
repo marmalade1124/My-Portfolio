@@ -10,6 +10,7 @@ import { WRITING, writingPath } from '@/lib/editorial-writing';
 import { CaseNarration, ChapterRail, EditorialArticle } from './EditorialChapters';
 import { EditorialLab, hasProjectLab } from './EditorialLab';
 import { EditorialThemeButton } from './EditorialThemeButton';
+import rrPattern from './rr-pattern.svg?no-inline';
 import { editorialPath, filipinoPath, localizedPath, FILIPINO } from '@/lib/editorial-language';
 import './editorial.css';
 
@@ -314,7 +315,7 @@ function CoverClip({ clip, title }: { clip: string; title: string }) {
   </>;
 }
 
-function DotField() {
+function LogoField() {
   const canvas = useRef<HTMLCanvasElement>(null);
   const reduced = useLiveReducedMotion();
   useEffect(() => {
@@ -323,6 +324,11 @@ function DotField() {
     if (!element || !context || reduced || !matchMedia('(hover: hover) and (pointer: fine)').matches) return;
 
     const spacing = 50;
+    const stampSize = 6;
+    const image = new Image();
+    const stamp = document.createElement('canvas');
+    const stampContext = stamp.getContext('2d');
+    if (!stampContext) return;
     let width = 0;
     let height = 0;
     let frame = 0;
@@ -341,7 +347,6 @@ function DotField() {
       frame = 0;
       const pull = strengthAt(time) * 16;
       context.clearRect(0, 0, width, height);
-      context.beginPath();
       for (let y = -(scrollY % spacing); y <= height + 1; y += spacing) {
         for (let x = 0; x <= width + 1; x += spacing) {
           let dx = 0;
@@ -356,11 +361,9 @@ function DotField() {
             dx -= (x - press.x) * attraction;
             dy -= (y - press.y) * attraction;
           }
-          context.moveTo(x + dx + 1, y + dy);
-          context.arc(x + dx, y + dy, 1, 0, 2 * Math.PI);
+          context.drawImage(stamp, x + dx - stampSize / 2, y + dy - stampSize / 2, stampSize, stampSize);
         }
       }
-      context.fill();
       const inkDots = document.querySelector<HTMLCanvasElement>('.ed-ink-layer .ed-dots');
       if (inkDots) {
         if (inkDots.width !== element.width || inkDots.height !== element.height) {
@@ -373,16 +376,25 @@ function DotField() {
       }
       if (time - press.start < press.duration) schedule();
     };
-    const schedule = () => { if (!frame) frame = requestAnimationFrame(render); };
+    const schedule = () => { if (!frame && element.hasAttribute('data-active')) frame = requestAnimationFrame(render); };
     const resize = () => {
+      if (!element.hasAttribute('data-active')) return;
       width = element.clientWidth;
       height = element.clientHeight;
       const scale = Math.min(devicePixelRatio || 1, 2);
       element.width = Math.round(width * scale);
       element.height = Math.round(height * scale);
       context.setTransform(scale, 0, 0, scale, 0, 0);
-      context.fillStyle = 'rgb(50 50 50 / .35)';
+      const crop = (spacing - stampSize) / 2;
+      stamp.width = stamp.height = Math.round(stampSize * scale);
+      stampContext.drawImage(image, crop, crop, stampSize, stampSize, 0, 0, stamp.width, stamp.height);
       schedule();
+    };
+    const activate = () => {
+      element.dataset.active = '';
+      resize();
+      cancelAnimationFrame(frame);
+      render(performance.now());
     };
     const move = (event: PointerEvent) => {
       if (event.pointerType !== 'mouse') return;
@@ -403,8 +415,8 @@ function DotField() {
       schedule();
     };
 
-    element.dataset.active = '';
-    resize();
+    image.addEventListener('load', activate);
+    image.src = rrPattern;
     window.addEventListener('resize', resize);
     window.addEventListener('scroll', schedule, { passive: true });
     window.addEventListener('pointermove', move, { passive: true });
@@ -415,6 +427,7 @@ function DotField() {
     document.addEventListener('visibilitychange', up);
     document.documentElement.addEventListener('pointerleave', leave);
     return () => {
+      image.removeEventListener('load', activate);
       delete element.dataset.active;
       cancelAnimationFrame(frame);
       window.removeEventListener('resize', resize);
@@ -649,11 +662,17 @@ export function EditorialPortfolio() {
   if (missing) return <div className="ed-site ed-error" onClick={navigate}><main id="content"><p>404</p><h1>{filipino ? 'Hindi makita ang pahina' : 'Page not found'}</h1><a className="ed-action" href={href('/')}>{filipino ? 'Bumalik sa portfolio' : 'Back to portfolio'} <ArrowUpRight size={16} /></a></main></div>;
 
   return <div className="ed-site" id="top" onClick={navigate} data-internal-visit={internalVisit || undefined} data-page-fade={route.fade || undefined} data-locale={filipino ? 'fil' : undefined}>
-    <DotField />
+    <LogoField />
     <a className="ed-skip" href="#content">Skip to content</a>
     <header className="ed-nav" data-enter={!internalEntry || undefined}>
       <nav aria-label="Main navigation">
-        <a href={href(home ? '/#top' : '/')}>Raziel Salamat</a>
+        <a href={href(home ? '/#top' : '/')}>
+          <svg aria-hidden="true" width="1em" height="1em" viewBox="64.75 65.12 29.81 29.76" fill="currentColor">
+            <path d="M84.59,66.97v3.25c.02,1.02-.81,1.86-1.83,1.86l-9.16.04c-1.02,0-1.85.84-1.85,1.86l.04,9.15c0,1.02-.82,1.86-1.85,1.86h-3.25c-1.02.02-1.86-.81-1.86-1.83l-.07-16.11c0-1.02.82-1.86,1.85-1.86l16.12-.07c1.02,0,1.86.82,1.86,1.85Z"/>
+            <path d="M94.55,76.84v3.25c.02,1.02-.81,1.86-1.83,1.86l-9.16.04c-1.02,0-1.85.84-1.85,1.86l.04,9.15c0,1.02-.82,1.86-1.85,1.86h-3.25c-1.02.02-1.86-.81-1.86-1.83l-.07-16.11c0-1.02.82-1.86,1.85-1.86l16.12-.07c1.02,0,1.86.82,1.86,1.85Z"/>
+          </svg>
+          Raziel Salamat
+        </a>
         {sections.map(({ href: destination, label }, index) => <a key={destination} href={href(destination)} aria-current={path === destination || (article && label === 'Writing') ? 'page' : undefined}>{filipino ? FILIPINO.nav[index] : label}</a>)}
       </nav>
       <div className="ed-nav-options">

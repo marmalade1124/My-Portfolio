@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 810" aria-hidden="true">
+    <defs>
+      <path id="rr-opening-left-shape" d="M84.59,66.97v3.25c.02,1.02-.81,1.86-1.83,1.86l-9.16.04c-1.02,0-1.85.84-1.85,1.86l.04,9.15c0,1.02-.82,1.86-1.85,1.86h-3.25c-1.02.02-1.86-.81-1.86-1.83l-.07-16.11c0-1.02.82-1.86,1.85-1.86l16.12-.07c1.02,0,1.86.82,1.86,1.85Z"/>
+      <path id="rr-opening-right-shape" d="M94.55,76.84v3.25c.02,1.02-.81,1.86-1.83,1.86l-9.16.04c-1.02,0-1.85.84-1.85,1.86l.04,9.15c0,1.02-.82,1.86-1.85,1.86h-3.25c-1.02.02-1.86-.81-1.86-1.83l-.07-16.11c0-1.02.82-1.86,1.85-1.86l16.12-.07c1.02,0,1.86.82,1.86,1.85Z"/>
+      <g id="rr-opening-horizontal-block">
+        <rect width="19.83" height="7" stroke="#a74b35" stroke-width=".09"/>
+        <path d="M-.25-.25h.5v.5h-.5z M19.58 6.75h.5v.5h-.5z" fill="#f5f4eb" stroke="#a74b35" stroke-width=".07"/>
+      </g>
+      <g id="rr-opening-vertical-block">
+        <rect width="7" height="19.87" stroke="#a74b35" stroke-width=".09"/>
+        <path d="M-.25-.25h.5v.5h-.5z M6.75 19.62h.5v.5h-.5z" fill="#f5f4eb" stroke="#a74b35" stroke-width=".07"/>
+      </g>
+      <rect id="rr-opening-horizontal-outline" width="19.83" height="7" pathLength="100"/>
+      <rect id="rr-opening-vertical-outline" width="7" height="19.87" pathLength="100"/>
+      <pattern id="rr-opening-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+        <circle cx="0.8" cy="0.8" r="1" fill="#779192" opacity=".55"/>
+      </pattern>
+      <pattern id="rr-opening-major-grid" width="120" height="120" patternUnits="userSpaceOnUse">
+        <path d="M0 120V0H120" fill="none" stroke="#aac0bf" stroke-width="1" opacity=".5"/>
+      </pattern>
+      <radialGradient id="rr-opening-paper" cx="50%" cy="45%" r="70%">
+        <stop stop-color="#f5f4eb"/><stop offset="1" stop-color="#e4ece7"/>
+      </radialGradient>
+      <marker id="rr-opening-dim" viewBox="0 0 8 8" refX="1" refY="4" markerWidth="8" markerHeight="8" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+        <path d="M7 1 1 4l6 3" fill="none" stroke="#416d75" stroke-width="1"/>
+      </marker>
+    </defs>
+    <rect data-rr-paper="" width="1440" height="810" fill="url(#rr-opening-paper)"/>
+    <g id="rr-opening-camera">
+    <rect y="-250" width="1440" height="1060" data-rr-grid="" fill="url(#rr-opening-major-grid)"/>
+    <rect y="-250" width="1440" height="1060" data-rr-grid="" fill="url(#rr-opening-grid)"/>
+    <g id="rr-opening-guides" fill="none" stroke="#729595" stroke-width="1.2">
+      <path d="M443 128H997V682H443Z" stroke-dasharray="7 7"/>
+      <path d="M398 405H1042M720 83V727M443 128 997 682M997 128 443 682" stroke-dasharray="5 9"/>
+      <path d="M429 128h28m-14-14v28m540-14h28m-14-14v28M429 682h28m-14-14v28m540-14h28m-14-14v28"/>
+      <circle cx="720" cy="405" r="188" stroke-dasharray="6 8"/>
+      <path d="M511 196h418M511 614h418M511 196v418m418-418v418M511 196v-29m418 29v-29m0 29h49m-49 418h49" opacity=".78"/>
+      <path d="M764 196v100m-253 183h100m136-145h182m-278 0v280m-140-319h253m-13 39v280" stroke-dasharray="5 7"/>
+      <path d="M511 186h418m37 10v418" stroke="#416d75" marker-start="url(#rr-opening-dim)" marker-end="url(#rr-opening-dim)"/>
+      <g fill="#416d75" stroke="none" font-family="Consolas, monospace" font-size="15">
+        <text x="720" y="171" text-anchor="middle">29.8 u</text>
+        <text x="987" y="407">29.7 u</text>
+      </g>
+    </g>
+    <g transform="translate(720 405) scale(14) translate(-79.655 -80)">
+      <g id="rr-opening-primitives">
+        <g id="rr-opening-left-horizontal">
+          <use href="#rr-opening-horizontal-block" x="64.76" y="65.12"/>
+          <use href="#rr-opening-horizontal-outline" x="64.76" y="65.12"/>
+        </g>
+        <g id="rr-opening-left-vertical">
+          <use href="#rr-opening-vertical-block" x="64.76" y="65.12"/>
+          <use href="#rr-opening-vertical-outline" x="64.76" y="65.12"/>
+        </g>
+        <g id="rr-opening-right-horizontal">
+          <use href="#rr-opening-horizontal-block" x="74.72" y="74.99"/>
+          <use href="#rr-opening-horizontal-outline" x="74.72" y="74.99"/>
+        </g>
+        <g id="rr-opening-right-vertical">
+          <use href="#rr-opening-vertical-block" x="74.72" y="74.99"/>
+          <use href="#rr-opening-vertical-outline" x="74.72" y="74.99"/>
+        </g>
+      </g>
+      <g id="rr-opening-fillets" fill="#1e1e1e">
+        <path id="rr-opening-left-fillet"/>
+        <path id="rr-opening-right-fillet" transform="translate(9.96 9.87)"/>
+      </g>
+      <circle id="rr-opening-active-corner" r="2.65" fill="none" stroke="#db6847" stroke-width=".065" stroke-dasharray=".32 .18"/>
+    </g>
+    </g>
+  </svg>
