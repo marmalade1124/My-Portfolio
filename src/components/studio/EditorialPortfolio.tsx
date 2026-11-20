@@ -539,6 +539,8 @@ export function EditorialPortfolio() {
   const internalEntry = navigation?.type === 'navigate' && document.referrer.startsWith(location.origin + '/');
   const internalVisit = route.internal || internalEntry;
   const [zoom, setZoom] = useState<number | null>(null);
+  const pageEnd = useRef<HTMLDivElement>(null);
+  const nearPageEnd = useInView(pageEnd, { margin: '0px 0px 64px 0px' });
   const outgoing = useRef<Animation | null>(null);
   const reduced = useLiveReducedMotion();
   useEffect(() => {
@@ -671,8 +673,17 @@ export function EditorialPortfolio() {
 
   return <div className="ed-site" id="top" onClick={navigate} data-internal-visit={internalVisit || undefined} data-page-fade={route.fade || undefined} data-locale={filipino ? 'fil' : undefined}>
     <LogoField />
+    <svg className="ed-glass-filter" width="0" height="0" aria-hidden="true">
+      <defs>
+        <filter id="ed-glass-refraction" x="0" y="0" width="100%" height="100%" colorInterpolationFilters="sRGB">
+          <feTurbulence type="fractalNoise" baseFrequency=".008 .028" numOctaves="1" seed="9" result="refraction" />
+          <feDisplacementMap in="SourceGraphic" in2="refraction" scale="54" xChannelSelector="R" yChannelSelector="G" />
+        </filter>
+      </defs>
+    </svg>
     <a className="ed-skip" href="#content">Skip to content</a>
     <header className="ed-nav" data-enter={!internalEntry || undefined}>
+      <div className="ed-edge-blur ed-nav-blur" aria-hidden="true"><span /><span /><span /><i className="ed-glass-corners" /></div>
       <nav aria-label="Main navigation">
         <a href={href(home ? '/#top' : '/')}>
           <RRMark />
@@ -817,6 +828,8 @@ export function EditorialPortfolio() {
         <span>Raziel Salamat</span>
       </motion.p>}
     </footer>
+    <div ref={pageEnd} className="ed-page-end" aria-hidden="true" />
+    <div className="ed-edge-blur ed-bottom-blur" aria-hidden="true" style={{ opacity: nearPageEnd ? 0 : undefined }}><span /><span /><span /><i className="ed-glass-corners" /></div>
     {(about || project) && <ImageLightboxModal key={`gallery:${route.path}`} appearance="editorial" project={about ? { ...portraitProject, techStack: [], images: aboutImages, imageCaptions: aboutImageCaptions } : project ?? null} currentImageIndex={zoom ?? 0} isOpen={zoom !== null} onClose={() => setZoom(null)} onSelectImage={setZoom} />}
   </div>;
 }

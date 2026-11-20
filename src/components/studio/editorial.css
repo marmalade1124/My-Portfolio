@@ -79,12 +79,84 @@ html:has(.ed-site) body { background:var(--paper); }
   display:flex; justify-content:space-between; align-items:center;
   gap:10px; pointer-events:none;
 }
-.ed-nav::before {
-  content:''; position:fixed; inset:0 0 auto; height:104px; z-index:-1;
-  background:linear-gradient(var(--paper) 35%,transparent);
+.ed-edge-blur {
+  --blur-direction:to bottom;
+  --blur-tint:42%;
+  --glass-rim:rgb(255 255 255 / .3);
+  position:fixed; inset-inline:0;
   pointer-events:none;
-  backdrop-filter:blur(6px);
-  mask-image:linear-gradient(#000 45%,transparent);
+}
+.ed-glass-filter { position:absolute; pointer-events:none; }
+.ed-nav-blur { inset-block-start:0; height:104px; z-index:-1; }
+.ed-bottom-blur {
+  --blur-direction:to top;
+  --blur-tint:27%;
+  inset-block-end:0; height:64px; z-index:3;
+}
+.ed-page-end { height:1px; }
+.ed-site:has(.ed-route :focus-visible,.ed-footer :focus-visible) > .ed-bottom-blur { opacity:0; }
+@media (prefers-reduced-motion:no-preference) {
+  .ed-bottom-blur { transition:opacity 160ms ease-out; }
+}
+.ed-edge-blur::after {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(var(--blur-direction),var(--paper) 24%,transparent);
+}
+.ed-glass-corners { position:absolute; inset:0; }
+.ed-glass-corners::before,.ed-glass-corners::after {
+  content:''; position:absolute; inset-block:0; width:clamp(12px,2vw,24px);
+  background:linear-gradient(var(--glass-side),var(--glass-rim),transparent 78%);
+  -webkit-mask-image:radial-gradient(ellipse 100% 100% at var(--glass-corner),#000 15%,transparent);
+  mask-image:radial-gradient(ellipse 100% 100% at var(--glass-corner),#000 15%,transparent);
+}
+.ed-glass-corners::before { --glass-side:to right; --glass-corner:left top; left:0; }
+.ed-glass-corners::after { --glass-side:to left; --glass-corner:right top; right:0; }
+.ed-bottom-blur .ed-glass-corners::before { --glass-corner:left bottom; }
+.ed-bottom-blur .ed-glass-corners::after { --glass-corner:right bottom; }
+@supports ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))) and
+          ((mask-image:linear-gradient(#000,transparent)) or (-webkit-mask-image:linear-gradient(#000,transparent))) {
+  .ed-edge-blur > span {
+    position:absolute; inset:0 0 auto; height:var(--blur-height);
+    -webkit-backdrop-filter:blur(var(--blur-radius));
+    backdrop-filter:blur(var(--blur-radius));
+    -webkit-mask-image:var(--blur-mask);
+    mask-image:var(--blur-mask);
+  }
+  .ed-bottom-blur > span { inset-block:auto 0; }
+  .ed-edge-blur > span:nth-child(1) {
+    --blur-height:100%; --blur-radius:3px;
+    --blur-mask:linear-gradient(var(--blur-direction),transparent 37%,#000 68%,transparent);
+  }
+  .ed-edge-blur > span:nth-child(2) {
+    --blur-height:78%; --blur-radius:7px;
+    --blur-mask:linear-gradient(var(--blur-direction),transparent 12%,#000 46% 63%,transparent);
+  }
+  .ed-edge-blur > span:nth-child(3) {
+    --blur-height:64%; --blur-radius:14px;
+    --blur-mask:linear-gradient(var(--blur-direction),#000 53%,transparent);
+  }
+  .ed-edge-blur::after {
+    background:
+      linear-gradient(var(--blur-direction),var(--glass-rim),transparent 3px),
+      linear-gradient(var(--blur-direction),color-mix(in oklab,var(--paper) var(--blur-tint),transparent),transparent 88%);
+  }
+  .ed-glass-corners::before,.ed-glass-corners::after {
+    -webkit-backdrop-filter:blur(5px);
+    backdrop-filter:blur(5px);
+  }
+}
+/* Chromium renders SVG refraction on backdrop pixels. The blur remains the fallback. */
+@supports (-webkit-app-region:drag) and (backdrop-filter:url("#ed-glass-refraction")) {
+  .ed-edge-blur > span:nth-child(3) {
+    --blur-height:52%;
+    backdrop-filter:url("#ed-glass-refraction") blur(4px) saturate(1.12);
+    --blur-mask:linear-gradient(var(--blur-direction),#000 45%,transparent);
+  }
+}
+@media (prefers-reduced-transparency:reduce) {
+  .ed-nav-blur > span,.ed-glass-corners,.ed-bottom-blur { display:none; }
+  .ed-nav-blur::after { background:linear-gradient(var(--paper) 64%,transparent); }
+  .ed-nav :is(a,.ed-theme) { backdrop-filter:none; }
 }
 .ed-nav nav,.ed-footer nav,.ed-document-links,.ed-case-links { display:flex; flex-wrap:wrap; gap:8px; }
 .ed-nav a,.ed-theme,.ed-document-links a,.ed-case-links a { display:inline-flex; align-items:center; gap:8px; background:var(--surface); border-radius:50px; padding:10px 17px; font-size:15px; white-space:nowrap; transition:background-color 160ms,color 160ms; }
@@ -636,7 +708,7 @@ html:has(.ed-site) body { background:var(--paper); }
 }
 @media (max-width:900px) {
   .ed-site[data-locale=fil] { --ed-anchor-offset:136px; }
-  .ed-site[data-locale=fil] .ed-nav::before { height:136px; }
+  .ed-site[data-locale=fil] .ed-nav-blur { height:136px; }
   .ed-site[data-locale=fil] .ed-hero,.ed-site[data-locale=fil] .ed-case { padding-top:max(144px, 21vh); }
 }
 .ed-project figure > .ed-zoom { aspect-ratio:16/10; max-height:85svh; }
